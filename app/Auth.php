@@ -27,6 +27,17 @@ final class Auth
         ]);
         ini_set('session.use_strict_mode', '1');
         ini_set('session.use_only_cookies', '1');
+        // Eigener Sitzungsordner (auf Shared Hosting sonst für andere Konten lesbar)
+        $dir = FP_ROOT . '/storage/sessions';
+        if (!is_dir($dir)) {
+            @mkdir($dir, 0700, true);
+        }
+        if (is_dir($dir) && is_writable($dir)) {
+            session_save_path($dir);
+            ini_set('session.gc_probability', '1');
+            ini_set('session.gc_divisor', '50');
+            ini_set('session.gc_maxlifetime', (string)max(43200, (int)cfg('session_timeout', 7200)));
+        }
         session_start();
 
         $now = time();

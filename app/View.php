@@ -20,6 +20,7 @@ final class View
         self::$meta = $meta + self::$meta;
         http_response_code($status);
         header('Content-Type: text/html; charset=utf-8');
+        header('Cache-Control: private, max-age=0, must-revalidate');
         Security::headers();
         $content = self::render($tpl, $vars);
         echo self::render('layout', ['content' => $content, 'meta' => self::$meta]);
