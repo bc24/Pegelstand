@@ -26,6 +26,10 @@ if (!is_file($__cfgFile)) {
     header('Location: ' . $base . '/install/');
     exit;
 }
+if (!is_readable($__cfgFile)) {
+    http_response_code(500);
+    exit('config/config.php ist für den Webserver nicht lesbar. Bitte Dateirechte prüfen (z. B. chmod 640 und passende Gruppe/Besitzer).');
+}
 $GLOBALS['fp_config'] = require $__cfgFile;
 unset($__cfgFile);
 

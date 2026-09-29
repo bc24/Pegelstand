@@ -44,6 +44,12 @@ php install/cli.php --db=frankpanzer --user=dbuser --pass=geheim \
 
 Der Installer legt die Tabellen an, spielt die Startinhalte ein (aus frank-panzer.de und panzerit.de übernommen) und schreibt `config/config.php` (nicht im Git, siehe `.gitignore`). Schreibrechte werden für `config/`, `storage/` und `uploads/` benötigt.
 
+### Umzug von der bisherigen statischen Seite
+
+Liegen im Zielordner noch die alten statischen Dateien (`index.html`, `css/`, `js/`, `blog/…/index.html`, `impressum/`, `datenschutz/`), werden diese von Apache **vor** der neuen Seite ausgeliefert. Vor dem Upload also entfernen bzw. überschreiben. Die Ordner der Einzel-Apps unter `projekte/<name>/` bleiben unverändert erhalten; die alten URLs (`/blog/<artikel>/`, `/impressum/`, `/datenschutz/`, `/assets/img/frank-panzer.jpg`) funktionieren weiter.
+
+Läuft die Installation per CLI unter einem anderen Benutzer als der Webserver, muss `config/config.php` für den Webserver lesbar sein (der Installer setzt 0644; bei Bedarf Gruppe setzen und auf 0640 verschärfen).
+
 ### Betrieb hinter Cloudflare / Reverse-Proxy
 
 In `config/config.php` `'trust_proxy' => true` setzen, damit Ratenbegrenzungen die echte Besucher-IP nutzen.

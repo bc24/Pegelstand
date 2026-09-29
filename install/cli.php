@@ -40,3 +40,4 @@ try {
     exit(1);
 }
 echo "Installation abgeschlossen.\nAdmin-Login: {$o['admin']} / $password\n";
+echo "Hinweis: config/config.php wurde mit Rechten 0644 angelegt. Ist der Webserver-Benutzer nicht der Besitzer, ggf. Gruppe setzen und auf 0640 verschärfen.\n";

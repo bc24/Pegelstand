@@ -83,7 +83,8 @@ final class Installer
         if (file_put_contents(FP_ROOT . '/config/config.php', $php, LOCK_EX) === false) {
             throw new RuntimeException('config/config.php konnte nicht geschrieben werden.');
         }
-        @chmod(FP_ROOT . '/config/config.php', 0640);
+        // Web-Installer läuft als Webserver-Benutzer (Besitzer der Datei) -> 0640; per CLI ggf. anderer Benutzer -> 0644
+        @chmod(FP_ROOT . '/config/config.php', PHP_SAPI === 'cli' ? 0644 : 0640);
         file_put_contents(FP_ROOT . '/config/installed.lock', date('c') . "\n");
     }
 
