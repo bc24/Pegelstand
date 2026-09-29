@@ -1,0 +1,1 @@
+Warum ich meine persönliche Website von Grund auf neu geschrieben habe — ohne Framework, ohne Build-Tool, nur pures HTML, CSS und JavaScript. Und warum das die beste Entscheidung war.

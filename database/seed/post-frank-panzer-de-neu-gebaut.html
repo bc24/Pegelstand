@@ -1,0 +1,50 @@
+<h2>Der alte Zustand</h2>
+      <p>
+        Meine alte persönliche Website war ehrlich gesagt ein Sammelsurium. Über die Jahre hatte ich hier und da etwas drangebaut, Templates angepasst, WordPress-Plugins installiert — bis die Seite schwerfällig, veraltet und peinlich geworden war. Der letzten Version sah man an, dass sie aus verschiedenen Epochen meiner Entwickler-Karriere zusammengestückelt war.
+      </p>
+      <p>
+        Es gab keinen roten Faden. Kein konsistentes Design. Und vor allem: Sie hat mich nicht mehr richtig repräsentiert. Nach 25 Jahren Online-Präsenz — von web-pood.de (2001) über unzählige Community-Projekte bis heute — verdiente ich eine Seite, die all das zusammenfasst.
+      </p>
+      <h2>Die Entscheidung: kein Framework</h2>
+      <p>
+        Ich hätte React nehmen können. Vue. Next.js. Astro. Gatsby. Die Liste der Möglichkeiten ist endlos. Aber ich wollte etwas anderes: Ich wollte eine Seite, die ich in zehn Jahren noch öffnen, verstehen und anpassen kann — ohne npm update, ohne Breaking Changes, ohne Bundler-Konfiguration.
+      </p>
+      <p>
+        Also habe ich mich für den klassischen Weg entschieden: <strong>statisches HTML, reines CSS, Vanilla JavaScript</strong>. Keine Abhängigkeiten außer Google Fonts. Kein Build-Tool. Kein node_modules-Verzeichnis mit 50.000 Dateien.
+      </p>
+      <h2>Das Design-System</h2>
+      <p>
+        Der erste Schritt war, ein sauberes Design-System aufzubauen. Alle CSS-Variablen zentral definiert:
+      </p>
+      <ul>
+        <li><strong>Hintergrund:</strong> #0D1117 — das tiefe Dunkel aus GitHubs Dark Mode</li>
+        <li><strong>Akzentfarbe:</strong> #F97316 — ein sattes, warmes Orange. Charakterstark, nicht generisch.</li>
+        <li><strong>Schriften:</strong> Space Grotesk für Headlines, Inter für Fließtext, JetBrains Mono für Code und Labels</li>
+      </ul>
+      <p>
+        Alle Klassen tragen das <code>fp-</code> Präfix — damit gibt es keine Konflikte mit externen Bibliotheken und der Code bleibt sauber trennbar.
+      </p>
+      <h2>Claude Code als Entwicklungspartner</h2>
+      <p>
+        Ich habe das Projekt mit <strong>Claude Code</strong> entwickelt — dem KI-gestützten CLI-Tool von Anthropic. Das war eine neue Erfahrung für mich. Statt Stunden vor dem Bildschirm zu sitzen und CSS-Details zu debuggen, konnte ich im Dialog arbeiten: Ich beschreibe, was ich will. Claude schlägt Code vor. Ich prüfe, passe an, deploye.
+      </p>
+      <p>
+        Was mich überrascht hat: Claude Code macht keine Kompromisse bei der Code-Qualität. Kein Copy-Paste-Müll, keine unnötigen Klassen, kein aufgeblähtes HTML. Der Code ist sauber — so wie ich ihn selbst schreiben würde, nur schneller.
+      </p>
+      <p>
+        Das Ergebnis: Eine Seite, die sich in einem einzigen <code>index.html</code>, drei CSS-Dateien und vier JS-Dateien befindet. Fertig. Kein Overhead.
+      </p>
+      <h2>Deployment: SCP statt FTP</h2>
+      <p>
+        Der Upload geht per SCP direkt auf meinen VPS. Kein Hosting-Panel, kein cPanel, kein Filezilla-GUI. Ein Befehl im Terminal, und die Änderung ist live. So muss das sein.
+      </p>
+      <h2>Was ich dabei gelernt habe</h2>
+      <p>
+        Manchmal ist weniger mehr. In einer Welt, die nach dem nächsten Framework, dem nächsten Meta-Framework, dem nächsten Abstraktions-Layer schreit, ist es befreiend, einfach HTML zu schreiben. Es ist schnell. Es ist verständlich. Und es funktioniert in jedem Browser, auf jedem Gerät — ohne Polyfills, ohne Hydration, ohne Server-Side-Rendering-Konfiguration.
+      </p>
+      <p>
+        Das Projekt hat mich auch daran erinnert, warum ich 2001 angefangen habe, Websites zu bauen: weil es Spaß macht. Weil man etwas erschafft, das andere sehen können. Weil man Kontrolle hat — über Design, über Inhalt, über alles.
+      </p>
+      <p>
+        <strong>Einfach anfangen. Der Rest kommt von selbst.</strong>
+      </p>

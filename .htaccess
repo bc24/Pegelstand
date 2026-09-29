@@ -1,0 +1,51 @@
+# Frank Panzer – Apache-Konfiguration (Apache 2.4, mod_rewrite)
+Options -Indexes -MultiViews
+DirectoryIndex index.php index.html
+AddDefaultCharset UTF-8
+
+<IfModule mod_rewrite.c>
+RewriteEngine On
+
+# Interne Verzeichnisse sind von außen nicht erreichbar
+RewriteRule ^(app|config|database|views|storage)(/|$) - [F,L]
+RewriteRule ^(admin/views)(/|$) - [F,L]
+
+# /projekte/ ist die Projektübersicht dieser Seite (Unterordner mit echten Apps bleiben erreichbar)
+RewriteRule ^(en/)?projekte/?$ index.php [L,QSA]
+
+# Alles, was keine echte Datei/kein echter Ordner ist, geht an den Front-Controller
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ index.php [L,QSA]
+</IfModule>
+
+<IfModule mod_headers.c>
+Header always set X-Content-Type-Options "nosniff"
+Header always set X-Frame-Options "SAMEORIGIN"
+Header always set Referrer-Policy "strict-origin-when-cross-origin"
+Header always set Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=()"
+Header always set Cross-Origin-Opener-Policy "same-origin"
+</IfModule>
+
+<IfModule mod_deflate.c>
+AddOutputFilterByType DEFLATE text/html text/css application/javascript application/json image/svg+xml text/xml application/xml application/rss+xml
+</IfModule>
+
+<IfModule mod_expires.c>
+ExpiresActive On
+ExpiresByType image/webp "access plus 6 months"
+ExpiresByType image/jpeg "access plus 6 months"
+ExpiresByType image/png "access plus 6 months"
+ExpiresByType image/svg+xml "access plus 6 months"
+ExpiresByType font/woff2 "access plus 1 year"
+ExpiresByType text/css "access plus 1 year"
+ExpiresByType application/javascript "access plus 1 year"
+</IfModule>
+
+# Konfigurations- und Sperrdateien nie ausliefern
+<FilesMatch "(^\.|\.(sql|lock|log|md|json|lockb)$|composer\.)">
+  Require all denied
+</FilesMatch>
+<FilesMatch "^(sitemap|feed)\.xml$">
+  Require all granted
+</FilesMatch>

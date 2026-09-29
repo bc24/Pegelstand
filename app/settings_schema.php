@@ -1,0 +1,231 @@
+<?php
+declare(strict_types=1);
+
+/**
+ * Schema aller Einstellungen. Der Admin-Bereich erzeugt daraus die Formulare,
+ * der Installer die Standardwerte. Bilinguale Felder werden als key_de / key_en gespeichert.
+ */
+return [
+    'general' => [
+        'admin_only' => true,
+        'label' => 'Allgemein',
+        'icon'  => 'settings',
+        'fields' => [
+            ['key' => 'site_name', 'label' => 'Name / Marke', 'type' => 'text', 'default' => 'Frank Panzer'],
+            ['key' => 'site_tagline', 'label' => 'Untertitel (Browser-Titel)', 'type' => 'text', 'bilingual' => true,
+                'default_de' => 'Maker. Entwickler. Unternehmer.', 'default_en' => 'Maker. Developer. Entrepreneur.'],
+            ['key' => 'site_url', 'label' => 'Website-URL', 'type' => 'url', 'default' => 'https://frank-panzer.de',
+                'help' => 'Ohne abschließenden Slash. Wird für Canonical, Sitemap und Open Graph genutzt.'],
+            ['key' => 'default_theme', 'label' => 'Standard-Design', 'type' => 'select', 'default' => 'dark',
+                'options' => ['dark' => 'Dunkel', 'light' => 'Hell', 'auto' => 'Automatisch (Systemeinstellung)']],
+            ['key' => 'accent', 'label' => 'Akzentfarbe', 'type' => 'color', 'default' => '#F97316',
+                'help' => 'Bestimmt Buttons, Verläufe, Leuchteffekte und Markierungen auf der gesamten Seite.'],
+            ['key' => 'location', 'label' => 'Wohnort (Anzeige)', 'type' => 'text', 'default' => 'Bremen-Blumenthal'],
+            ['key' => 'online_since', 'label' => 'Online seit (Jahr)', 'type' => 'number', 'default' => '2001',
+                'help' => 'Wird für die automatische Jahre-Berechnung im Zahlenstreifen genutzt (Platzhalter {years}).'],
+            ['key' => 'footer_text', 'label' => 'Footer-Text', 'type' => 'textarea', 'bilingual' => true, 'rows' => 2,
+                'default_de' => 'Handgebaut in Bremen. Einfach angefangen — der Rest kam von selbst.',
+                'default_en' => 'Handcrafted in Bremen. Just started — the rest followed on its own.'],
+        ],
+    ],
+
+    'hero' => [
+        'label' => 'Startbereich (Hero)',
+        'icon'  => 'sparkles',
+        'fields' => [
+            ['key' => 'hero_eyebrow', 'label' => 'Kleiner Text über dem Namen', 'type' => 'text', 'bilingual' => true,
+                'default_de' => 'Bremen-Blumenthal · Seit 2001 im Netz', 'default_en' => 'Bremen-Blumenthal · Online since 2001'],
+            ['key' => 'hero_name', 'label' => 'Name (große Überschrift)', 'type' => 'text', 'default' => 'Frank Panzer'],
+            ['key' => 'hero_lead', 'label' => 'Text vor dem Wechsel-Wort', 'type' => 'text', 'bilingual' => true,
+                'default_de' => 'Ich bin', 'default_en' => "I'm a"],
+            ['key' => 'hero_words', 'label' => 'Wechselnde Wörter (eins pro Zeile)', 'type' => 'textarea', 'bilingual' => true, 'rows' => 5,
+                'default_de' => "Maker.\nEntwickler.\nUnternehmer.\nBremer.", 'default_en' => "Maker.\nDeveloper.\nEntrepreneur.\nBremener."],
+            ['key' => 'hero_desc', 'label' => 'Beschreibung', 'type' => 'textarea', 'bilingual' => true, 'rows' => 4,
+                'default_de' => 'Ich bin Frank Panzer — geboren in Bremen, aufgewachsen zwischen Lagerlogistik und Linux-Servern. Heute baue ich digitale Produkte, Automatisierungen und Musik — alles selbst, alles mit Leidenschaft.',
+                'default_en' => "I'm Frank Panzer — born in Bremen, raised between warehouse logistics and Linux servers. Today I build digital products, automations, and music — all by myself, all with passion."],
+            ['key' => 'hero_cta1_text', 'label' => 'Button 1: Text', 'type' => 'text', 'bilingual' => true, 'default_de' => 'Meine Projekte', 'default_en' => 'My projects'],
+            ['key' => 'hero_cta1_link', 'label' => 'Button 1: Link', 'type' => 'text', 'default' => '#projekte'],
+            ['key' => 'hero_cta2_text', 'label' => 'Button 2: Text', 'type' => 'text', 'bilingual' => true, 'default_de' => 'Lebenslauf ansehen', 'default_en' => 'View CV'],
+            ['key' => 'hero_cta2_link', 'label' => 'Button 2: Link', 'type' => 'text', 'default' => '#lebenslauf'],
+            ['key' => 'hero_image', 'label' => 'Porträt', 'type' => 'image', 'default' => 'assets/img/frank-panzer.jpg'],
+            ['key' => 'hero_chips', 'label' => 'Schwebende Chips am Porträt (eins pro Zeile)', 'type' => 'textarea', 'rows' => 5,
+                'default' => "PHP\nMySQL\nn8n\nClaude Code", 'help' => 'Max. 4 werden um das Porträt animiert.'],
+            ['key' => 'hero_available', 'label' => 'Verfügbarkeits-Badge anzeigen', 'type' => 'bool', 'default' => '0'],
+            ['key' => 'hero_available_text', 'label' => 'Verfügbarkeits-Text', 'type' => 'text', 'bilingual' => true,
+                'default_de' => 'Panzer IT nimmt neue Projekte an', 'default_en' => 'Panzer IT is taking on new projects'],
+            ['key' => 'marquee_words', 'label' => 'Laufband unter dem Hero (eins pro Zeile)', 'type' => 'textarea', 'rows' => 6,
+                'default' => "PHP\nMySQL\nJavaScript\nWordPress\nLinux\nn8n\nTelegram-Bots\nClaude Code\nRaspberry Pi\nBremen\nDJ-Frankus\nMaker"],
+        ],
+    ],
+
+    'about' => [
+        'label' => 'Über mich',
+        'icon'  => 'user',
+        'fields' => [
+            ['key' => 'about_image', 'label' => 'Foto', 'type' => 'image', 'default' => 'assets/img/frank-panzer.jpg'],
+            ['key' => 'about_heading', 'label' => 'Überschrift', 'type' => 'text', 'bilingual' => true,
+                'default_de' => 'Quereinsteiger. Macher. Bremer.', 'default_en' => 'Self-made. Builder. Bremener.'],
+            ['key' => 'about_text1', 'label' => 'Absatz 1', 'type' => 'textarea', 'bilingual' => true, 'rows' => 5,
+                'default_de' => 'Ich habe die Schule nach der 9. Klasse verlassen und meine erste Website im Jahr 2001 gebaut — ohne Studium, ohne Kurs. Einfach angefangen. Seitdem habe ich über 20 Web-Projekte gestartet, zwei IT-Ausbildungen abgeschlossen und lerne täglich weiter.',
+                'default_en' => "I left school after 9th grade and built my first website in 2001 — no degree, no course. Just started. Since then I've launched over 20 web projects, completed two IT apprenticeships, and learn something new every day."],
+            ['key' => 'about_text2', 'label' => 'Absatz 2', 'type' => 'textarea', 'bilingual' => true, 'rows' => 5,
+                'default_de' => 'Ich lebe in Bremen-Blumenthal zusammen mit meiner Frau Jenna. Wir sind seit dem 13.03.2009 zusammen und haben am 02.02.2022 geheiratet. Was mich antreibt: Neues ausprobieren, Dinge selbst bauen und digitale Ideen zum Leben erwecken — ob Website, Bot, Automatisierung oder Musik.',
+                'default_en' => "I live in Bremen-Blumenthal together with my wife Jenna. We've been together since 13.03.2009 and got married on 02.02.2022. What drives me: trying new things, building stuff myself, and bringing digital ideas to life — whether website, bot, automation, or music."],
+        ],
+    ],
+
+    'motto' => [
+        'label' => 'Motto',
+        'icon'  => 'quote',
+        'fields' => [
+            ['key' => 'motto_text', 'label' => 'Motto', 'type' => 'textarea', 'bilingual' => true, 'rows' => 2,
+                'default_de' => 'Einfach anfangen. Der Rest kommt von selbst.', 'default_en' => 'Just start. The rest follows on its own.'],
+            ['key' => 'motto_author', 'label' => 'Urheber', 'type' => 'text', 'default' => '— Frank Panzer'],
+        ],
+    ],
+
+    'music' => [
+        'label' => 'Musik (DJ-Frankus)',
+        'icon'  => 'music',
+        'fields' => [
+            ['key' => 'music_name', 'label' => 'Künstlername', 'type' => 'text', 'default' => 'DJ-Frankus'],
+            ['key' => 'music_text', 'label' => 'Beschreibung', 'type' => 'textarea', 'bilingual' => true, 'rows' => 4,
+                'default_de' => 'Musik ist mein kreativer Ausgleich. Unter dem Namen DJ-Frankus produziere ich selbst gemachte Tracks — komplett eigenständig, keine Samples von anderen.',
+                'default_en' => 'Music is my creative outlet. As DJ-Frankus I produce self-made tracks — completely independently, no samples from others.'],
+            ['key' => 'music_soon', 'label' => 'Hinweis, solange keine Tracks eingetragen sind', 'type' => 'text', 'bilingual' => true,
+                'default_de' => 'Die Musik ist noch nicht öffentlich — aber die Leidenschaft ist real.',
+                'default_en' => "The music isn't public yet — but the passion is real."],
+            ['key' => 'music_soon_badge', 'label' => 'Badge-Text', 'type' => 'text', 'bilingual' => true,
+                'default_de' => 'Musik coming soon', 'default_en' => 'Music coming soon'],
+        ],
+    ],
+
+    'shop' => [
+        'label' => 'Shop',
+        'icon'  => 'shopping-cart',
+        'fields' => [
+            ['key' => 'shop_url', 'label' => 'Shop-Link', 'type' => 'url', 'default' => 'https://hb3d.de'],
+            ['key' => 'shop_cta', 'label' => 'Button-Text', 'type' => 'text', 'bilingual' => true,
+                'default_de' => 'Shop auf hb3d.de', 'default_en' => 'Shop at hb3d.de'],
+            ['key' => 'shop_url2', 'label' => 'Zweiter Link (optional)', 'type' => 'url', 'default' => 'https://bc24.org'],
+            ['key' => 'shop_cta2', 'label' => 'Zweiter Button-Text', 'type' => 'text', 'bilingual' => true,
+                'default_de' => 'bc24.org', 'default_en' => 'bc24.org'],
+        ],
+    ],
+
+    'partner' => [
+        'label' => 'Partner-Programm',
+        'icon'  => 'handshake',
+        'fields' => [
+            ['key' => 'partner_title', 'label' => 'Überschrift Karte', 'type' => 'text', 'bilingual' => true,
+                'default_de' => 'Das Partner-Programm', 'default_en' => 'The Partner Program'],
+            ['key' => 'partner_text', 'label' => 'Text', 'type' => 'textarea', 'bilingual' => true, 'rows' => 4,
+                'default_de' => 'Du empfiehlst meine Produkte und Dienstleistungen weiter — und bekommst bei jedem erfolgreichen Abschluss eine Provision. Produkte aus dem Shop, Webentwicklung, Hosting — alles dabei. Bei Interesse einfach über das Kontaktformular melden.',
+                'default_en' => 'You refer my products and services and earn a commission for every successful deal. Shop products, web development, hosting — all included. Just contact me via the form below.'],
+            ['key' => 'partner_cta', 'label' => 'Button-Text', 'type' => 'text', 'bilingual' => true,
+                'default_de' => 'Jetzt Partner werden', 'default_en' => 'Become a partner'],
+            ['key' => 'partner_subject', 'label' => 'Betreff im Kontaktformular', 'type' => 'text', 'bilingual' => true,
+                'default_de' => 'Partner-Anfrage', 'default_en' => 'Partner inquiry'],
+        ],
+    ],
+
+    'contact' => [
+        'admin_only' => true,
+        'label' => 'Kontakt & E-Mail',
+        'icon'  => 'mail',
+        'fields' => [
+            ['key' => 'contact_email', 'label' => 'Öffentliche E-Mail-Adresse', 'type' => 'email', 'default' => 'frank@panzerit.de'],
+            ['key' => 'contact_notify', 'label' => 'Benachrichtigungen an (mehrere mit Komma)', 'type' => 'text', 'default' => 'frank@panzerit.de',
+                'help' => 'Neue Nachrichten aus dem Kontaktformular werden hierhin gemailt (zusätzlich zur Speicherung im Admin).'],
+            ['key' => 'contact_reply_time', 'label' => 'Antwortzeit-Hinweis', 'type' => 'text', 'bilingual' => true,
+                'default_de' => 'Ich antworte in der Regel innerhalb eines Werktages.', 'default_en' => 'I usually respond within one working day.'],
+            ['key' => 'contact_success', 'label' => 'Erfolgsmeldung', 'type' => 'text', 'bilingual' => true,
+                'default_de' => 'Danke! Deine Nachricht ist angekommen — ich melde mich bald.', 'default_en' => 'Thanks! Your message has arrived — I will get back to you soon.'],
+            ['key' => 'mail_transport', 'label' => 'Mail-Versand', 'type' => 'select', 'default' => 'mail', 'admin_only' => true,
+                'options' => ['mail' => 'PHP mail() (Standard des Webhosters)', 'smtp' => 'SMTP-Server']],
+            ['key' => 'mail_from', 'label' => 'Absender-Adresse', 'type' => 'email', 'default' => '', 'admin_only' => true,
+                'help' => 'Leer = no-reply@<Domain>. Bei SMTP muss die Adresse zum Postfach passen.'],
+            ['key' => 'smtp_host', 'label' => 'SMTP-Host', 'type' => 'text', 'default' => '', 'admin_only' => true],
+            ['key' => 'smtp_port', 'label' => 'SMTP-Port', 'type' => 'number', 'default' => '587', 'admin_only' => true],
+            ['key' => 'smtp_secure', 'label' => 'SMTP-Verschlüsselung', 'type' => 'select', 'default' => 'tls', 'admin_only' => true,
+                'options' => ['tls' => 'STARTTLS (587)', 'ssl' => 'SSL/TLS (465)', 'none' => 'Keine']],
+            ['key' => 'smtp_user', 'label' => 'SMTP-Benutzer', 'type' => 'text', 'default' => '', 'admin_only' => true],
+            ['key' => 'smtp_pass', 'label' => 'SMTP-Passwort', 'type' => 'password', 'default' => '', 'admin_only' => true],
+        ],
+    ],
+
+    'blog' => [
+        'label' => 'Blog',
+        'icon'  => 'newspaper',
+        'fields' => [
+            ['key' => 'blog_title', 'label' => 'Titel der Blog-Seite', 'type' => 'text', 'bilingual' => true,
+                'default_de' => 'Gedanken & Updates', 'default_en' => 'Thoughts & Updates'],
+            ['key' => 'blog_intro', 'label' => 'Einleitung der Blog-Seite', 'type' => 'textarea', 'bilingual' => true, 'rows' => 3,
+                'default_de' => 'Über Web-Entwicklung, Automatisierung, Claude Code und 25 Jahre Internet — ungefiltert und aus der Praxis.',
+                'default_en' => 'About web development, automation, Claude Code and 25 years of internet — unfiltered and from practice.'],
+            ['key' => 'comments_enabled', 'label' => 'Kommentare erlauben', 'type' => 'bool', 'default' => '1'],
+            ['key' => 'comments_moderation', 'label' => 'Kommentare vor Veröffentlichung prüfen', 'type' => 'bool', 'default' => '1'],
+            ['key' => 'likes_enabled', 'label' => 'Likes erlauben', 'type' => 'bool', 'default' => '1'],
+        ],
+    ],
+
+    'seo' => [
+        'admin_only' => true,
+        'label' => 'SEO & Social',
+        'icon'  => 'search',
+        'fields' => [
+            ['key' => 'meta_title', 'label' => 'Seitentitel Startseite', 'type' => 'text', 'bilingual' => true,
+                'default_de' => 'Frank Panzer — Maker. Entwickler. Unternehmer.', 'default_en' => 'Frank Panzer — Maker. Developer. Entrepreneur.'],
+            ['key' => 'meta_desc', 'label' => 'Beschreibung Startseite', 'type' => 'textarea', 'bilingual' => true, 'rows' => 3,
+                'default_de' => 'Frank Panzer aus Bremen — Webentwickler, Maker und digitaler Unternehmer seit 2001. Entdecke alle Projekte, den Lebenslauf und mehr.',
+                'default_en' => 'Frank Panzer from Bremen — web developer, maker and digital entrepreneur since 2001. Discover all projects, the CV and more.'],
+            ['key' => 'og_image', 'label' => 'Vorschaubild (Open Graph)', 'type' => 'image', 'default' => 'assets/img/frank-panzer.jpg'],
+            ['key' => 'job_title', 'label' => 'Berufsbezeichnung (Schema.org)', 'type' => 'text', 'bilingual' => true,
+                'default_de' => 'Webentwickler & Unternehmer', 'default_en' => 'Web developer & entrepreneur'],
+            ['key' => 'robots_index', 'label' => 'Suchmaschinen dürfen indexieren', 'type' => 'bool', 'default' => '1'],
+        ],
+    ],
+
+    'effects' => [
+        'admin_only' => true,
+        'label' => 'Animationen & Effekte',
+        'icon'  => 'wand-sparkles',
+        'fields' => [
+            ['key' => 'fx_preloader', 'label' => 'Einblend-Animation beim ersten Besuch', 'type' => 'bool', 'default' => '1'],
+            ['key' => 'fx_particles', 'label' => 'Partikel-Netz im Startbereich', 'type' => 'bool', 'default' => '1'],
+            ['key' => 'fx_cursor', 'label' => 'Leuchtender Mauszeiger (nur Desktop)', 'type' => 'bool', 'default' => '1'],
+            ['key' => 'fx_tilt', 'label' => '3D-Neigung und Spotlight bei Karten', 'type' => 'bool', 'default' => '1'],
+            ['key' => 'fx_marquee', 'label' => 'Laufband unter dem Startbereich', 'type' => 'bool', 'default' => '1'],
+            ['key' => 'fx_konami', 'label' => 'Easter Egg (Konami-Code)', 'type' => 'bool', 'default' => '1'],
+            ['key' => 'fx_grain', 'label' => 'Feines Filmkorn über der Seite', 'type' => 'bool', 'default' => '1'],
+        ],
+    ],
+
+    'privacy' => [
+        'admin_only' => true,
+        'label' => 'Datenschutz-Hinweis',
+        'icon'  => 'shield-check',
+        'fields' => [
+            ['key' => 'cookie_banner', 'label' => 'Hinweis-Banner anzeigen', 'type' => 'bool', 'default' => '1'],
+            ['key' => 'cookie_text', 'label' => 'Banner-Text', 'type' => 'textarea', 'bilingual' => true, 'rows' => 3,
+                'default_de' => 'Diese Website speichert nur deine Sprach- und Design-Präferenz lokal in deinem Browser. Kein Tracking, kein Google Analytics, keine externen Schriften.',
+                'default_en' => 'This website only stores your language and theme preference locally in your browser. No tracking, no Google Analytics, no external fonts.'],
+            ['key' => 'count_visits', 'label' => 'Anonymen Besuchszähler im Dashboard führen', 'type' => 'bool', 'default' => '1',
+                'help' => 'Zählt nur Aufrufe pro Tag und Seite — ohne IP-Adresse, ohne Cookies, ohne Wiedererkennung.'],
+        ],
+    ],
+
+    'advanced' => [
+        'label' => 'Erweitert',
+        'icon'  => 'code',
+        'admin_only' => true,
+        'fields' => [
+            ['key' => 'custom_css', 'label' => 'Eigenes CSS', 'type' => 'code', 'default' => '', 'rows' => 8],
+            ['key' => 'custom_head', 'label' => 'Zusätzlicher HTML-Code im <head>', 'type' => 'code', 'default' => '', 'rows' => 5,
+                'help' => 'Nur für vertrauenswürdigen Code (z. B. Meta-Tags). Skripte von Fremdanbietern werden durch die Content-Security-Policy blockiert.'],
+            ['key' => 'maintenance', 'label' => 'Wartungsmodus (Besucher sehen eine Hinweisseite)', 'type' => 'bool', 'default' => '0'],
+            ['key' => 'maintenance_text', 'label' => 'Wartungs-Text', 'type' => 'textarea', 'bilingual' => true, 'rows' => 2,
+                'default_de' => 'Die Seite wird gerade überarbeitet. Bis gleich!', 'default_en' => 'The site is being updated. Back in a moment!'],
+        ],
+    ],
+];

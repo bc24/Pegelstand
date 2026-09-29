@@ -1,0 +1,12 @@
+/config/config.php
+/config/installed.lock
+/storage/cache/*
+/storage/logs/*
+!/storage/cache/.gitkeep
+!/storage/logs/.gitkeep
+/uploads/*
+!/uploads/.htaccess
+!/uploads/.gitkeep
+node_modules/
+.DS_Store
+*.log
