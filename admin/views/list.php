@@ -55,7 +55,7 @@ $sortable = !empty($e['sortable']);
         <?php endforeach; ?>
         <td class="c-actions">
           <a class="icon-btn" href="<?= e($editUrl) ?>" title="Bearbeiten" aria-label="Bearbeiten"><?= icon('pencil') ?></a>
-          <?php if (!empty($e['view_url'])): $vu = str_replace('{slug}', (string)($r['slug'] ?? ''), $e['view_url']); ?><a class="icon-btn" href="<?= e(rtrim((string)cfg('base_path', ''), '/') . $vu) ?>" target="_blank" rel="noopener" title="Ansehen" aria-label="Ansehen"><?= icon('eye') ?></a><?php endif; ?>
+          <?php if (!empty($e['view_url'])): $vu = str_replace('{slug}', (string)($r['slug'] ?? ''), $e['view_url']); if ($key === 'posts' && (($r['status'] ?? '') !== 'published' || strtotime((string)($r['published_at'] ?? '')) > time())) { $vu .= '?preview=1'; } ?><a class="icon-btn" href="<?= e(rtrim((string)cfg('base_path', ''), '/') . $vu) ?>" target="_blank" rel="noopener" title="Ansehen" aria-label="Ansehen"><?= icon('eye') ?></a><?php endif; ?>
           <?php if ($e['can_add']): ?>
           <form method="post" class="inline"><?= Csrf::field() ?><input type="hidden" name="do" value="duplicate"><input type="hidden" name="id" value="<?= (int)$r['id'] ?>"><button class="icon-btn" type="submit" title="Duplizieren" aria-label="Duplizieren"><?= icon('copy') ?></button></form>
           <?php endif; ?>

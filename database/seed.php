@@ -349,7 +349,7 @@ HTML,
 <p>Beim Besuch dieser Website werden folgende Daten verarbeitet:</p>
 <ul>
 <li><strong>Technische Zugriffsdaten (Server-Logs):</strong> IP-Adresse, Browsertyp, Betriebssystem, aufgerufene Seiten, Datum und Uhrzeit — automatisch durch den Webhoster erfasst</li>
-<li><strong>Kontaktformular-Daten:</strong> Name, E-Mail-Adresse, Betreff, Nachricht — nur wenn Sie das Formular ausfüllen</li>
+<li><strong>Kontakt- und Anfrageformulare:</strong> Name, E-Mail-Adresse, Betreff, Nachricht sowie die Angaben der Projekt- bzw. Booking-Anfrage — nur wenn Sie ein Formular ausfüllen</li>
 <li><strong>Kommentare:</strong> Name und Kommentartext — nur wenn Sie einen Blog-Beitrag kommentieren</li>
 <li><strong>Design- und Cookie-Einstellungen:</strong> Ihre Auswahl (heller/dunkler Modus, Hinweis-Banner) wird ausschließlich lokal in Ihrem Browser gespeichert (localStorage, kein Server-Zugriff)</li>
 </ul>
@@ -357,8 +357,9 @@ HTML,
 <h2>3. Server-Logs &amp; Hosting</h2>
 <p>Diese Website wird auf einem eigenen Server gehostet. Der Server erfasst automatisch technische Zugriffsdaten. Diese Daten sind technisch notwendig für den Betrieb.</p>
 <p>Rechtsgrundlage: Art. 6 Abs. 1 lit. f DSGVO. Speicherdauer: 7–30 Tage.</p>
-<h2>4. Kontaktformular</h2>
+<h2>4. Kontakt- und Anfrageformulare</h2>
 <p>Wenn Sie das Kontaktformular nutzen, werden Ihre Angaben (Name, E-Mail-Adresse, Betreff, Nachricht) zur Bearbeitung Ihrer Anfrage in der Datenbank dieser Website gespeichert und per E-Mail an den Verantwortlichen weitergeleitet. Eine Weitergabe an Dritte erfolgt nicht. Zum Schutz vor Missbrauch (Spam) wird Ihre IP-Adresse nur in gehashter Form und nur kurzzeitig (maximal 24 Stunden) für eine Häufigkeitsbegrenzung verwendet.</p>
+<p>Dasselbe gilt für die Projektanfrage und die Booking-Anfrage. Dort werden zusätzlich die von Ihnen gemachten Angaben gespeichert (z. B. Telefonnummer, Projektart, Zeitrahmen, Budget, Veranstaltungsdatum und -ort).</p>
 <p>Rechtsgrundlage: Art. 6 Abs. 1 lit. b/f DSGVO. Speicherdauer: bis zur abgeschlossenen Bearbeitung Ihrer Anfrage.</p>
 <h2>5. Kommentare und „Gefällt mir“</h2>
 <p>Bei Blog-Kommentaren speichern wir Name, Kommentartext und Zeitpunkt. Kommentare werden vor der Veröffentlichung geprüft. Für „Gefällt mir“-Angaben und zur Missbrauchsabwehr wird die IP-Adresse nur in gehashter Form und kurzzeitig (maximal 24 Stunden) verarbeitet.</p>

@@ -338,6 +338,8 @@ CREATE TABLE IF NOT EXISTS messages (
   email VARCHAR(190) NOT NULL,
   subject VARCHAR(200) NOT NULL DEFAULT '',
   message TEXT NOT NULL,
+  kind VARCHAR(12) NOT NULL DEFAULT 'contact',
+  details TEXT NULL,
   status ENUM('new','read','replied','archived','spam') NOT NULL DEFAULT 'new',
   lang CHAR(2) NOT NULL DEFAULT 'de',
   created_at DATETIME NOT NULL,

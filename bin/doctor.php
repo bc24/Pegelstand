@@ -28,14 +28,14 @@ foreach (['gd', 'zip', 'iconv'] as $ext) {
 }
 
 echo "\nDateien\n";
-$classes = ['Admin', 'AdminPages', 'Auth', 'Content', 'Crud', 'Csrf', 'Db', 'Front', 'FormToken', 'Html', 'Icons', 'Installer', 'Lang', 'Mailer', 'Media', 'RateLimit', 'Security', 'Settings', 'Totp', 'View', 'Visits'];
+$classes = ['Admin', 'AdminPages', 'Auth', 'Content', 'Crud', 'Csrf', 'Db', 'Front', 'FormToken', 'Html', 'Icons', 'Installer', 'Lang', 'Mailer', 'Media', 'RateLimit', 'Security', 'Settings', 'Totp', 'View', 'Visits', 'Backup', 'Inquiry', 'Search', 'Migrations', 'TikTok', 'Http'];
 $missing = [];
 foreach ($classes as $c) {
     if (!is_file(FP_ROOT . "/app/$c.php")) {
         $missing[] = "app/$c.php";
     }
 }
-foreach (['app/strings.php', 'app/helpers.php', 'app/bootstrap.php', 'app/entities.php', 'app/settings_schema.php', 'assets/img/icons.svg', 'database/schema.sql', 'database/seed.php'] as $f) {
+foreach (['app/strings.php', 'app/helpers.php', 'app/bootstrap.php', 'app/entities.php', 'app/settings_schema.php', 'assets/img/icons.svg', 'database/schema.sql', 'database/seed.php', 'database/seed/projects.php', 'bin/backup.php'] as $f) {
     if (!is_file(FP_ROOT . '/' . $f)) {
         $missing[] = $f;
     }

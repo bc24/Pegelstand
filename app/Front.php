@@ -21,6 +21,9 @@ final class Front
             if ($path === '/api/contact') {
                 self::contact();
             }
+            if ($path === '/api/inquiry') {
+                Inquiry::submit((string)($_POST['kind'] ?? 'project'));
+            }
             if (preg_match('#^/blog/([a-z0-9-]+)/(like|comment)$#', $path, $m)) {
                 $m[2] === 'like' ? self::like($m[1]) : self::comment($m[1]);
             }
@@ -38,6 +41,12 @@ final class Front
                 self::projects();
             case (bool)preg_match('#^/projekt/([a-z0-9-]+)$#', $path, $m):
                 self::project($m[1]);
+            case $path === '/anfrage':
+                self::inquiryPage('project');
+            case $path === '/booking':
+                self::inquiryPage('booking');
+            case $path === '/suche':
+                self::search();
             case $path === '/sitemap.xml':
                 self::sitemap();
             case $path === '/feed.xml':
@@ -91,10 +100,21 @@ final class Front
     private static function blogPost(string $slug): never
     {
         $post = Content::post($slug);
+        $preview = false;
+        if (!$post && isset($_GET['preview']) && Auth::hasSessionCookie()) {
+            // Entwürfe und geplante Beiträge sind nur für angemeldete Admin-Benutzer sichtbar
+            Auth::start();
+            if (Auth::check()) {
+                $post = Db::one('SELECT * FROM posts WHERE slug = ?', [$slug]);
+                $preview = $post !== null;
+            }
+        }
         if (!$post) {
             self::notFound();
         }
-        if (Visits::countable()) {
+        if ($preview) {
+            header('Cache-Control: no-store');
+        } elseif (Visits::countable()) {
             Db::q('UPDATE posts SET views = views + 1 WHERE id = ?', [$post['id']]);
             Visits::track(self::visitPath());
         }
@@ -109,6 +129,7 @@ final class Front
             'fallbackDe' => $fallbackDe,
             'formToken' => FormToken::issue('comment'),
             'flash' => (string)($_GET['c'] ?? ''),
+            'preview' => $preview,
         ], [
             'title' => $title . ' — ' . setting('site_name'),
             'description' => excerpt(t($post, 'excerpt') ?: $content, 170),
@@ -116,6 +137,7 @@ final class Front
             'alternates' => $fallbackDe ? [] : self::alternates('/blog/' . $slug . '/'),
             'og_image' => $img,
             'og_type' => 'article',
+            'robots' => $preview ? 'noindex,nofollow' : null,
             'body_class' => 'page-post',
             'jsonld' => [[
                 '@context' => 'https://schema.org', '@type' => 'BlogPosting',
@@ -166,6 +188,55 @@ final class Front
         ]);
     }
 
+    private static function inquiryPage(string $kind): never
+    {
+        Visits::track(self::visitPath());
+        $path = Inquiry::path($kind);
+        $errKey = (string)($_GET['err'] ?? '');
+        $title = $kind === 'booking' ? s('book_title') : s('inq_title');
+        $intro = $kind === 'booking' ? s('book_intro') : s('inq_intro');
+        View::page('inquiry', [
+            'kind' => $kind,
+            'title' => $title,
+            'intro' => $intro,
+            'sent' => ($_GET['sent'] ?? '') === '1',
+            'error' => in_array($errKey, ['err_required', 'err_email', 'err_length', 'err_rate', 'err_spam', 'err_date', 'err_choice'], true) ? tr($errKey) : '',
+        ], [
+            'title' => $title . ' — ' . setting('site_name'),
+            'description' => excerpt($intro, 170),
+            'canonical' => page_url($path),
+            'alternates' => self::alternates($path),
+            'og_image' => setting('og_image'),
+            'body_class' => 'page-inquiry',
+        ]);
+    }
+
+    private static function search(): never
+    {
+        Visits::track(self::visitPath());
+        $q = trim(mb_substr((string)($_GET['q'] ?? ''), 0, 80));
+        $terms = Search::terms($q);
+        $res = null;
+        $short = false;
+        $status = 200;
+        if ($q !== '') {
+            if (mb_strlen($q) < Search::MIN) {
+                $short = true;
+            } elseif (!RateLimit::hit('search:' . substr(ip_hash('search'), 0, 32), 40, 60)) {
+                $status = 429;
+            } else {
+                $res = Search::run($terms);
+            }
+        }
+        View::page('search', ['q' => $q, 'terms' => $terms, 'res' => $res, 'short' => $short, 'limited' => $status === 429], [
+            'title' => tr('search_title') . ($q !== '' ? ': ' . $q : '') . ' — ' . setting('site_name'),
+            'description' => tr('search_intro'),
+            'canonical' => page_url('/suche/'),
+            'robots' => 'noindex,follow',
+            'body_class' => 'page-search',
+        ], $status);
+    }
+
     /** @return bool true, wenn die Seite existierte und ausgeliefert wurde. */
     private static function page(string $slug): bool
     {
@@ -197,7 +268,7 @@ final class Front
         return str_contains((string)($_SERVER['HTTP_ACCEPT'] ?? ''), 'application/json') || ($_SERVER['HTTP_X_REQUESTED_WITH'] ?? '') === 'fetch';
     }
 
-    private static function reply(bool $ok, string $message, string $redirect, array $extra = []): never
+    public static function reply(bool $ok, string $message, string $redirect, array $extra = []): never
     {
         if (self::wantsJson()) {
             json_out(['ok' => $ok, 'message' => $message] + $extra, $ok ? 200 : 422);
@@ -320,6 +391,8 @@ final class Front
         $add('/', null, 'weekly', '1.0');
         $add('/blog/', null, 'weekly', '0.8');
         $add('/projekte/', null, 'monthly', '0.8');
+        $add('/anfrage/', null, 'yearly', '0.5');
+        $add('/booking/', null, 'yearly', '0.5');
         foreach (Content::projects() as $p) {
             $add('/projekt/' . $p['slug'] . '/', null, 'monthly', '0.6');
         }
@@ -412,6 +485,11 @@ final class Front
         return [
             '@context' => 'https://schema.org', '@type' => 'WebSite',
             'name' => setting('site_name', 'Frank Panzer'), 'url' => page_url('/'), 'inLanguage' => Lang::$code,
+            'potentialAction' => [
+                '@type' => 'SearchAction',
+                'target' => ['@type' => 'EntryPoint', 'urlTemplate' => page_url('/suche/') . '?q={search_term_string}'],
+                'query-input' => 'required name=search_term_string',
+            ],
         ];
     }
 }

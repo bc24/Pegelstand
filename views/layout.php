@@ -109,6 +109,7 @@ $i18n = [
       </ul>
     </nav>
     <div class="header-actions">
+      <a class="icon-btn search-link" href="<?= e(u('/suche/')) ?>" aria-label="<?= e(tr('search')) ?>" title="<?= e(tr('search')) ?>"><?= icon('search') ?></a>
       <a class="lang-switch" href="<?= e(u($altPath, $otherLang)) ?>" hreflang="<?= e($otherLang) ?>" lang="<?= e($otherLang) ?>" aria-label="<?= e(tr('lang_switch')) ?>">
         <span class="<?= $lang === 'de' ? 'is-active' : '' ?>">DE</span><span class="<?= $lang === 'en' ? 'is-active' : '' ?>">EN</span>
       </a>
@@ -158,6 +159,8 @@ $i18n = [
           <?php foreach ($navSections as $ns): ?><li><a href="<?= e(View::sectionHref($ns)) ?>"><?= e(t($ns, 'nav') ?: t($ns, 'label')) ?></a></li>
           <?php endforeach; ?>
           <li><a href="<?= e(u('/projekte/')) ?>"><?= e(tr('projects_page_title')) ?></a></li>
+          <li><a href="<?= e(u('/anfrage/')) ?>"><?= e(tr('inq_cta')) ?></a></li>
+          <li><a href="<?= e(u('/suche/')) ?>"><?= e(tr('search')) ?></a></li>
         </ul>
       </div>
       <div class="footer-col">

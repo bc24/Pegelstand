@@ -757,3 +757,41 @@ a.tool:hover .tool-icon{color:var(--accent);transform:scale(1.18) rotate(-5deg)}
 .player-meta .link-arrow{flex:none}
 body.player-open{overflow:hidden}
 @media (max-width:620px){.song{flex-basis:68vw}.songs-nav{display:none}.player-x{right:.3rem;top:.3rem;z-index:3}}
+
+/* Formulare: Auswahlfelder, Datum, Anfrage-Seiten */
+.field select,.field input[type=date],.field input[type=number],.field input[type=tel]{width:100%;padding:1.55rem 1.05rem .6rem;background:var(--surface);border:1px solid var(--line-2);border-radius:14px;color:var(--text);font:inherit;font-size:1rem;transition:border-color .25s,box-shadow .25s}
+.field select{appearance:none;-webkit-appearance:none;padding-right:2.6rem;background-image:linear-gradient(45deg,transparent 50%,var(--muted) 50%),linear-gradient(135deg,var(--muted) 50%,transparent 50%);background-position:calc(100% - 20px) 55%,calc(100% - 14px) 55%;background-size:6px 6px;background-repeat:no-repeat;cursor:pointer}
+.field select option{background:var(--surface);color:var(--text)}
+.field select:focus,.field input[type=date]:focus,.field input[type=number]:focus,.field input[type=tel]:focus{outline:0;border-color:var(--accent);box-shadow:0 0 0 4px rgba(var(--accent-rgb),.16)}
+.field input[type=tel]:focus+span,.field input[type=number]:focus+span,.field input[type=tel]:not(:placeholder-shown)+span,.field input[type=number]:not(:placeholder-shown)+span{transform:translateY(-.68rem) scale(.76);color:var(--accent)}
+.field-static span{transform:translateY(-.68rem) scale(.76)}
+.field-static select:focus+span,.field-static input:focus+span{color:var(--accent)}
+.field.has-error select,.field.has-error input[type=date]{border-color:#f87171}
+.field input[type=date]{color-scheme:dark}
+[data-theme="light"] .field input[type=date]{color-scheme:light}
+.contact-cta{margin:0 0 1.6rem}
+.contact-info .form-note{margin:0 0 1.4rem}
+
+/* Suche */
+.search-link{flex:none}
+.search-form{position:relative;display:flex;align-items:center;gap:.7rem;margin-top:1.4rem;padding:.4rem .4rem .4rem 1.1rem;border:1px solid var(--line-2);border-radius:999px;background:var(--surface);transition:border-color .25s,box-shadow .25s}
+.search-form:focus-within{border-color:var(--accent);box-shadow:0 0 0 4px rgba(var(--accent-rgb),.16)}
+.search-form>.i{color:var(--muted);flex:none}
+.search-form input{flex:1;min-width:0;background:none;border:0;color:var(--text);font:inherit;font-size:1.05rem;padding:.55rem 0;outline:0}
+.search-form input::-webkit-search-cancel-button{display:none}
+.search-count{font:500 .9rem var(--font-mono);color:var(--muted);margin:0 0 1.6rem}
+.search-h{display:flex;align-items:center;gap:.6rem;margin:2rem 0 1rem}
+.search-h .i{color:var(--accent)}
+.search-h small{font:500 .8rem var(--font-mono);color:var(--muted)}
+.results{display:grid;gap:.7rem}
+.results a{display:flex;gap:1rem;align-items:flex-start;padding:1rem 1.1rem;border:1px solid var(--line);border-radius:16px;background:var(--surface);transition:border-color .25s,transform .25s var(--ease),background .25s}
+.results a:hover{border-color:var(--accent);transform:translateY(-2px);background:rgba(var(--accent-rgb),.05)}
+.res-ico{flex:none;width:40px;height:40px;border-radius:12px;display:grid;place-items:center;background:rgba(var(--accent-rgb),.12);color:var(--accent)}
+.res-main{display:grid;gap:.2rem;min-width:0}
+.res-main strong{font:600 1.05rem var(--font-head)}
+.res-main small{font:500 .78rem var(--font-mono);color:var(--muted)}
+.res-text{color:var(--muted-2);font-size:.93rem;line-height:1.55;overflow-wrap:anywhere}
+mark{background:rgba(var(--accent-rgb),.28);color:inherit;border-radius:4px;padding:0 .12em}
+
+/* Vorschau-Leiste für Entwürfe und geplante Beiträge */
+.preview-bar{position:sticky;top:0;z-index:60;display:flex;align-items:center;justify-content:center;gap:.6rem;padding:.55rem 1rem;background:var(--accent);color:var(--on-accent);font:600 .88rem var(--font-body)}

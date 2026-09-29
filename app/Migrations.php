@@ -4,7 +4,7 @@ declare(strict_types=1);
 /** Kleine, idempotente Schema-Anpassungen für bereits installierte Seiten (läuft einmalig beim ersten Aufruf nach einem Update). */
 final class Migrations
 {
-    public const VERSION = 3;
+    public const VERSION = 4;
 
     private static bool $ran = false;
 
@@ -27,6 +27,9 @@ final class Migrations
             }
             if ($current < 3) {
                 self::v3();
+            }
+            if ($current < 4) {
+                self::v4();
             }
             Settings::set('schema_version', (string)self::VERSION);
         } catch (Throwable $e) {
@@ -120,6 +123,38 @@ final class Migrations
             if ($upd) {
                 Db::update('projects', (int)$cur['id'], $upd);
             }
+        }
+    }
+
+    /** v4: Projekt- und Booking-Anfragen (messages.kind/details, neue Einstellungen, Datenschutzhinweis). */
+    private static function v4(): void
+    {
+        if (Db::tableExists('messages')) {
+            $add = [
+                'kind' => "VARCHAR(12) NOT NULL DEFAULT 'contact' AFTER message",
+                'details' => 'TEXT NULL AFTER kind',
+            ];
+            foreach ($add as $col => $def) {
+                if (!self::hasColumn('messages', $col)) {
+                    Db::pdo()->exec("ALTER TABLE messages ADD COLUMN `$col` $def");
+                }
+            }
+        }
+        Installer::ensureSettings();
+        $page = Db::one("SELECT id, content_de FROM pages WHERE slug = 'datenschutz'");
+        if ($page && str_contains((string)$page['content_de'], '<h2>4. Kontaktformular</h2>')) {
+            $html = str_replace(
+                ['<h2>4. Kontaktformular</h2>', '<li><strong>Kontaktformular-Daten:</strong> Name, E-Mail-Adresse, Betreff, Nachricht — nur wenn Sie das Formular ausfüllen</li>'],
+                ['<h2>4. Kontakt- und Anfrageformulare</h2>', '<li><strong>Kontakt- und Anfrageformulare:</strong> Name, E-Mail-Adresse, Betreff, Nachricht sowie die Angaben der Projekt- bzw. Booking-Anfrage — nur wenn Sie ein Formular ausfüllen</li>'],
+                (string)$page['content_de']
+            );
+            $rg = '<p>Rechtsgrundlage: Art. 6 Abs. 1 lit. b/f DSGVO. Speicherdauer: bis zur abgeschlossenen Bearbeitung Ihrer Anfrage.</p>';
+            $extra = '<p>Dasselbe gilt für die Projektanfrage und die Booking-Anfrage. Dort werden zusätzlich die von Ihnen gemachten Angaben gespeichert (z. B. Telefonnummer, Projektart, Zeitrahmen, Budget, Veranstaltungsdatum und -ort).</p>';
+            $pos = strpos($html, $rg);
+            if ($pos !== false) {
+                $html = substr($html, 0, $pos) . $extra . "\n" . substr($html, $pos);
+            }
+            Db::update('pages', (int)$page['id'], ['content_de' => $html, 'updated_at' => now()]);
         }
     }
 

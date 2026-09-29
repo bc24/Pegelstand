@@ -1,5 +1,5 @@
 <?php
-/** @var array $post @var array $neighbours @var array $comments @var bool $fallbackDe @var string $formToken @var string $flash */
+/** @var array $post @var array $neighbours @var array $comments @var bool $fallbackDe @var string $formToken @var string $flash @var bool $preview */
 [$body, $toc] = Html::withToc(Html::sanitize(t($post, 'content')));
 $url = page_url('/blog/' . $post['slug'] . '/');
 $title = t($post, 'title');
@@ -11,6 +11,10 @@ $share = [
     ['X', 'https://x.com/intent/post?text=' . rawurlencode($title) . '&url=' . rawurlencode($url), 'brand-x'],
 ];
 ?>
+<?php if (!empty($preview)):
+    $future = $post['status'] === 'published' && $post['published_at'] && strtotime((string)$post['published_at']) > time(); ?>
+<div class="preview-bar" role="status"><?= icon('eye') ?><span><?= e($future ? tr('preview_scheduled', ['date' => format_date($post['published_at'], null, true) . ', ' . date('H:i', strtotime((string)$post['published_at']))]) : tr('preview_banner')) ?></span></div>
+<?php endif; ?>
 <article class="post" data-post="<?= e($post['slug']) ?>">
   <header class="page-hero post-hero">
     <div class="hero-bg" aria-hidden="true"><i class="blob blob-1"></i><i class="blob blob-2"></i></div>

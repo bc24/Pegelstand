@@ -341,8 +341,8 @@ return [
             ['name' => 'image', 'label' => 'Titelbild', 'type' => 'image'],
             ['name' => 'category', 'label' => 'Kategorie', 'type' => 'text', 'bilingual' => true],
             ['name' => 'icon', 'label' => 'Icon (für Cover ohne Bild)', 'type' => 'icon'],
-            ['name' => 'status', 'label' => 'Status', 'type' => 'select', 'options' => ['draft' => 'Entwurf', 'published' => 'Veröffentlicht'], 'default' => 'draft'],
-            ['name' => 'published_at', 'label' => 'Veröffentlichung', 'type' => 'datetime', 'help' => 'Ein Datum in der Zukunft plant den Beitrag ein.'],
+            ['name' => 'status', 'label' => 'Status', 'type' => 'select', 'options' => ['draft' => 'Entwurf (nicht öffentlich)', 'published' => 'Veröffentlicht (bzw. geplant, siehe Datum)'], 'default' => 'draft'],
+            ['name' => 'published_at', 'label' => 'Veröffentlichung', 'type' => 'datetime', 'help' => 'Leer = sofort bei Status „Veröffentlicht“. Liegt das Datum in der Zukunft, erscheint der Beitrag zu diesem Zeitpunkt automatisch (Blog, Feed, Sitemap). Entwürfe und geplante Beiträge kannst du im Admin über das Auge-Symbol als Vorschau ansehen.'],
             ['name' => 'allow_comments', 'label' => 'Kommentare erlauben', 'type' => 'bool', 'default' => 1],
         ],
         'before_save' => static function (array $data, ?array $old): array {

@@ -110,6 +110,7 @@ final class Admin
                 $s('general', 'Allgemein & Design', 'palette', 'admin'),
                 $e('social_links'),
                 $s('contact', 'Kontakt & E-Mail', 'mail', 'admin'),
+                $s('inquiry', 'Anfrage-Formulare', 'send'),
                 $s('seo', 'SEO & Social', 'search', 'admin'),
                 $s('effects', 'Animationen', 'wand-sparkles', 'admin'),
                 $s('privacy', 'Datenschutz-Hinweis', 'shield-check', 'admin'),
@@ -258,6 +259,9 @@ final class Admin
             }
             $label = $opts[$val] ?? $val;
             if ($col === 'status') {
+                if ($val === 'published' && !empty($row['published_at']) && (strtotime((string)$row['published_at']) ?: 0) > time()) {
+                    return '<span class="pill pill-info" title="Erscheint automatisch zum eingestellten Zeitpunkt">Geplant · ' . e(date('d.m. H:i', strtotime((string)$row['published_at']))) . '</span>';
+                }
                 $cls = in_array($val, ['published', 'live', 'done'], true) ? 'pill-ok' : (in_array($val, ['draft', 'planned', 'beta'], true) ? 'pill-warn' : '');
                 return '<span class="pill ' . $cls . '">' . e((string)$label) . '</span>';
             }

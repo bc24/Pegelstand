@@ -11,7 +11,8 @@ final class AdminPages
         $counts = [
             'messages' => (int)Db::val("SELECT COUNT(*) FROM messages WHERE status = 'new'"),
             'comments' => (int)Db::val("SELECT COUNT(*) FROM comments WHERE status = 'pending'"),
-            'posts'    => (int)Db::val("SELECT COUNT(*) FROM posts WHERE status = 'published'"),
+            'posts'    => (int)Db::val("SELECT COUNT(*) FROM posts WHERE status = 'published' AND published_at <= ?", [now()]),
+            'scheduled' => (int)Db::val("SELECT COUNT(*) FROM posts WHERE status = 'published' AND published_at > ?", [now()]),
             'drafts'   => (int)Db::val("SELECT COUNT(*) FROM posts WHERE status = 'draft'"),
             'projects' => (int)Db::val('SELECT COUNT(*) FROM projects WHERE visible = 1'),
             'media'    => (int)Db::val('SELECT COUNT(*) FROM media'),
@@ -26,6 +27,13 @@ final class AdminPages
         $checks[] = [extension_loaded('gd'), extension_loaded('gd') ? 'GD aktiv (Vorschaubilder, EXIF-Bereinigung).' : 'GD fehlt: keine Vorschaubilder/Bildbereinigung.', extension_loaded('gd') ? 'ok' : 'warn'];
         $mailOk = setting('mail_transport', 'mail') === 'smtp' ? setting('smtp_host') !== '' : true;
         $checks[] = [$mailOk, $mailOk ? 'Mail-Versand konfiguriert (' . setting('mail_transport', 'mail') . ').' : 'SMTP ist gewählt, aber kein Host eingetragen.', $mailOk ? 'ok' : 'warn'];
+        $last = Backup::newest();
+        if ($last === null) {
+            $checks[] = [false, 'Noch keine automatische Server-Sicherung. Unter Backup steht der Cron-Befehl (bin/backup.php).', 'info'];
+        } else {
+            $days = (int)floor((time() - $last) / 86400);
+            $checks[] = [$days <= 2, $days <= 2 ? 'Letzte Server-Sicherung: ' . date('d.m.Y H:i', $last) . '.' : 'Letzte Server-Sicherung ist ' . $days . ' Tage alt — läuft der Cron-Job noch?', $days <= 2 ? 'ok' : 'warn'];
+        }
         $me = Auth::user();
         $checks[] = [(int)$me['totp_enabled'] === 1, (int)$me['totp_enabled'] === 1 ? 'Zwei-Faktor-Anmeldung ist für dein Konto aktiv.' : 'Empfehlung: Zwei-Faktor-Anmeldung unter „Mein Konto“ aktivieren.', (int)$me['totp_enabled'] === 1 ? 'ok' : 'info'];
 
@@ -137,6 +145,10 @@ final class AdminPages
             'all' => '1=1',
             default => "status IN ('new','read','replied')",
         };
+        $kind = in_array($_GET['k'] ?? '', ['contact', 'project', 'booking'], true) ? (string)$_GET['k'] : '';
+        if ($kind !== '') {
+            $where .= ' AND kind = ' . Db::pdo()->quote($kind);
+        }
         $per = 25;
         $page = max(1, (int)($_GET['page'] ?? 1));
         $total = (int)Db::val("SELECT COUNT(*) FROM messages WHERE $where");
@@ -145,7 +157,11 @@ final class AdminPages
         foreach (Db::all('SELECT status, COUNT(*) AS c FROM messages GROUP BY status') as $r) {
             $counts[$r['status']] = (int)$r['c'];
         }
-        Admin::render('messages', ['rows' => $rows, 'tab' => $tab, 'counts' => $counts, 'page' => $page, 'pages' => (int)ceil($total / $per)], 'Nachrichten');
+        $kinds = [];
+        foreach (Db::all("SELECT kind, COUNT(*) AS c FROM messages WHERE status IN ('new','read','replied') GROUP BY kind") as $r) {
+            $kinds[$r['kind']] = (int)$r['c'];
+        }
+        Admin::render('messages', ['rows' => $rows, 'tab' => $tab, 'counts' => $counts, 'kind' => $kind, 'kinds' => $kinds, 'page' => $page, 'pages' => (int)ceil($total / $per)], 'Nachrichten');
     }
 
     /* ------------------------------------------------------------ Kommentare */
@@ -426,10 +442,19 @@ final class AdminPages
             if ($do === 'zip') {
                 self::zipUploads();
             }
+            if ($do === 'server') {
+                self::serverBackup();
+            }
+            if ($do === 'delete_server') {
+                self::deleteServerBackup((string)($_POST['name'] ?? ''));
+            }
             if ($do === 'restore') {
                 self::restore();
             }
             Admin::back(['p' => 'backup']);
+        }
+        if (isset($_GET['dl'])) {
+            self::downloadServerBackup((string)$_GET['dl']);
         }
         $tables = [];
         foreach (Db::all('SELECT table_name AS t, table_rows AS r, data_length + index_length AS s FROM information_schema.tables WHERE table_schema = DATABASE() ORDER BY table_name') as $r) {
@@ -446,40 +471,22 @@ final class AdminPages
                 }
             }
         }
-        Admin::render('backup', ['tables' => $tables, 'upBytes' => $upBytes, 'upFiles' => $upFiles, 'zip' => class_exists('ZipArchive')], 'Backup');
+        Admin::render('backup', [
+            'tables' => $tables, 'upBytes' => $upBytes, 'upFiles' => $upFiles, 'zip' => class_exists('ZipArchive'),
+            'saved' => Backup::list(), 'backupDir' => Backup::dir(), 'root' => FP_ROOT,
+        ], 'Backup');
     }
 
     private static function dump(): never
     {
         @set_time_limit(300);
-        $pdo = Db::pdo();
         Auth::log('backup', 'system', '', 'SQL-Dump');
         header('Content-Type: application/sql; charset=utf-8');
         header('Content-Disposition: attachment; filename="frank-panzer-backup-' . date('Y-m-d-His') . '.sql"');
         header('Cache-Control: no-store');
-        echo "-- Frank Panzer Backup\n-- Erstellt: " . date('c') . "\n-- Wiederherstellung: Admin → Backup → Wiederherstellen oder per phpMyAdmin\nSET NAMES utf8mb4;\nSET FOREIGN_KEY_CHECKS=0;\n";
-        foreach (Db::col('SHOW TABLES') as $table) {
-            if ($table === 'rate_limits') {
-                continue;
-            }
-            $create = (string)Db::one("SHOW CREATE TABLE `$table`")['Create Table'];
-            echo "DROP TABLE IF EXISTS `$table`;\n" . preg_replace('/\s*\R\s*/', ' ', $create) . ";\n";
-            $offset = 0;
-            do {
-                $rows = Db::all("SELECT * FROM `$table` LIMIT 400 OFFSET $offset");
-                if (!$rows) {
-                    break;
-                }
-                $cols = '`' . implode('`,`', array_keys($rows[0])) . '`';
-                $vals = [];
-                foreach ($rows as $r) {
-                    $vals[] = '(' . implode(',', array_map(static fn($v) => $v === null ? 'NULL' : $pdo->quote((string)$v), array_values($r))) . ')';
-                }
-                echo "INSERT INTO `$table` ($cols) VALUES\n" . implode(",\n", $vals) . ";\n";
-                $offset += 400;
-            } while (count($rows) === 400);
-        }
-        echo "SET FOREIGN_KEY_CHECKS=1;\n";
+        Backup::writeSql(static function (string $chunk): void {
+            echo $chunk;
+        });
         exit;
     }
 
@@ -490,22 +497,55 @@ final class AdminPages
             Admin::back(['p' => 'backup']);
         }
         @set_time_limit(300);
-        $tmp = tempnam(sys_get_temp_dir(), 'fpz');
-        $zip = new ZipArchive();
-        $zip->open((string)$tmp, ZipArchive::OVERWRITE);
-        $base = FP_ROOT . '/uploads';
-        foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator($base, FilesystemIterator::SKIP_DOTS)) as $f) {
-            if ($f->isFile() && $f->getFilename() !== '.htaccess') {
-                $zip->addFile($f->getPathname(), 'uploads/' . ltrim(substr($f->getPathname(), strlen($base)), '/'));
-            }
-        }
-        $zip->close();
+        $tmp = (string)tempnam(sys_get_temp_dir(), 'fpz');
+        Backup::zipUploads($tmp);
         Auth::log('backup', 'system', '', 'Uploads-ZIP');
         header('Content-Type: application/zip');
         header('Content-Disposition: attachment; filename="frank-panzer-uploads-' . date('Y-m-d-His') . '.zip"');
-        header('Content-Length: ' . filesize((string)$tmp));
-        readfile((string)$tmp);
-        @unlink((string)$tmp);
+        header('Content-Length: ' . filesize($tmp));
+        readfile($tmp);
+        @unlink($tmp);
+        exit;
+    }
+
+    /** Sicherung jetzt auf dem Server anlegen (wie der Cron-Aufruf). */
+    private static function serverBackup(): never
+    {
+        try {
+            $res = Backup::run();
+            Auth::log('backup', 'system', '', 'Server-Backup');
+            $names = implode(', ', array_column($res['files'], 'name'));
+            Admin::flash('ok', 'Sicherung angelegt: ' . $names . ($res['skipped'] ? ' (' . implode('; ', $res['skipped']) . ')' : ''));
+        } catch (Throwable $e) {
+            Admin::flash('err', 'Sicherung fehlgeschlagen: ' . $e->getMessage());
+        }
+        Admin::back(['p' => 'backup']);
+    }
+
+    private static function deleteServerBackup(string $name): never
+    {
+        if (Backup::validName($name) && @unlink(Backup::dir() . '/' . $name)) {
+            Auth::log('delete', 'backup', '', $name);
+            Admin::flash('ok', 'Sicherung gelöscht.');
+        } else {
+            Admin::flash('err', 'Sicherung nicht gefunden.');
+        }
+        Admin::back(['p' => 'backup']);
+    }
+
+    private static function downloadServerBackup(string $name): never
+    {
+        $path = Backup::dir() . '/' . $name;
+        if (!Backup::validName($name) || !is_file($path)) {
+            Admin::flash('err', 'Sicherung nicht gefunden.');
+            Admin::back(['p' => 'backup']);
+        }
+        Auth::log('backup', 'system', '', 'Download ' . $name);
+        header('Content-Type: application/octet-stream');
+        header('Content-Disposition: attachment; filename="' . $name . '"');
+        header('Content-Length: ' . filesize($path));
+        header('Cache-Control: no-store');
+        readfile($path);
         exit;
     }
 
@@ -513,7 +553,7 @@ final class AdminPages
     {
         $f = $_FILES['sql'] ?? null;
         if (!$f || $f['error'] !== UPLOAD_ERR_OK || !is_uploaded_file($f['tmp_name'])) {
-            Admin::flash('err', 'Bitte eine .sql-Datei auswählen.');
+            Admin::flash('err', 'Bitte eine .sql- oder .sql.gz-Datei auswählen.');
             Admin::back(['p' => 'backup']);
         }
         if (($_POST['confirm'] ?? '') !== 'WIEDERHERSTELLEN') {
@@ -522,7 +562,8 @@ final class AdminPages
         }
         @set_time_limit(300);
         $allowed = array_flip(Db::col('SHOW TABLES'));
-        $h = fopen($f['tmp_name'], 'rb');
+        $gz = (string)file_get_contents($f['tmp_name'], false, null, 0, 2) === "\x1f\x8b";
+        $h = fopen(($gz ? 'compress.zlib://' : '') . $f['tmp_name'], 'rb');
         $n = 0;
         try {
             while (($line = fgets($h)) !== false) {

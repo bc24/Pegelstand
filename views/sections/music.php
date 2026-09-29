@@ -15,11 +15,11 @@ $ttUrl = $ttUser !== '' ? 'https://www.tiktok.com/@' . $ttUser : '';
           <?php foreach ($genres as $g): ?><li class="chip" data-reveal><?= icon($g['icon']) ?><?= e($g['name']) ?></li><?php endforeach; ?>
         </ul>
         <?php endif; ?>
-        <?php if ($tracks && $ttUrl): ?>
         <div class="btn-row" data-reveal>
-          <a class="btn btn-primary magnetic" href="<?= e($ttUrl) ?>" target="_blank" rel="noopener me"><?= icon('brand-tiktok') ?><span><?= e(s('music_follow')) ?></span></a>
+          <a class="btn btn-primary magnetic" href="<?= e(u('/booking/')) ?>"><?= icon('calendar-heart') ?><span><?= e(tr('book_cta')) ?></span></a>
+          <?php if ($tracks && $ttUrl): ?><a class="btn btn-ghost magnetic" href="<?= e($ttUrl) ?>" target="_blank" rel="noopener me"><?= icon('brand-tiktok') ?><span><?= e(s('music_follow')) ?></span></a><?php endif; ?>
         </div>
-        <?php elseif (!$tracks): ?>
+        <?php if (!$tracks): ?>
         <p class="soon" data-reveal><i class="pulse-dot"></i><span><?= e(s('music_soon')) ?></span></p>
         <?php endif; ?>
       </div>

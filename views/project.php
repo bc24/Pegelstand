@@ -17,6 +17,7 @@ $meta = t($p, 'meta');
         <p class="page-lead"><?= e(t($p, 'tagline')) ?></p>
         <div class="btn-row">
           <?php if ($p['url'] !== ''): ?><a class="btn btn-primary magnetic" href="<?= e($p['url']) ?>" target="_blank" rel="noopener"><span><?= e(tr('visit_project')) ?></span><?= icon('arrow-up-right') ?></a><?php endif; ?>
+          <?php if ($p['slug'] === 'panzerit-de'): ?><a class="btn btn-ghost magnetic" href="<?= e(u('/anfrage/')) ?>"><?= icon('send') ?><span><?= e(tr('inq_cta')) ?></span></a><?php endif; ?>
           <a class="btn btn-ghost magnetic" href="<?= e(u('/projekte/')) ?>"><?= icon('arrow-left') ?><span><?= e(tr('back_projects')) ?></span></a>
         </div>
         <dl class="facts-row">

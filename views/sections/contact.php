@@ -19,6 +19,10 @@ $privacyLink = '<a href="' . e(u('/datenschutz/')) . '">' . e(tr('privacy')) . '
           <li><span class="icon-orb icon-orb-sm"><?= icon('map-pin') ?></span><span><?= e(setting('location')) ?></span></li>
           <?php if (s('contact_reply_time') !== ''): ?><li><span class="icon-orb icon-orb-sm"><?= icon('clock') ?></span><span><?= e(s('contact_reply_time')) ?></span></li><?php endif; ?>
         </ul>
+        <div class="btn-row contact-cta">
+          <a class="btn btn-ghost btn-sm" href="<?= e(u('/anfrage/')) ?>"><?= icon('briefcase') ?><span><?= e(tr('inq_cta')) ?></span></a>
+          <a class="btn btn-ghost btn-sm" href="<?= e(u('/booking/')) ?>"><?= icon('music') ?><span><?= e(tr('book_cta')) ?></span></a>
+        </div>
         <div class="social-row">
           <?php foreach ($socials as $so): ?>
           <a class="social-btn magnetic" href="<?= e($so['url']) ?>" target="_blank" rel="noopener me" aria-label="<?= e($so['label']) ?>" title="<?= e($so['label'] . ($so['handle'] ? ' · ' . $so['handle'] : '')) ?>"><?= icon($so['icon']) ?></a>

@@ -20,7 +20,7 @@ $greet = $hour < 11 ? 'Guten Morgen' : ($hour < 18 ? 'Hallo' : 'Guten Abend');
 <section class="stat-cards">
   <a class="stat-card" href="<?= e(Admin::url(['p' => 'messages'])) ?>"><span class="sc-ico"><?= icon('inbox') ?></span><b><?= $counts['messages'] ?></b><span>Neue Nachrichten</span></a>
   <a class="stat-card" href="<?= e(Admin::url(['p' => 'comments'])) ?>"><span class="sc-ico"><?= icon('message-square') ?></span><b><?= $counts['comments'] ?></b><span>Kommentare warten</span></a>
-  <a class="stat-card" href="<?= e(Admin::url(['p' => 'posts'])) ?>"><span class="sc-ico"><?= icon('newspaper') ?></span><b><?= $counts['posts'] ?></b><span>Beiträge online<?= $counts['drafts'] ? ' · ' . $counts['drafts'] . ' Entwurf' : '' ?></span></a>
+  <a class="stat-card" href="<?= e(Admin::url(['p' => 'posts'])) ?>"><span class="sc-ico"><?= icon('newspaper') ?></span><b><?= $counts['posts'] ?></b><span>Beiträge online<?= $counts['scheduled'] ? ' · ' . $counts['scheduled'] . ' geplant' : '' ?><?= $counts['drafts'] ? ' · ' . $counts['drafts'] . ' Entwurf' : '' ?></span></a>
   <a class="stat-card" href="<?= e(Admin::url(['p' => 'projects'])) ?>"><span class="sc-ico"><?= icon('folders') ?></span><b><?= $counts['projects'] ?></b><span>Projekte sichtbar</span></a>
   <div class="stat-card"><span class="sc-ico"><?= icon('eye') ?></span><b><?= number_format($total7, 0, ',', '.') ?></b><span>Aufrufe · 7 Tage</span></div>
   <div class="stat-card"><span class="sc-ico"><?= icon('chart-column') ?></span><b><?= number_format($total30, 0, ',', '.') ?></b><span>Aufrufe · 30 Tage</span></div>

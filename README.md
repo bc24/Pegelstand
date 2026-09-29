@@ -10,16 +10,18 @@ Alle Inhalte, Texte (Deutsch/Englisch), Bilder, Reihenfolgen und das Design lass
 - Animationen: Preloader, Partikel-Netz, morphendes Porträt mit schwebenden Chips, Typewriter, Text-Reveal (Zeichen/Wörter), Zahlen-Counter, Scroll-Timeline, 3D-Tilt und Spotlight auf Karten, magnetische Buttons, Cursor-Glow, Laufband, Filter mit Übergängen, animierte Skill-Balken, FAQ-Akkordeon, Vinyl/Equalizer, Konami-Easter-Egg
 - Hell/Dunkel-Modus, Akzentfarbe im Admin einstellbar, `prefers-reduced-motion` wird respektiert
 - Blog mit Inhaltsverzeichnis, Likes, moderierten Kommentaren, Teilen; Projekt-Übersicht und Detailseiten
-- Kontaktformular (Honeypot, Zeit-Token, Ratenbegrenzung) → Datenbank + E-Mail
+- Kontaktformular sowie Projektanfrage (`/anfrage/`, Panzer IT) und Booking-Anfrage (`/booking/`, DJ-Frankus) mit Honeypot, Zeit-Token und Ratenbegrenzung → Datenbank + E-Mail
+- Suche über Projekte und Blog (`/suche/`), erreichbar über das Lupen-Symbol im Kopfbereich
 - Keine externen Ressourcen: Schriften, Icons und Skripte liegen lokal; Besuchszähler ohne Cookies und ohne IP
 
 **Admin-Bereich (`/admin/`)**
 - Dashboard mit Kennzahlen, Aufrufe-Diagramm, System-Check
 - Alle Bereiche editierbar: Bereiche & Reihenfolge (Drag & Drop), Hero, Über mich, Zahlen, Interessen, Fun Facts, Zeitstrahl, Projekte, Ehemalige Webseiten, Maker, Shop, Skills, Lebenslauf, Musik/Tracks, Tools, FAQ, Partner, Social Links, Blog, Rechtstexte
 - Zweisprachige Formulare (DE/EN-Umschalter), Rich-Text-Editor, Icon-Auswahl, Medienbibliothek mit Upload (Bilder werden neu kodiert, EXIF/GPS entfernt, Vorschaubilder)
-- Nachrichten-Postfach, Kommentar-Moderation, Benutzer & Rollen (Administrator/Redakteur)
+- Nachrichten-Postfach mit Filter (Kontakt, Projektanfrage, Booking) und Detailansicht, Kommentar-Moderation, Benutzer & Rollen (Administrator/Redakteur)
+- Blog: Entwürfe und geplante Veröffentlichung (Status „Veröffentlicht“ mit Datum in der Zukunft), Vorschau für angemeldete Benutzer über das Auge-Symbol
 - Zwei-Faktor-Anmeldung (TOTP), Login-Sperre, CSRF-Schutz, Aktivitätsprotokoll
-- Backup (SQL-Dump, Uploads als ZIP) und Wiederherstellung
+- Backup (SQL-Dump, Uploads als ZIP, automatische Server-Sicherung per Cron) und Wiederherstellung (`.sql` oder `.sql.gz`)
 
 ## Voraussetzungen
 
@@ -75,6 +77,16 @@ Im Musik-Bereich erscheinen die letzten 10 Videos von `@dj.frankus` als Karussel
 - Profil und Anzahl: Einstellungen → Musik. Die Daten stammen aus der öffentlichen Profil-Einbettung von TikTok; ändert TikTok deren Format, meldet der Abgleich einen Fehler und Songs lassen sich weiter manuell pflegen.
 - Bestehende Installationen werden beim ersten Aufruf nach dem Update automatisch migriert (neue Spalten, Einstellungen, Hinweis „TikTok-Einbettung“ in der Datenschutzerklärung). Danach im Admin einmal „Von TikTok aktualisieren“ klicken.
 
+## Backup per Cron
+
+`bin/backup.php` legt Sicherungen in `storage/backups/` ab (Datenbank als `db-<Datum>.sql.gz`, Uploads als `uploads-<Datum>.zip`, nur wenn sich Uploads geändert haben). Pro Art bleiben die neuesten 14 Dateien erhalten (`--keep=N`, `--no-uploads`). Der Ordner ist per `.htaccess` gesperrt; unter nginx greift die vorhandene Regel für `storage/`.
+
+```bash
+17 3 * * *  cd /var/www/frank-panzer.de && sudo -u www-data php bin/backup.php >/dev/null 2>&1
+```
+
+Im Admin unter Backup stehen der passende Cron-Eintrag, die vorhandenen Server-Sicherungen (Download/Löschen) und der Button „Jetzt auf dem Server sichern“. Das Dashboard warnt, wenn die letzte Sicherung älter als 2 Tage ist. Eine Sicherung auf demselben Server schützt nicht vor einem Serverausfall: die Dateien zusätzlich per rsync oder in einen Cloud-Speicher kopieren.
+
 ## Fehlersuche (leere Seite / Fehler 500)
 
 ```bash
@@ -125,4 +137,5 @@ Prepared Statements überall, Ausgabe-Escaping, Whitelist-Bereinigung von Rich-T
 - **Instagram:** Als Profil ist `@frankpanzer82` eingetragen (Link aus dem Auftrag); die alte Seite verlinkte `@frank__panzer`. Im Admin unter „Social Links“ anpassbar.
 - **Projekte:** Die Apps aus `/projekte/<ordner>/` (BewerbungsPilot, TechDeals24, Trockenheld, Weltenentdecker, Spielearena, Poesiealbum sowie die bisherigen Apps) stehen im Projekt-Raster der Startseite, auf `/projekte/` und mit eigener Detailseite unter `/projekt/<name>/`. Die Links zeigen relativ auf den jeweiligen App-Ordner (`/projekte/<ordner>/`). „PanzerIT Territoriumskrieg“ liegt nur auf panzerit.de/spiel. „Panzer IT Cockpit“ und „Social Media Manager“ sind private Login-Tools und standardmäßig unsichtbar (Admin → Projekte → Sichtbar). Projektdaten liegen in `database/seed/projects.php`; bestehende Installationen werden beim ersten Aufruf automatisch angepasst (nur unveränderte Standardtexte werden ersetzt).
 - **Blog:** Der Artikel „frank-panzer.de — komplett neu gebaut“ beschreibt noch die statische Vorgängerseite.
+- **Anfrage-Formulare:** Auswahllisten (Projektarten, Zeitrahmen, Budget, Anlässe) und Texte stehen unter Einstellungen → Anfrage-Formulare und sind Vorschläge — bitte anpassen. Die Datenschutzerklärung wurde um die Anfrage-Formulare ergänzt; bitte prüfen.
 - **Mail-Versand:** Unter Einstellungen → Kontakt & E-Mail ggf. SMTP eintragen und „Testmail senden“ nutzen.

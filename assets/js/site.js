@@ -577,24 +577,29 @@
     }
   }
   safe(() => {
+    // Kontaktformular sowie Projekt- und Booking-Anfrage laufen über dasselbe AJAX-Muster
+    [['#contact-form', '#form-error', '#form-success'], ['#inquiry-form', '#inq-error', '#inq-success']].forEach(([fs, es, os]) => {
+      const form = $(fs);
+      if (!form) return;
+      const err = $(es);
+      const ok = $(os);
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        err.hidden = true;
+        $$('.field', form).forEach((f) => f.classList.remove('has-error'));
+        let bad = false;
+        $$('[required]', form).forEach((inp) => {
+          if (!inp.value.trim() || (inp.type === 'email' && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(inp.value))) {
+            inp.closest('.field')?.classList.add('has-error'); bad = true;
+          }
+        });
+        if (bad) { err.textContent = form.dataset.required || (lang === 'en' ? 'Please fill in all required fields.' : 'Bitte alle Pflichtfelder ausfüllen.'); err.hidden = false; return; }
+        postForm(form, () => { form.hidden = true; ok.hidden = false; ok.scrollIntoView({ block: 'center', behavior: reduced ? 'auto' : 'smooth' }); },
+          (m) => { err.textContent = m; err.hidden = false; }, $('button[type=submit]', form));
+      });
+    });
     const form = $('#contact-form');
     if (!form) return;
-    const err = $('#form-error');
-    const ok = $('#form-success');
-    form.addEventListener('submit', (e) => {
-      e.preventDefault();
-      err.hidden = true;
-      $$('.field', form).forEach((f) => f.classList.remove('has-error'));
-      let bad = false;
-      $$('[required]', form).forEach((inp) => {
-        if (!inp.value.trim() || (inp.type === 'email' && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(inp.value))) {
-          inp.closest('.field')?.classList.add('has-error'); bad = true;
-        }
-      });
-      if (bad) { err.textContent = form.dataset.required || (lang === 'en' ? 'Please fill in all required fields.' : 'Bitte alle Pflichtfelder ausfüllen.'); err.hidden = false; return; }
-      postForm(form, () => { form.hidden = true; ok.hidden = false; ok.scrollIntoView({ block: 'center', behavior: reduced ? 'auto' : 'smooth' }); },
-        (m) => { err.textContent = m; err.hidden = false; }, $('button[type=submit]', form));
-    });
     // Betreff per Link vorbelegen (Partner-Programm)
     $$('[data-subject]').forEach((a) => a.addEventListener('click', (e) => {
       const subj = $('#c-subject');
