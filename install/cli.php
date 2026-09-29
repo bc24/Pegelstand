@@ -17,7 +17,7 @@ spl_autoload_register(static function (string $c): void {
 });
 require FP_ROOT . '/app/helpers.php';
 
-$o = getopt('', ['host:', 'port:', 'db:', 'user:', 'pass:', 'admin:', 'email:', 'password:', 'url:', 'base:', 'force']);
+$o = getopt('', ['host:', 'port:', 'db:', 'user:', 'pass:', 'admin:', 'email:', 'password:', 'url:', 'base:', 'force', 'web-user:']);
 foreach (['db', 'user', 'admin', 'email'] as $req) {
     if (empty($o[$req])) {
         fwrite(STDERR, "Fehlender Parameter --$req\n");
@@ -38,6 +38,24 @@ try {
 } catch (Throwable $e) {
     fwrite(STDERR, 'Fehler: ' . $e->getMessage() . "\n");
     exit(1);
+}
+if (!empty($o['web-user'])) {
+    // Besitz für den Webserver-Benutzer setzen (config/storage/uploads), z. B. --web-user=www-data
+    $chown = static function (string $path) use (&$chown, $o): void {
+        @chown($path, $o['web-user']);
+        @chgrp($path, $o['web-user']);
+        if (is_dir($path)) {
+            foreach (scandir($path) ?: [] as $f) {
+                if ($f !== '.' && $f !== '..') {
+                    $chown($path . '/' . $f);
+                }
+            }
+        }
+    };
+    foreach (['config', 'storage', 'uploads'] as $d) {
+        $chown(FP_ROOT . '/' . $d);
+    }
+    echo "Besitzer von config/, storage/ und uploads/ auf {$o['web-user']} gesetzt.\n";
 }
 echo "Installation abgeschlossen.\nAdmin-Login: {$o['admin']} / $password\n";
 echo "Hinweis: config/config.php wurde mit Rechten 0644 angelegt. Ist der Webserver-Benutzer nicht der Besitzer, ggf. Gruppe setzen und auf 0640 verschärfen.\n";

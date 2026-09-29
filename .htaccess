@@ -7,7 +7,7 @@ AddDefaultCharset UTF-8
 RewriteEngine On
 
 # Interne Verzeichnisse sind von außen nicht erreichbar
-RewriteRule ^(app|config|database|views|storage)(/|$) - [F,L]
+RewriteRule ^(app|config|database|views|storage|bin)(/|$) - [F,L]
 RewriteRule ^(admin/views)(/|$) - [F,L]
 
 # /projekte/ ist die Projektübersicht dieser Seite (Unterordner mit echten Apps bleiben erreichbar)

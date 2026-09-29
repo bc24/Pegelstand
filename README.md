@@ -35,11 +35,11 @@ Alle Inhalte, Texte (Deutsch/Englisch), Bilder, Reihenfolgen und das Design lass
 4. Den Installer über den angezeigten Button löschen (oder Ordner `install/` per FTP entfernen).
 5. Unter `/admin/` anmelden.
 
-Per Kommandozeile:
+Per Kommandozeile (auf einem VPS mit `--web-user` den Webserver-Benutzer als Besitzer von `config/`, `storage/` und `uploads/` setzen):
 
 ```bash
-php install/cli.php --db=frankpanzer --user=dbuser --pass=geheim \
-    --admin=frank --email=frank@panzerit.de --url=https://frank-panzer.de
+sudo php install/cli.php --db=frankpanzer --user=dbuser --pass=geheim \
+    --admin=frank --email=frank@panzerit.de --url=https://frank-panzer.de --web-user=www-data
 ```
 
 Der Installer legt die Tabellen an, spielt die Startinhalte ein (aus frank-panzer.de und panzerit.de übernommen) und schreibt `config/config.php` (nicht im Git, siehe `.gitignore`). Schreibrechte werden für `config/`, `storage/` und `uploads/` benötigt.
@@ -65,6 +65,14 @@ location ~ \.php$ { include fastcgi_params; fastcgi_pass unix:/run/php/php8.3-fp
 
 Hinweis: Auf dem bestehenden Server liegen unter `/projekte/<name>/` die Einzel-Apps. Die `.htaccess` liefert nur `/projekte/` (Übersicht) über diese Seite aus; die Unterordner bleiben unverändert erreichbar. In nginx entsprechend `location = /projekte/ { try_files /index.php$is_args$args =404; }` ergänzen.
 
+## Fehlersuche (leere Seite / Fehler 500)
+
+```bash
+sudo -u www-data php bin/doctor.php     # als Webserver-Benutzer ausführen
+```
+
+Das Skript prüft PHP-Erweiterungen, Dateirechte (config/, storage/, uploads/), die Datenbankverbindung und ruft Startseite, Admin und Blog mit sichtbaren Fehlern auf. Die Anwendung zeigt bei Konfigurations- oder Datenbankproblemen eine Fehlerseite mit Hinweis; Details stehen im Fehlerlog (`storage/logs/php-error.log` bzw. das Log des Webservers, z. B. `/var/log/apache2/error.log`). Für die Fehlersuche kann in `config/config.php` vorübergehend `'debug' => true` gesetzt werden.
+
 ## Lokale Entwicklung
 
 ```bash
@@ -78,6 +86,7 @@ php -S localhost:8080 router.php
 index.php            Front-Controller der öffentlichen Seite
 router.php           nur für den PHP-Entwicklungsserver
 admin/               Admin-Einstieg und Templates (admin/views)
+bin/doctor.php       Diagnose der Installation (nur CLI)
 app/                 PHP-Klassen (Db, Auth, Crud, Front, Media, Mailer, Html, …)
 app/entities.php     Definition aller editierbaren Inhaltstypen (Formulare entstehen daraus)
 app/settings_schema.php  Definition aller Einstellungen
