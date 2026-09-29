@@ -11,7 +11,7 @@ final class Lang
     public static function init(string $code): void
     {
         self::$code = in_array($code, self::SUPPORTED, true) ? $code : 'de';
-        self::$strings = require FP_ROOT . '/app/lang.php';
+        self::$strings = require FP_ROOT . '/app/strings.php';
     }
 
     public static function get(string $key): string

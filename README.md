@@ -90,7 +90,7 @@ bin/doctor.php       Diagnose der Installation (nur CLI)
 app/                 PHP-Klassen (Db, Auth, Crud, Front, Media, Mailer, Html, …)
 app/entities.php     Definition aller editierbaren Inhaltstypen (Formulare entstehen daraus)
 app/settings_schema.php  Definition aller Einstellungen
-app/lang.php         UI-Texte DE/EN
+app/strings.php         UI-Texte DE/EN
 database/            schema.sql und seed.php (Startinhalte)
 views/               Templates der öffentlichen Seite (views/sections/* = Startseiten-Bereiche)
 assets/              CSS, JS, Schriften, Icons, Bilder

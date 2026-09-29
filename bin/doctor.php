@@ -28,6 +28,24 @@ foreach (['gd', 'zip', 'iconv'] as $ext) {
 }
 
 echo "\nDateien\n";
+$classes = ['Admin', 'AdminPages', 'Auth', 'Content', 'Crud', 'Csrf', 'Db', 'Front', 'FormToken', 'Html', 'Icons', 'Installer', 'Lang', 'Mailer', 'Media', 'RateLimit', 'Security', 'Settings', 'Totp', 'View', 'Visits'];
+$missing = [];
+foreach ($classes as $c) {
+    if (!is_file(FP_ROOT . "/app/$c.php")) {
+        $missing[] = "app/$c.php";
+    }
+}
+foreach (['app/strings.php', 'app/helpers.php', 'app/bootstrap.php', 'app/entities.php', 'app/settings_schema.php', 'assets/img/icons.svg', 'database/schema.sql', 'database/seed.php'] as $f) {
+    if (!is_file(FP_ROOT . '/' . $f)) {
+        $missing[] = $f;
+    }
+}
+if ($missing) {
+    $warn('Dateien fehlen: ' . implode(', ', $missing));
+    $info('Häufige Ursache: Beim Entpacken/Hochladen unter Windows überschreiben sich Dateien, die sich nur in Groß-/Kleinschreibung unterscheiden. Bitte den aktuellen Stand komplett neu hochladen.');
+} else {
+    $ok('Alle Programmdateien vorhanden');
+}
 $cfg = FP_ROOT . '/config/config.php';
 if (!is_file($cfg)) {
     $warn('config/config.php fehlt — Installation (/install/ oder php install/cli.php) noch nicht durchgeführt?');

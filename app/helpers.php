@@ -56,7 +56,7 @@ function t(array $row, string $field): string
     return $v;
 }
 
-/** UI-Übersetzung aus app/lang.php */
+/** UI-Übersetzung aus app/strings.php */
 function tr(string $key, array $vars = []): string
 {
     $s = Lang::get($key);
