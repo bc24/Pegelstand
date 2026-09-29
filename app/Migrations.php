@@ -4,7 +4,7 @@ declare(strict_types=1);
 /** Kleine, idempotente Schema-Anpassungen für bereits installierte Seiten (läuft einmalig beim ersten Aufruf nach einem Update). */
 final class Migrations
 {
-    public const VERSION = 2;
+    public const VERSION = 3;
 
     private static bool $ran = false;
 
@@ -24,6 +24,9 @@ final class Migrations
             }
             if ($current < 2) {
                 self::v2();
+            }
+            if ($current < 3) {
+                self::v3();
             }
             Settings::set('schema_version', (string)self::VERSION);
         } catch (Throwable $e) {
@@ -56,6 +59,68 @@ final class Migrations
         }
         Installer::ensureSettings();
         self::privacyTikTok();
+    }
+
+    /**
+     * v3: Apps aus /projekte/ sauber einbinden – Beschreibungen, interne Links, Startseite; "Spiel" heißt jetzt Territoriumskrieg.
+     * Nur leere oder noch unveränderte Standardwerte werden überschrieben, im Admin geänderte Texte bleiben erhalten.
+     */
+    private static function v3(): void
+    {
+        if (!Db::tableExists('projects')) {
+            return;
+        }
+        $rows = require FP_ROOT . '/database/seed/projects.php';
+        $bySlug = [];
+        foreach ($rows as $r) {
+            $bySlug[$r['slug']] = $r;
+        }
+
+        $old = Db::one("SELECT id, title FROM projects WHERE slug = 'spiel'");
+        if ($old && $old['title'] === 'Spiel' && !Db::one("SELECT id FROM projects WHERE slug = 'territoriumskrieg'")) {
+            $n = $bySlug['territoriumskrieg'];
+            unset($n['featured']);
+            Db::update('projects', (int)$old['id'], $n);
+        }
+
+        $promote = ['bewerbungspilot', 'techdeals24', 'trockenheld', 'weltenentdecker', 'spielearena', 'poesiealbum'];
+        // MD5 der bisherigen Standardtexte (DE, EN): nur wenn der Text im Admin nicht geändert wurde, wird er ersetzt
+        $oldDesc = [
+            'bewerbungspilot' => ['description_de' => '9090525f5e182721a6aa5d1227be6095', 'description_en' => 'c3d0bc13269473044dd19373e40a43ad'],
+            'trockenheld' => ['description_de' => 'f6b4ec80e5342ce54f9b6419b2b616b7', 'description_en' => '56758209cc27a551a56291cbbacd1aef'],
+            'weltenentdecker' => ['description_de' => '5d1557bab127ebd216f2169c957e994d', 'description_en' => '24eb0d69c722310ae09eaefa844029a2'],
+        ];
+        foreach ($rows as $r) {
+            $cur = Db::one('SELECT * FROM projects WHERE slug = ?', [$r['slug']]);
+            if (!$cur) {
+                $r['sort'] = (int)Db::val('SELECT COALESCE(MAX(sort), 0) FROM projects') + 10;
+                $r['created_at'] = now();
+                Db::insert('projects', $r);
+                continue;
+            }
+            $upd = [];
+            foreach (['description_de', 'description_en'] as $f) {
+                $text = trim((string)$cur[$f]);
+                if (!empty($r[$f]) && ($text === '' || md5($text) === ($oldDesc[$r['slug']][$f] ?? ''))) {
+                    $upd[$f] = $r[$f];
+                }
+            }
+            foreach (['meta_de', 'meta_en'] as $f) {
+                if (!empty($r[$f]) && (trim((string)$cur[$f]) === '' || preg_match('~^panzerit\.de/~', (string)$cur[$f]))) {
+                    $upd[$f] = $r[$f];
+                }
+            }
+            if (str_starts_with((string)$r['url'], '/') && (string)$cur['url'] !== $r['url']
+                && preg_match('~^https://(www\.)?(panzerit|frank-panzer)\.de/~i', (string)$cur['url'])) {
+                $upd['url'] = $r['url'];
+            }
+            if (in_array($r['slug'], $promote, true) && empty($cur['featured'])) {
+                $upd['featured'] = 1;
+            }
+            if ($upd) {
+                Db::update('projects', (int)$cur['id'], $upd);
+            }
+        }
     }
 
     private static function privacyTikTok(): void

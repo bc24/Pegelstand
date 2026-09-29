@@ -147,6 +147,9 @@ final class Front
     private static function project(string $slug): never
     {
         $p = Content::project($slug);
+        if (!$p && $slug === 'spiel' && Content::project('territoriumskrieg')) {
+            redirect(u('/projekt/territoriumskrieg/'), 301); // früherer Name des Projekts
+        }
         if (!$p) {
             self::notFound();
         }
