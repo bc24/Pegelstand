@@ -230,16 +230,63 @@ return [
     'tracks' => [
         'title' => 'Musik: Tracks', 'singular' => 'Track', 'icon' => 'music', 'group' => 'content',
         'table' => 'tracks', 'order' => 'sort ASC, id ASC', 'sortable' => true, 'toggle' => 'visible',
-        'help' => 'Sobald hier Tracks eingetragen sind, ersetzt die Liste den „coming soon“-Hinweis im Musik-Bereich.',
-        'columns' => ['image' => 'Cover', 'title' => 'Titel', 'genre' => 'Genre', 'platform' => 'Plattform'],
+        'help' => 'Die Songs erscheinen im Musik-Bereich. „Von TikTok aktualisieren“ lädt die neuesten Videos des Profils (Einstellungen → Musik) samt Cover. Eigene Links (TikTok-Video-Link einfügen) werden automatisch mit Titel und Cover ergänzt.',
+        'buttons' => [['sync_tiktok', 'Von TikTok aktualisieren', 'refresh-cw']],
+        'handlers' => ['sync_tiktok' => static function (): void {
+            $user = trim(setting('tiktok_user', 'dj.frankus'));
+            $res = TikTok::sync($user, max(1, (int)setting('tiktok_limit', '10')));
+            Auth::log('sync', 'tracks', '', "@$user: +{$res['added']} ~{$res['updated']} -{$res['removed']}");
+            if ($res['error'] !== '') {
+                Admin::flash('err', 'TikTok-Abgleich fehlgeschlagen: ' . $res['error']);
+            } else {
+                Admin::flash('ok', "TikTok-Abgleich fertig: {$res['added']} neu, {$res['updated']} aktualisiert, {$res['removed']} entfernt.");
+            }
+        }],
+        'columns' => ['image' => 'Cover', 'title' => 'Titel', 'platform' => 'Plattform', 'plays' => 'Aufrufe', 'published_at' => 'Datum'],
         'fields' => [
-            ['name' => 'title', 'label' => 'Titel', 'type' => 'text', 'required' => true],
-            ['name' => 'genre', 'label' => 'Genre', 'type' => 'text'],
-            ['name' => 'platform', 'label' => 'Plattform', 'type' => 'text', 'help' => 'z. B. YouTube, SoundCloud, Spotify, TikTok'],
-            ['name' => 'url', 'label' => 'Link zum Track', 'type' => 'url'],
+            ['name' => 'url', 'label' => 'Link zum Song / TikTok-Video', 'type' => 'url', 'help' => 'Bei TikTok-Video-Links werden Titel, Cover und Player automatisch ergänzt.'],
+            ['name' => 'title', 'label' => 'Titel', 'type' => 'text', 'help' => 'Leer lassen, um ihn bei TikTok-Links automatisch zu übernehmen.'],
+            ['name' => 'caption', 'label' => 'Beschreibung', 'type' => 'textarea', 'rows' => 3],
+            ['name' => 'genre', 'label' => 'Genre / Tags', 'type' => 'text'],
+            ['name' => 'platform', 'label' => 'Plattform', 'type' => 'text', 'help' => 'z. B. TikTok, YouTube, SoundCloud, Spotify'],
             ['name' => 'image', 'label' => 'Cover', 'type' => 'image'],
+            ['name' => 'video_id', 'label' => 'TikTok-Video-ID (automatisch)', 'type' => 'text', 'max' => 32],
+            ['name' => 'published_at', 'label' => 'Veröffentlicht', 'type' => 'datetime'],
+            ['name' => 'plays', 'label' => 'Aufrufe', 'type' => 'number', 'min' => 0, 'default' => 0],
             ['name' => 'visible', 'label' => 'Sichtbar', 'type' => 'bool', 'default' => 1],
         ],
+        'before_save' => static function (array $data, ?array $old): array {
+            $url = (string)($data['url'] ?? '');
+            $vid = TikTok::videoId($url);
+            if ($vid !== '') {
+                $data['video_id'] = $vid;
+                $data['platform'] = ($data['platform'] ?? '') !== '' ? $data['platform'] : 'TikTok';
+                if (empty($data['published_at'])) {
+                    $data['published_at'] = TikTok::dateFromId($vid);
+                }
+                if (($data['title'] ?? '') === '' || ($data['image'] ?? '') === '') {
+                    $oe = TikTok::oembed($url);
+                    if ($oe) {
+                        if (($data['title'] ?? '') === '') {
+                            $data['title'] = TikTok::titleFromCaption($oe['title']);
+                            $data['caption'] = ($data['caption'] ?? '') !== '' ? $data['caption'] : $oe['title'];
+                        }
+                        if (($data['image'] ?? '') === '') {
+                            $data['image'] = TikTok::saveCover($vid, $oe['thumbnail_url']);
+                        }
+                    }
+                }
+            } else {
+                $data['video_id'] = '';
+            }
+            if (($data['title'] ?? '') === '') {
+                $data['title'] = 'Song';
+            }
+            if ($old === null) {
+                $data['source'] = 'manual';
+            }
+            return $data;
+        },
     ],
 
     'faq' => [

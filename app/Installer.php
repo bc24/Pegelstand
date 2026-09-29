@@ -108,13 +108,14 @@ final class Installer
             if (!empty($site['site_url'])) {
                 $defaults['site_url'] = $site['site_url'];
             }
+            $defaults['schema_version'] = (string)Migrations::VERSION;
             foreach ($defaults as $k => $v) {
                 Db::upsert('settings', ['skey' => $k, 'svalue' => $v], ['svalue']);
             }
 
             // Einfache Tabellen: Zeilen mit Sortierung einfügen
             $simple = ['sections', 'stats', 'about_badges', 'interests', 'facts', 'timeline', 'projects', 'former_sites', 'maker_projects',
-                'shop_items', 'cv_entries', 'tools', 'music_genres', 'faq', 'partner_steps', 'social_links', 'pages'];
+                'shop_items', 'cv_entries', 'tools', 'music_genres', 'tracks', 'faq', 'partner_steps', 'social_links', 'pages'];
             foreach ($simple as $table) {
                 foreach ($data[$table] as $i => $row) {
                     $row['sort'] ??= ($i + 1) * 10;

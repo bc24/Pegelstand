@@ -460,6 +460,90 @@
     });
   });
 
+
+  /* ------------------------------------------------------------ Songs: Karussell + TikTok-Player (erst nach Klick) */
+  safe(() => {
+    const root = $('[data-songs]');
+    if (!root) return;
+    const rail = $('[data-rail]', root);
+    const prev = $('[data-rail-prev]', root);
+    const next = $('[data-rail-next]', root);
+    const step = () => Math.max(220, Math.round(rail.clientWidth * 0.8));
+    const update = () => {
+      const max = rail.scrollWidth - rail.clientWidth - 2;
+      if (prev) prev.disabled = rail.scrollLeft <= 2;
+      if (next) next.disabled = rail.scrollLeft >= max;
+    };
+    prev?.addEventListener('click', () => rail.scrollBy({ left: -step(), behavior: reduced ? 'auto' : 'smooth' }));
+    next?.addEventListener('click', () => rail.scrollBy({ left: step(), behavior: reduced ? 'auto' : 'smooth' }));
+    rail.addEventListener('scroll', update, { passive: true });
+    addEventListener('resize', update, { passive: true });
+    update();
+    // Mit der Maus ziehen (Touch scrollt nativ)
+    let down = false, moved = false, sx = 0, sl = 0;
+    rail.addEventListener('pointerdown', (e) => {
+      if (e.pointerType !== 'mouse' || e.button !== 0) return;
+      down = true; moved = false; sx = e.clientX; sl = rail.scrollLeft;
+    });
+    addEventListener('pointermove', (e) => {
+      if (!down) return;
+      const dx = e.clientX - sx;
+      if (Math.abs(dx) > 6) { moved = true; rail.classList.add('is-dragging'); }
+      if (moved) rail.scrollLeft = sl - dx;
+    });
+    addEventListener('pointerup', () => { if (!down) return; down = false; rail.classList.remove('is-dragging'); setTimeout(() => { moved = false; }, 0); });
+    rail.addEventListener('click', (e) => { if (moved) { e.preventDefault(); e.stopPropagation(); } }, true);
+    rail.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight') { rail.scrollBy({ left: step() / 2, behavior: 'smooth' }); e.preventDefault(); }
+      if (e.key === 'ArrowLeft') { rail.scrollBy({ left: -step() / 2, behavior: 'smooth' }); e.preventDefault(); }
+    });
+
+    // Player: iframe wird erst beim Klick erzeugt (vorher keine Verbindung zu TikTok)
+    const player = $('#player');
+    if (!player) return;
+    const frame = $('#player-frame', player);
+    const title = $('#player-title', player);
+    const link = $('#player-link', player);
+    let opener = null;
+    const close = () => {
+      player.hidden = true;
+      frame.textContent = '';
+      body.classList.remove('player-open');
+      d.removeEventListener('keydown', onKey);
+      opener?.focus();
+    };
+    const onKey = (e) => {
+      if (e.key === 'Escape') close();
+      if (e.key === 'Tab') {
+        const f = $$('button,a[href]', player);
+        if (!f.length) return;
+        const first = f[0], last = f[f.length - 1];
+        if (e.shiftKey && d.activeElement === first) { last.focus(); e.preventDefault(); }
+        else if (!e.shiftKey && d.activeElement === last) { first.focus(); e.preventDefault(); }
+      }
+    };
+    $$('[data-tiktok]', root).forEach((card) => card.addEventListener('click', () => {
+      const id = card.dataset.tiktok;
+      if (!/^\d{8,25}$/.test(id)) return;
+      opener = card;
+      frame.textContent = '';
+      const f = d.createElement('iframe');
+      f.src = `https://www.tiktok.com/player/v1/${id}?autoplay=1&loop=0&rel=0&music_info=1&description=0`;
+      f.allow = 'autoplay; fullscreen; encrypted-media; picture-in-picture';
+      f.setAttribute('allowfullscreen', '');
+      f.title = card.dataset.title || 'TikTok';
+      f.referrerPolicy = 'strict-origin-when-cross-origin';
+      frame.appendChild(f);
+      title.textContent = card.dataset.title || '';
+      link.href = card.dataset.url || '#';
+      player.hidden = false;
+      body.classList.add('player-open');
+      d.addEventListener('keydown', onKey);
+      $('[data-player-close]', player).focus();
+    }));
+    player.addEventListener('click', (e) => { if (e.target === player || e.target.closest('[data-player-close]')) close(); });
+  });
+
   /* ------------------------------------------------------------ FAQ */
   safe(() => {
     const items = $$('.faq-item');

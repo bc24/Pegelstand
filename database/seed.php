@@ -335,6 +335,8 @@ return [
         ['name' => 'WooCommerce', 'icon' => 'brand-woocommerce', 'url' => 'https://woocommerce.com'],
     ],
 
+    'tracks' => json_decode((string)file_get_contents(__DIR__ . '/seed/tiktok.json'), true) ?: [],
+
     'music_genres' => [
         ['icon' => 'mic', 'name' => 'Rap'],
         ['icon' => 'zap', 'name' => 'Hardstyle'],
@@ -437,7 +439,7 @@ HTML,
 <li><strong>Kommentare:</strong> Name und Kommentartext — nur wenn Sie einen Blog-Beitrag kommentieren</li>
 <li><strong>Design- und Cookie-Einstellungen:</strong> Ihre Auswahl (heller/dunkler Modus, Hinweis-Banner) wird ausschließlich lokal in Ihrem Browser gespeichert (localStorage, kein Server-Zugriff)</li>
 </ul>
-<p>Wir verwenden kein Google Analytics, kein Facebook Pixel und keine sonstigen Tracking-Tools. Es werden keine externen Schriftarten, Skripte oder Inhalte von Drittanbietern nachgeladen.</p>
+<p>Wir verwenden kein Google Analytics, kein Facebook Pixel und keine sonstigen Tracking-Tools. Es werden keine externen Schriftarten, Skripte oder Inhalte von Drittanbietern automatisch nachgeladen; die einzige Ausnahme ist der TikTok-Player, der erst nach Ihrem Klick geladen wird (siehe Abschnitt 9).</p>
 <h2>3. Server-Logs &amp; Hosting</h2>
 <p>Diese Website wird auf einem eigenen Server gehostet. Der Server erfasst automatisch technische Zugriffsdaten. Diese Daten sind technisch notwendig für den Betrieb.</p>
 <p>Rechtsgrundlage: Art. 6 Abs. 1 lit. f DSGVO. Speicherdauer: 7–30 Tage.</p>
@@ -459,9 +461,12 @@ HTML,
 <li><strong>fp-liked (localStorage):</strong> Merkt sich, welche Beiträge Sie mit „Gefällt mir“ markiert haben. Kein Server-Zugriff.</li>
 </ul>
 <p>Wir verwenden keine Analyse-, Marketing- oder Tracking-Cookies. Für den geschützten Verwaltungsbereich wird nach dem Login ein Sitzungs-Cookie gesetzt; dieser betrifft nur Administratoren.</p>
-<h2>9. SSL-Verschlüsselung</h2>
+<h2>9. TikTok-Einbettung (Songs)</h2>
+<p>Im Bereich „Musik“ werden Songs als Vorschaubilder angezeigt. Die Vorschaubilder liegen auf diesem Server; beim Aufruf der Seite findet keine Verbindung zu TikTok statt. Erst wenn Sie auf einen Song klicken, wird der Video-Player von TikTok (TikTok Technology Limited, Irland; TikTok Inc., USA) in einem eingebetteten Fenster geladen. Dabei kann TikTok Daten wie Ihre IP-Adresse verarbeiten und Cookies oder ähnliche Technologien einsetzen. Weitere Informationen finden Sie in der Datenschutzerklärung von TikTok.</p>
+<p>Rechtsgrundlage: Art. 6 Abs. 1 lit. a DSGVO (Ihre Einwilligung durch den Klick auf den Song).</p>
+<h2>10. SSL-Verschlüsselung</h2>
 <p>Diese Website nutzt SSL/TLS-Verschlüsselung (erkennbar am „https://“ in der Adresszeile).</p>
-<h2>10. Ihre Rechte</h2>
+<h2>11. Ihre Rechte</h2>
 <p>Sie haben folgende Rechte bezüglich Ihrer personenbezogenen Daten:</p>
 <ul>
 <li>Auskunftsrecht (Art. 15 DSGVO)</li>
@@ -473,9 +478,9 @@ HTML,
 <li>Beschwerderecht bei der Aufsichtsbehörde (Art. 77 DSGVO)</li>
 </ul>
 <p>Zur Ausübung Ihrer Rechte wenden Sie sich bitte an: <a href="mailto:frank@panzerit.de">frank@panzerit.de</a></p>
-<h2>11. Aufsichtsbehörde</h2>
+<h2>12. Aufsichtsbehörde</h2>
 <p>Die Landesbeauftragte für Datenschutz und Informationsfreiheit Bremen<br>Arndtstraße 1 · 27570 Bremerhaven<br>Telefon: 0421 / 361-2010<br>E-Mail: <a href="mailto:office@datenschutz.bremen.de">office@datenschutz.bremen.de</a><br><a href="https://www.datenschutz.bremen.de" target="_blank" rel="noopener">www.datenschutz.bremen.de</a></p>
-<h2>12. Aktualität</h2>
+<h2>13. Aktualität</h2>
 <p>Diese Datenschutzerklärung hat den Stand September 2026. Änderungen werden auf dieser Seite veröffentlicht.</p>
 HTML,
             'content_en' => ''],

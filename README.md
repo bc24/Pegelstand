@@ -65,6 +65,16 @@ location ~ \.php$ { include fastcgi_params; fastcgi_pass unix:/run/php/php8.3-fp
 
 Hinweis: Auf dem bestehenden Server liegen unter `/projekte/<name>/` die Einzel-Apps. Die `.htaccess` liefert nur `/projekte/` (Übersicht) über diese Seite aus; die Unterordner bleiben unverändert erreichbar. In nginx entsprechend `location = /projekte/ { try_files /index.php$is_args$args =404; }` ergänzen.
 
+## Songs von TikTok
+
+Im Musik-Bereich erscheinen die letzten 10 Videos von `@dj.frankus` als Karussell. Die Cover liegen lokal auf dem Server; erst beim Klick auf einen Song wird der TikTok-Player in einem Fenster geladen (Datenschutz: vorher keine Verbindung zu TikTok).
+
+- **Aktualisieren im Admin:** Musik: Tracks → „Von TikTok aktualisieren“. Neue Videos werden ergänzt, Aufrufzahlen aktualisiert, ältere automatisch importierte Videos entfernt. Titel, die du im Admin geändert hast, bleiben erhalten.
+- **Automatisch per Cron** (täglich, als Webserver-Benutzer): `17 6 * * * cd /var/www/frank-panzer.de && sudo -u www-data php bin/sync-tiktok.php`
+- **Einzelne Songs:** Beim Anlegen eines Tracks reicht der TikTok-Video-Link; Titel, Cover und Datum werden automatisch ergänzt. Auch Links zu anderen Plattformen sind möglich (öffnen in neuem Tab).
+- Profil und Anzahl: Einstellungen → Musik. Die Daten stammen aus der öffentlichen Profil-Einbettung von TikTok; ändert TikTok deren Format, meldet der Abgleich einen Fehler und Songs lassen sich weiter manuell pflegen.
+- Bestehende Installationen werden beim ersten Aufruf nach dem Update automatisch migriert (neue Spalten, Einstellungen, Hinweis „TikTok-Einbettung“ in der Datenschutzerklärung). Danach im Admin einmal „Von TikTok aktualisieren“ klicken.
+
 ## Fehlersuche (leere Seite / Fehler 500)
 
 ```bash
@@ -87,7 +97,7 @@ index.php            Front-Controller der öffentlichen Seite
 router.php           nur für den PHP-Entwicklungsserver
 admin/               Admin-Einstieg und Templates (admin/views)
 bin/doctor.php       Diagnose der Installation (nur CLI)
-app/                 PHP-Klassen (Db, Auth, Crud, Front, Media, Mailer, Html, …)
+app/                 PHP-Klassen (Db, Auth, Crud, Front, Media, Mailer, Html, TikTok, Migrations, …)
 app/entities.php     Definition aller editierbaren Inhaltstypen (Formulare entstehen daraus)
 app/settings_schema.php  Definition aller Einstellungen
 app/strings.php         UI-Texte DE/EN

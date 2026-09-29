@@ -12,6 +12,7 @@ $sortable = !empty($e['sortable']);
     <?php if (!empty($e['help'])): ?><p class="muted"><?= e($e['help']) ?></p><?php endif; ?>
   </div>
   <div class="head-actions">
+    <?php foreach ($e['buttons'] ?? [] as [$bd, $bl, $bi]): ?><form method="post" class="inline"><?= Csrf::field() ?><input type="hidden" name="do" value="<?= e($bd) ?>"><button class="btn btn-soft" type="submit"><?= icon($bi) ?><span><?= e($bl) ?></span></button></form><?php endforeach; ?>
     <?php foreach ($e['links'] ?? [] as [$lk, $ll, $li]): ?><a class="btn btn-soft" href="<?= e(Admin::url(['p' => $lk])) ?>"><?= icon($li) ?><span><?= e($ll) ?></span></a><?php endforeach; ?>
     <?php if ($e['can_add']): ?><a class="btn btn-primary" href="<?= e(Admin::url(['p' => $key, 'a' => 'new'] + ($filterVal !== '' ? ['f' => $filterVal] : []))) ?>"><?= icon('plus') ?><span><?= e($e['singular']) ?> hinzufügen</span></a><?php endif; ?>
   </div>

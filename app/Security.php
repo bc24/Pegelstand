@@ -23,7 +23,7 @@ final class Security
              . "font-src 'self'; "
              . "connect-src 'self'; "
              . "media-src 'self' https:; "
-             . "frame-src https://www.youtube-nocookie.com https://open.spotify.com https://w.soundcloud.com; "
+             . "frame-src https://www.tiktok.com https://www.youtube-nocookie.com https://open.spotify.com https://w.soundcloud.com; "
              . "object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'";
         header('Content-Security-Policy: ' . $csp);
         header('X-Content-Type-Options: nosniff');

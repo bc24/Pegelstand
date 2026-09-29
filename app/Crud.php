@@ -21,7 +21,7 @@ final class Crud
                 'toggle' => self::toggle($e),
                 'reorder' => self::reorder($e),
                 'duplicate' => self::duplicate($e),
-                default => Admin::back(['p' => $key]),
+                default => self::custom($e),
             };
         }
 
@@ -133,6 +133,15 @@ final class Crud
             Admin::back(['p' => $e['key'], 'a' => 'edit', 'id' => $id]);
         }
         Admin::back(['p' => $e['key']] + (!empty($e['filter']) && !empty($_POST['_f']) ? ['f' => $_POST['_f']] : []));
+    }
+
+    private static function custom(array $e): never
+    {
+        $do = (string)($_POST['do'] ?? '');
+        if (isset($e['handlers'][$do])) {
+            ($e['handlers'][$do])();
+        }
+        Admin::back(['p' => $e['key']]);
     }
 
     private static function delete(array $e): never

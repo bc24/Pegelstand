@@ -103,3 +103,5 @@ try {
     $code = $e instanceof PDOException && isset($e->errorInfo[1]) ? ' (MySQL-Fehler ' . (int)$e->errorInfo[1] . ')' : '';
     fp_fail('Datenbank nicht erreichbar', 'Die Verbindung zur Datenbank ist fehlgeschlagen' . $code . '. Betreiber: Zugangsdaten in config/config.php und den Datenbank-Dienst prüfen oder "php bin/doctor.php" ausführen.', $e, 503);
 }
+
+Migrations::run();
