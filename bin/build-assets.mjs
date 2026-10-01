@@ -31,6 +31,7 @@ async function bundles() {
     ...gemein,
     entryPoints: {
       pegelstand: pfad('resources/css/main.css'),
+      dashboard: pfad('resources/css/dashboard.css'),
       komponentenseite: pfad('resources/css/komponentenseite.css'),
     },
     outdir: pfad('assets/css'),
@@ -42,6 +43,7 @@ async function bundles() {
     entryPoints: {
       pegelstand: pfad('resources/js/main.js'),
       'theme-init': pfad('resources/js/theme-init.js'),
+      dashboard: pfad('resources/js/dashboard/dashboard.js'),
       komponentenseite: pfad('resources/js/komponentenseite.js'),
     },
     outdir: pfad('assets/js'),
