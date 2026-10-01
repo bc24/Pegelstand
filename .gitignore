@@ -1,0 +1,22 @@
+# Abhängigkeiten (das Release-Zip enthält vendor/, das Repository nicht)
+/vendor/
+/node_modules/
+
+# Laufzeit und lokale Konfiguration
+/config/config.php
+/config/installed.lock
+/storage/*
+!/storage/.gitkeep
+!/storage/.htaccess
+
+# Werkzeug-Caches und Testausgaben
+/.php-cs-fixer.cache
+/.phpunit.cache/
+/test-results/
+/playwright-report/
+/dist/
+
+# Lokales
+/.claude/settings.local.json
+*.log
+.DS_Store
