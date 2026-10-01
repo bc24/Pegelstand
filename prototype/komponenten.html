@@ -4,6 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex">
+  <link rel="icon" href="data:,">
   <title>Komponenten – Pegelstand</title>
   <script src="/assets/js/theme-init.js"></script>
   <link rel="preload" href="/assets/fonts/inter-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
@@ -11,7 +12,7 @@
   <link rel="stylesheet" href="/assets/css/komponentenseite.css">
 </head>
 <body>
-  <a class="kp-skip" href="#inhalt">Zum Inhalt springen</a>
+  <a class="ps-skip" href="#inhalt">Zum Inhalt springen</a>
 
   <header class="kp-header">
     <a class="ps-wordmark" href="komponenten.html">Pegelstand</a>
@@ -47,6 +48,7 @@
       <a href="#tooltip">Tooltips</a>
       <a href="#skeleton">Skeletons</a>
       <a href="#leer">Leerzustände</a>
+      <a href="#chips">Chips</a>
       <a href="#badges">Badges</a>
     </nav>
 
@@ -457,6 +459,18 @@
             <p class="ps-empty__text">Die Verbindung zur Datenbank ist fehlgeschlagen. Prüfe die Zugangsdaten in der Konfiguration oder versuche es gleich noch einmal.</p>
             <div class="ps-empty__actions"><button type="button" class="ps-btn ps-btn--primary"><svg class="ps-icon ps-icon--s" aria-hidden="true" focusable="false"><use href="/assets/icons.svg#ps-icon-refresh-cw"/></svg> Erneut versuchen</button><button type="button" class="ps-btn ps-btn--ghost">Hilfe öffnen</button></div>
           </div></div>
+        </div>
+      </section>
+
+      <section class="kp-section" id="chips" aria-labelledby="h-chips">
+        <h2 id="h-chips">Chips</h2>
+        <p>Ein Chip zeigt einen aktiven Filter und lässt sich über das Kreuz entfernen. Lange Texte werden gekürzt.</p>
+        <div class="kp-demo">
+          <div class="kp-row">
+            <span class="ps-chip"><span class="ps-chip__text"><span class="ps-chip__art">Land:</span> Deutschland</span><button type="button" class="ps-chip__x" aria-label="Filter Land: Deutschland entfernen"><svg class="ps-icon ps-icon--s" aria-hidden="true" focusable="false"><use href="/assets/icons.svg#ps-icon-x"/></svg></button></span>
+            <span class="ps-chip"><span class="ps-chip__text"><span class="ps-chip__art">Seite:</span> /blog/datenschutz-ohne-cookies</span><button type="button" class="ps-chip__x" aria-label="Filter Seite: /blog/datenschutz-ohne-cookies entfernen"><svg class="ps-icon ps-icon--s" aria-hidden="true" focusable="false"><use href="/assets/icons.svg#ps-icon-x"/></svg></button></span>
+            <button type="button" class="ps-btn ps-btn--ghost ps-btn--s">Alle Filter entfernen</button>
+          </div>
         </div>
       </section>
 
