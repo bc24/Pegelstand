@@ -1,0 +1,95 @@
+.ps-table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--ps-border);
+  border-radius: var(--ps-radius-l);
+  background: var(--ps-surface);
+}
+
+.ps-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: var(--ps-text-sm);
+  font-variant-numeric: tabular-nums;
+}
+
+.ps-table caption {
+  padding: var(--ps-space-3) var(--ps-space-4);
+  color: var(--ps-text-muted);
+  text-align: left;
+}
+
+.ps-table th,
+.ps-table td {
+  padding: var(--ps-space-3) var(--ps-space-4);
+  border-bottom: 1px solid var(--ps-border);
+  text-align: left;
+  vertical-align: middle;
+}
+
+.ps-table thead th {
+  background: var(--ps-surface-sunken);
+  color: var(--ps-text-muted);
+  font-size: var(--ps-text-xs);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.ps-table tbody tr:last-child > * {
+  border-bottom: 0;
+}
+
+.ps-table .num {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.ps-table tbody tr {
+  transition: background-color var(--ps-duration-fast) var(--ps-ease);
+}
+
+.ps-table tbody tr:hover {
+  background: var(--ps-surface-sunken);
+}
+
+/* Zeile als Filter: Der Button in der ersten Zelle spannt über die ganze Zeile. */
+.ps-table--rows tbody tr {
+  position: relative;
+}
+
+.ps-table__link {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--ps-text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.ps-table__link::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+}
+
+.ps-table__link:hover {
+  color: var(--ps-primary-text);
+}
+
+.ps-table__link:focus-visible {
+  outline-offset: -2px;
+}
+
+/* Balken hinter der ersten Spalte zeigt den Anteil (--anteil: 0% bis 100%). */
+.ps-table--bars tbody td:first-child {
+  background: linear-gradient(
+    90deg,
+    var(--ps-primary-subtle) var(--anteil, 0%),
+    transparent var(--anteil, 0%)
+  );
+}
+
+.ps-table .ps-muted {
+  color: var(--ps-text-muted);
+}

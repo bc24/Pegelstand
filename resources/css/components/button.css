@@ -1,0 +1,132 @@
+.ps-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ps-space-2);
+  min-height: 2.5rem;
+  padding: 0 var(--ps-space-4);
+  border: 1px solid transparent;
+  border-radius: var(--ps-radius-m);
+  background: transparent;
+  color: var(--ps-text);
+  font: inherit;
+  font-size: var(--ps-text-sm);
+  font-weight: 600;
+  line-height: 1.25rem;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background-color var(--ps-duration-fast) var(--ps-ease),
+    border-color var(--ps-duration-fast) var(--ps-ease),
+    color var(--ps-duration-fast) var(--ps-ease),
+    box-shadow var(--ps-duration-fast) var(--ps-ease);
+}
+
+.ps-btn--primary {
+  background: var(--ps-primary);
+  color: var(--ps-on-primary);
+}
+
+.ps-btn--primary:hover {
+  background: var(--ps-primary-hover);
+  color: var(--ps-on-primary);
+}
+
+.ps-btn--primary:active {
+  background: var(--ps-primary-active);
+}
+
+.ps-btn--secondary {
+  border-color: var(--ps-border-strong);
+  background: var(--ps-surface);
+  color: var(--ps-text);
+}
+
+.ps-btn--secondary:hover {
+  background: var(--ps-surface-sunken);
+  color: var(--ps-text);
+}
+
+.ps-btn--secondary:active {
+  background: var(--ps-border);
+}
+
+.ps-btn--ghost {
+  color: var(--ps-text-muted);
+}
+
+.ps-btn--ghost:hover {
+  background: var(--ps-surface-sunken);
+  color: var(--ps-text);
+}
+
+.ps-btn--ghost:active {
+  background: var(--ps-border);
+}
+
+.ps-btn--danger {
+  background: var(--ps-danger);
+  color: var(--ps-on-danger);
+}
+
+.ps-btn--danger:hover {
+  background: var(--ps-danger);
+  color: var(--ps-on-danger);
+  box-shadow: inset 0 0 0 999px rgb(0 0 0 / 0.14);
+}
+
+.ps-btn--s {
+  min-height: 2rem;
+  padding: 0 var(--ps-space-3);
+  font-size: var(--ps-text-xs);
+}
+
+.ps-btn--icon {
+  width: 2.5rem;
+  padding: 0;
+}
+
+.ps-btn--icon.ps-btn--s {
+  width: 2rem;
+}
+
+.ps-btn[disabled],
+.ps-btn[aria-disabled='true'] {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Wartezustand: Beschriftung bleibt stehen, ein kleiner Ring zeigt die Arbeit an. */
+.ps-btn[aria-busy='true'] {
+  pointer-events: none;
+  cursor: progress;
+}
+
+.ps-btn[aria-busy='true']::after {
+  content: '';
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: ps-drehen 0.8s linear infinite;
+}
+
+@keyframes ps-drehen {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (pointer: coarse) {
+  .ps-btn {
+    min-height: 2.75rem;
+  }
+
+  .ps-btn--icon {
+    width: 2.75rem;
+  }
+}

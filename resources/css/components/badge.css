@@ -1,0 +1,69 @@
+.ps-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ps-space-1);
+  padding: 0.125rem var(--ps-space-2);
+  border-radius: var(--ps-radius-full);
+  background: var(--ps-surface-sunken);
+  color: var(--ps-text-muted);
+  font-size: var(--ps-text-xs);
+  font-weight: 600;
+  line-height: 1.25rem;
+  white-space: nowrap;
+}
+
+.ps-badge--primary {
+  background: var(--ps-primary-subtle);
+  color: var(--ps-primary-text);
+}
+
+.ps-badge--signal {
+  background: var(--ps-signal-subtle);
+  color: var(--ps-signal-text);
+}
+
+.ps-badge--success {
+  background: var(--ps-success-subtle);
+  color: var(--ps-success);
+}
+
+.ps-badge--warning {
+  background: var(--ps-warning-subtle);
+  color: var(--ps-warning);
+}
+
+.ps-badge--danger {
+  background: var(--ps-danger-subtle);
+  color: var(--ps-danger);
+}
+
+.ps-badge__dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+/* Veränderung zur Vorperiode: Pfeil für die Richtung, Farbe für gut oder schlecht */
+.ps-delta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.125rem;
+  padding: 0.0625rem var(--ps-space-2) 0.0625rem var(--ps-space-1);
+  border-radius: var(--ps-radius-full);
+  background: var(--ps-surface-sunken);
+  color: var(--ps-text-muted);
+  font-size: var(--ps-text-xs);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.ps-delta--gut {
+  background: var(--ps-success-subtle);
+  color: var(--ps-success);
+}
+
+.ps-delta--schlecht {
+  background: var(--ps-danger-subtle);
+  color: var(--ps-danger);
+}

@@ -1,0 +1,46 @@
+.ps-tooltip {
+  position: fixed;
+  z-index: var(--ps-z-tooltip);
+  max-width: 18rem;
+  padding: var(--ps-space-2) var(--ps-space-3);
+  border-radius: var(--ps-radius-s);
+  background: light-dark(#0a2430, #e8f0f3);
+  color: light-dark(#e8f0f3, #0a2430);
+  box-shadow: var(--ps-shadow-2);
+  font-size: var(--ps-text-xs);
+  line-height: var(--ps-leading-snug);
+  pointer-events: none;
+  animation: ps-tooltip-ein var(--ps-duration-fast) var(--ps-ease);
+}
+
+.ps-tooltip strong {
+  font-variant-numeric: tabular-nums;
+}
+
+[data-ps-tooltip]:not(button, a, input, select, textarea, [tabindex]) {
+  cursor: help;
+}
+
+.ps-info-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  padding: 0;
+  border: 0;
+  border-radius: var(--ps-radius-full);
+  background: none;
+  color: var(--ps-text-subtle);
+  cursor: help;
+}
+
+.ps-info-btn:hover {
+  color: var(--ps-text);
+}
+
+@keyframes ps-tooltip-ein {
+  from {
+    opacity: 0;
+  }
+}

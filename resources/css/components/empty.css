@@ -1,0 +1,43 @@
+.ps-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--ps-space-3);
+  max-width: 28rem;
+  margin: 0 auto;
+  padding: var(--ps-space-7) var(--ps-space-4);
+  text-align: center;
+}
+
+.ps-empty__icon {
+  display: grid;
+  place-items: center;
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: var(--ps-radius-full);
+  background: var(--ps-primary-subtle);
+  color: var(--ps-primary-text);
+}
+
+.ps-empty--danger .ps-empty__icon {
+  background: var(--ps-danger-subtle);
+  color: var(--ps-danger);
+}
+
+.ps-empty__title {
+  font-size: var(--ps-text-lg);
+  font-weight: 600;
+}
+
+.ps-empty__text {
+  color: var(--ps-text-muted);
+  font-size: var(--ps-text-sm);
+}
+
+.ps-empty__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--ps-space-2);
+  margin-top: var(--ps-space-2);
+}

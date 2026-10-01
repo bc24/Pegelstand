@@ -1,0 +1,39 @@
+.ps-skeleton {
+  display: block;
+  height: 1em;
+  border-radius: var(--ps-radius-s);
+  background: linear-gradient(
+    90deg,
+    var(--ps-surface-sunken) 0%,
+    var(--ps-border) 50%,
+    var(--ps-surface-sunken) 100%
+  );
+  background-size: 200% 100%;
+  animation: ps-schimmer 1.6s ease-in-out infinite;
+}
+
+.ps-skeleton--circle {
+  border-radius: 50%;
+}
+
+.ps-skeleton--block {
+  height: 100%;
+  min-height: 4rem;
+  border-radius: var(--ps-radius-m);
+}
+
+@keyframes ps-schimmer {
+  from {
+    background-position: 200% 0;
+  }
+  to {
+    background-position: -200% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ps-skeleton {
+    animation: none;
+    background: var(--ps-surface-sunken);
+  }
+}
