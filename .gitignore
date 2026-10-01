@@ -20,3 +20,6 @@
 /.claude/settings.local.json
 *.log
 .DS_Store
+/assets/*
+!/assets/.gitkeep
+/screenshots/

@@ -13,9 +13,13 @@ rm -rf "$ZIEL"
 mkdir -p "$STAGING"
 
 # Nur ausgewählte Pfade ausliefern (Allowlist), keine Entwicklungsdateien
-for pfad in index.php .htaccess LICENSE README.md CHANGELOG.md src config resources assets storage vendor bin; do
+for pfad in index.php .htaccess LICENSE README.md CHANGELOG.md THIRD-PARTY.md licenses src config resources assets storage vendor bin; do
     cp -a "$WURZEL/$pfad" "$STAGING/"
 done
+
+# Dateien der internen Komponentenseite gehören nicht ins Release
+rm -f "$STAGING"/assets/css/komponentenseite.css "$STAGING"/assets/js/komponentenseite.js \
+  "$STAGING"/resources/css/komponentenseite.css "$STAGING"/resources/js/komponentenseite.js "$STAGING"/bin/build-assets.mjs
 
 # vendor/ ist im Repository nicht enthalten und erhält die Zugriffssperre beim Build
 cp "$WURZEL/src/.htaccess" "$STAGING/vendor/.htaccess"

@@ -19,7 +19,12 @@ jobs:
           php-version: '8.2'
           tools: composer
       - run: composer install --no-interaction --prefer-dist --no-dev --optimize-autoloader
-      # TODO: Assets bauen (ab Phase 1), sobald es einen Build-Schritt gibt.
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
       - name: Zip erstellen
         run: bin/build-release.sh "${GITHUB_REF_NAME#v}"
       - uses: actions/upload-artifact@v4

@@ -29,7 +29,7 @@ export default defineConfig({
     use: { viewport, colorScheme },
   })),
   webServer: {
-    command: `php -S 127.0.0.1:${port} -t .`,
+    command: `npm run build --silent && php -S 127.0.0.1:${port} -t .`,
     url: `http://127.0.0.1:${port}/`,
     reuseExistingServer: !process.env.CI,
     stdout: 'ignore',
