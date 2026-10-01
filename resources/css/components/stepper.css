@@ -1,0 +1,82 @@
+/* Fortschrittsanzeige für mehrstufige Abläufe, z. B. den Installer. */
+.ps-stepper {
+  display: flex;
+  gap: var(--ps-space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ps-stepper__item {
+  position: relative;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--ps-space-2);
+  min-width: 0;
+  color: var(--ps-text-muted);
+  font-size: var(--ps-text-sm);
+  text-align: center;
+}
+
+/* Verbindungslinie zum vorherigen Schritt */
+.ps-stepper__item + .ps-stepper__item::before {
+  content: '';
+  position: absolute;
+  top: 0.875rem;
+  right: calc(50% + 1.25rem);
+  left: calc(-50% + 1.25rem);
+  height: 2px;
+  background: var(--ps-border-strong);
+}
+
+.ps-stepper__item--fertig + .ps-stepper__item::before,
+.ps-stepper__item--aktuell::before {
+  background: var(--ps-primary);
+}
+
+.ps-stepper__marke {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border: 2px solid var(--ps-border-strong);
+  border-radius: 50%;
+  background: var(--ps-surface);
+  color: var(--ps-text-muted);
+  font-size: var(--ps-text-xs);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.ps-stepper__item--aktuell {
+  color: var(--ps-text);
+  font-weight: 600;
+}
+
+.ps-stepper__item--aktuell .ps-stepper__marke {
+  border-color: var(--ps-primary);
+  background: var(--ps-primary);
+  color: var(--ps-on-primary);
+}
+
+.ps-stepper__item--fertig .ps-stepper__marke {
+  border-color: var(--ps-primary);
+  background: var(--ps-primary-subtle);
+  color: var(--ps-primary-text);
+}
+
+/* Auf schmalen Bildschirmen steht nur beim aktuellen Schritt die Beschriftung. */
+@media (max-width: 39.99rem) {
+  .ps-stepper__item:not(.ps-stepper__item--aktuell) .ps-stepper__label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}

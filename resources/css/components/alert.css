@@ -1,0 +1,69 @@
+/* Hinweis: erklärt etwas Wichtiges im Fluss der Seite, mit Icon und Text (Farbe ist nie das einzige Signal). */
+.ps-alert {
+  display: flex;
+  gap: var(--ps-space-3);
+  padding: var(--ps-space-4);
+  border: 1px solid var(--ps-border-strong);
+  border-left-width: 4px;
+  border-radius: var(--ps-radius-m);
+  background: var(--ps-primary-subtle);
+  color: var(--ps-text);
+  font-size: var(--ps-text-sm);
+}
+
+.ps-alert > .ps-icon {
+  margin-top: 0.125rem;
+  color: var(--ps-primary-text);
+}
+
+.ps-alert__inhalt {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ps-space-1);
+  min-width: 0;
+}
+
+.ps-alert__titel {
+  font-weight: 600;
+}
+
+.ps-alert ul {
+  margin: var(--ps-space-1) 0 0;
+  padding-left: var(--ps-space-5);
+}
+
+.ps-alert a {
+  color: inherit;
+  text-underline-offset: 0.2em;
+}
+
+.ps-alert:focus-visible {
+  outline-offset: 2px;
+}
+
+.ps-alert--danger {
+  border-color: var(--ps-danger);
+  background: var(--ps-danger-subtle);
+}
+
+.ps-alert--danger > .ps-icon {
+  color: var(--ps-danger);
+}
+
+.ps-alert--warning {
+  border-color: var(--ps-warning);
+  background: var(--ps-warning-subtle);
+}
+
+.ps-alert--warning > .ps-icon {
+  color: var(--ps-warning);
+}
+
+.ps-alert--success {
+  border-color: var(--ps-success);
+  background: var(--ps-success-subtle);
+}
+
+.ps-alert--success > .ps-icon {
+  color: var(--ps-success);
+}

@@ -1,0 +1,216 @@
+/* Seitenrahmen für Installer, Startseite und Fehlerseiten (Seiten ohne Dashboard). */
+body.se {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.se-kopf {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ps-space-3);
+  padding: var(--ps-space-3) var(--ps-space-4);
+}
+
+.se-haupt {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--ps-space-5);
+  width: 100%;
+  max-width: 40rem;
+  margin: 0 auto;
+  padding: var(--ps-space-4) var(--ps-space-4) var(--ps-space-7);
+}
+
+.se-haupt:focus {
+  outline: none;
+}
+
+.se-karte .ps-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ps-space-4);
+  padding: var(--ps-space-5);
+}
+
+.se-karte h1 {
+  font-size: var(--ps-text-xl);
+}
+
+.se-einleitung {
+  color: var(--ps-text-muted);
+}
+
+.se-zwischentitel {
+  margin-top: var(--ps-space-2);
+  font-size: var(--ps-text-base);
+}
+
+.se-symbol {
+  background: var(--ps-primary-subtle);
+}
+
+.se-symbol--ok {
+  background: var(--ps-success-subtle);
+  color: var(--ps-success);
+}
+
+.se-symbol--fehler {
+  background: var(--ps-danger-subtle);
+  color: var(--ps-danger);
+}
+
+.se-formular {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ps-space-4);
+}
+
+.se-zeile {
+  display: grid;
+  gap: var(--ps-space-4);
+  grid-template-columns: minmax(0, 1fr);
+}
+
+@media (min-width: 40rem) {
+  .se-zeile {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .se-zeile:has(#f-port) {
+    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+  }
+}
+
+.se-aktionen {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--ps-space-3);
+  margin-top: var(--ps-space-2);
+}
+
+.se-aktionen--getrennt {
+  justify-content: space-between;
+}
+
+.se-aktionen--getrennt .ps-btn--ghost .ps-icon {
+  order: -1;
+}
+
+@media (max-width: 39.99rem) {
+  .se-aktionen .ps-btn {
+    flex: 1 1 100%;
+  }
+
+  .se-aktionen--getrennt {
+    flex-direction: column-reverse;
+  }
+}
+
+.se-liste {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ps-space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: var(--ps-text-sm);
+}
+
+.se-liste li {
+  display: flex;
+  gap: var(--ps-space-3);
+}
+
+.se-liste .ps-icon {
+  margin-top: 0.125rem;
+  color: var(--ps-primary-text);
+}
+
+.se-fuss {
+  padding: var(--ps-space-5) var(--ps-space-4);
+  color: var(--ps-text-muted);
+  font-size: var(--ps-text-sm);
+  text-align: center;
+}
+
+/* Passwortfeld mit Anzeigen-Knopf */
+.in-passwort {
+  position: relative;
+}
+
+.in-passwort .ps-input {
+  padding-right: 5.5rem;
+}
+
+.in-passwort .ps-btn {
+  position: absolute;
+  top: 50%;
+  right: var(--ps-space-1);
+  transform: translateY(-50%);
+}
+
+/* Systemprüfung */
+.in-punkte {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--ps-border);
+  border-radius: var(--ps-radius-m);
+  list-style: none;
+}
+
+.in-punkt {
+  display: flex;
+  gap: var(--ps-space-3);
+  padding: var(--ps-space-3) var(--ps-space-4);
+  font-size: var(--ps-text-sm);
+}
+
+.in-punkt + .in-punkt {
+  border-top: 1px solid var(--ps-border);
+}
+
+.in-punkt__symbol {
+  flex: none;
+  margin-top: 0.0625rem;
+}
+
+.in-punkt__text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  min-width: 0;
+}
+
+.in-punkt__detail {
+  color: var(--ps-text-muted);
+}
+
+.in-punkt__hinweis {
+  margin-top: var(--ps-space-1);
+}
+
+.in-punkt--ok .in-punkt__symbol {
+  color: var(--ps-success);
+}
+
+.in-punkt--warn .in-punkt__symbol {
+  color: var(--ps-warning);
+}
+
+.in-punkt--fail {
+  background: var(--ps-danger-subtle);
+}
+
+.in-punkt--fail .in-punkt__symbol {
+  color: var(--ps-danger);
+}
+
+.in-punkt--pruefe .in-punkt__symbol {
+  color: var(--ps-text-muted);
+}

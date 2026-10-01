@@ -11,7 +11,7 @@ const pfad = (...teile) => join(wurzel, ...teile);
 
 // Verwendete Icons (Lucide). Neue Icons hier ergänzen.
 const ICONS = [
-  'layout-dashboard', 'chart-line', 'users', 'eye', 'clock', 'arrow-up', 'arrow-down', 'arrow-right',
+  'layout-dashboard', 'chart-line', 'users', 'eye', 'clock', 'arrow-up', 'arrow-down', 'arrow-right', 'arrow-left',
   'arrow-up-right', 'minus', 'search', 'x', 'check', 'chevron-down', 'chevron-right', 'chevron-up',
   'calendar', 'settings', 'sun', 'moon', 'monitor', 'globe', 'link', 'external-link', 'funnel',
   'download', 'copy', 'command', 'info', 'triangle-alert', 'circle-alert', 'circle-check', 'circle-x',
@@ -32,6 +32,7 @@ async function bundles() {
     entryPoints: {
       pegelstand: pfad('resources/css/main.css'),
       dashboard: pfad('resources/css/dashboard.css'),
+      seiten: pfad('resources/css/seiten.css'),
       komponentenseite: pfad('resources/css/komponentenseite.css'),
     },
     outdir: pfad('assets/css'),
@@ -44,6 +45,7 @@ async function bundles() {
       pegelstand: pfad('resources/js/main.js'),
       'theme-init': pfad('resources/js/theme-init.js'),
       dashboard: pfad('resources/js/dashboard/dashboard.js'),
+      seiten: pfad('resources/js/seiten.js'),
       komponentenseite: pfad('resources/js/komponentenseite.js'),
     },
     outdir: pfad('assets/js'),
