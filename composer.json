@@ -1,0 +1,57 @@
+{
+  "name": "bc24/pegelstand",
+  "description": "Webanalyse ohne Cookies, die auf jedem PHP-Webspace läuft.",
+  "type": "project",
+  "license": "MIT",
+  "homepage": "https://github.com/bc24/Frank-Panzer",
+  "authors": [
+    {
+      "name": "Frank Panzer",
+      "homepage": "https://frank-panzer.de"
+    },
+    {
+      "name": "Panzer IT",
+      "homepage": "https://panzerit.de"
+    }
+  ],
+  "require": {
+    "php": ">=8.2",
+    "ext-json": "*",
+    "ext-mbstring": "*",
+    "ext-openssl": "*",
+    "ext-pdo_mysql": "*"
+  },
+  "autoload": {
+    "psr-4": {
+      "Pegelstand\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Pegelstand\\Tests\\": "tests/"
+    }
+  },
+  "config": {
+    "sort-packages": true,
+    "optimize-autoloader": true,
+    "platform": {
+      "php": "8.2.0"
+    }
+  },
+  "scripts": {
+    "cs": "php-cs-fixer fix --dry-run --diff",
+    "cs:fix": "php-cs-fixer fix",
+    "analyse": "phpstan analyse --memory-limit=1G",
+    "test": "phpunit",
+    "check": [
+      "@cs",
+      "@analyse",
+      "@test"
+    ]
+  },
+  "require-dev": {
+    "friendsofphp/php-cs-fixer": "^3.95",
+    "phpstan/phpstan": "^2.2",
+    "phpunit/phpunit": "^11.5"
+  }
+}
