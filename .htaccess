@@ -8,7 +8,7 @@ Options -Indexes -MultiViews
     RewriteEngine On
 
     # Sensible Ordner: Antwort 404 statt 403, damit ihre Existenz nichts verrät
-    RewriteRule ^(config|src|storage|vendor|bin|tests|docs|website|docker|resources|prototype|licenses|node_modules|dist|\.git|\.github|\.claude)(/|$) - [R=404,L]
+    RewriteRule ^(config|src|storage|vendor|bin|tests|docs|website|docker|database|resources|prototype|licenses|node_modules|dist|\.git|\.github|\.claude)(/|$) - [R=404,L]
 
     # Projekt- und Werkzeugdateien im Wurzelverzeichnis
     RewriteRule ^(composer\.(json|lock)|package(-lock)?\.json|phpunit\.xml\.dist|phpstan\.neon|playwright\.config\.ts|CLAUDE\.md|CHANGELOG\.md)$ - [R=404,L]

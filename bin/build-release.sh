@@ -13,11 +13,12 @@ rm -rf "$ZIEL"
 mkdir -p "$STAGING"
 
 # Nur ausgewählte Pfade ausliefern (Allowlist), keine Entwicklungsdateien
-for pfad in index.php .htaccess LICENSE README.md CHANGELOG.md THIRD-PARTY.md licenses src config resources assets storage vendor bin; do
+for pfad in index.php .htaccess LICENSE README.md CHANGELOG.md THIRD-PARTY.md licenses src config database resources assets storage vendor bin; do
     cp -a "$WURZEL/$pfad" "$STAGING/"
 done
 
-# Dateien der internen Komponentenseite gehören nicht ins Release
+# Nur-Entwicklungs-Dateien gehören nicht ins Release
+find "$STAGING/bin" -type f ! -name .htaccess -delete
 rm -f "$STAGING"/assets/css/komponentenseite.css "$STAGING"/assets/js/komponentenseite.js \
   "$STAGING"/resources/css/komponentenseite.css "$STAGING"/resources/js/komponentenseite.js "$STAGING"/bin/build-assets.mjs
 
