@@ -1,0 +1,14 @@
+{
+  "name": "pegelstand",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Nur Entwicklungswerkzeuge (E2E-Tests, später Asset-Build). Der Endnutzer braucht Node nicht.",
+  "license": "MIT",
+  "scripts": {
+    "test:e2e": "playwright test"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.13.0",
+    "@playwright/test": "^1.63.0"
+  }
+}
