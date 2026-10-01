@@ -55,6 +55,20 @@ test.describe('Anmeldung', () => {
   });
 });
 
+test('Öffentliches Dashboard: ohne Anmeldung lesbar, ohne Verwaltung, falscher Link ergibt 404', async ({ page }, info) => {
+  const antwort = await page.goto(`${LIVE}/oeffentlich/abcdef0123456789abcdef0123456789`);
+  expect(antwort?.status()).toBe(200);
+  await geladen(page);
+  await expect(page.locator('.ps-kpi--waehlbar')).toHaveCount(5);
+  await expect(page.locator('#diagramm canvas').first()).toBeVisible();
+  await expect(page.locator('[data-export]')).toHaveCount(0);
+  await expect(page.getByRole('menuitem', { name: 'Einstellungen' })).toHaveCount(0);
+  expect(await seitenUeberlauf(page)).toBeLessThanOrEqual(0);
+  expect(await axeVerstoesse(page)).toEqual([]);
+  await page.screenshot({ path: `screenshots/${info.project.name}/dashboard-oeffentlich.png`, fullPage: true });
+  expect((await page.goto(`${LIVE}/oeffentlich/00000000000000000000000000000000`))?.status()).toBe(404);
+});
+
 test.describe('Dashboard mit echten Daten', () => {
   test.beforeEach(async ({ page }) => {
     await anmelden(page);

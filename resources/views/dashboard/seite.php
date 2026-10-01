@@ -10,6 +10,9 @@ defined('PEGELSTAND_ROOT') || exit;
 /** @var string $benutzer */
 /** @var string $csrf */
 /** @var string $version */
+/** @var bool $oeffentlich Schreibgeschützte Ansicht ohne Anmeldung */
+/** @var string $apiBasis Pfad der Datenschnittstelle */
+$kontoLabel = $oeffentlich ? $this->translate('layout.darstellung') : $this->translate('login.konto', ['name' => $benutzer]);
 ?><!DOCTYPE html>
 <html lang="de" data-ps-assets="<?= $this->assetsBasis() ?>">
 <head>
@@ -40,23 +43,25 @@ defined('PEGELSTAND_ROOT') || exit;
       <svg class="ps-icon ps-icon--s" aria-hidden="true" focusable="false"><use href="<?= $this->asset('icons.svg') ?>#ps-icon-search"/></svg><span class="db-nur-gross">Suchen oder springen</span><span class="ps-visually-hidden db-nur-klein">Befehlspalette</span><kbd class="db-nur-gross">Strg K</kbd>
     </button>
     <div class="ps-menu-wrap" data-ps-menu>
-      <button type="button" class="ps-btn ps-btn--ghost ps-btn--icon" aria-haspopup="menu" aria-expanded="false" aria-controls="menue-darstellung" aria-label="<?= $this->e($this->translate('login.konto', ['name' => $benutzer])) ?>" data-ps-tooltip="<?= $this->e($this->translate('login.konto', ['name' => $benutzer])) ?>"><?= $this->icon('user') ?></button>
-      <div class="ps-menu ps-menu--end" id="menue-darstellung" role="menu" aria-label="<?= $this->e($this->translate('login.konto', ['name' => $benutzer])) ?>" hidden>
+      <button type="button" class="ps-btn ps-btn--ghost ps-btn--icon" aria-haspopup="menu" aria-expanded="false" aria-controls="menue-darstellung" aria-label="<?= $this->e($kontoLabel) ?>" data-ps-tooltip="<?= $this->e($kontoLabel) ?>"><?= $this->icon($oeffentlich ? 'sun' : 'user') ?></button>
+      <div class="ps-menu ps-menu--end" id="menue-darstellung" role="menu" aria-label="<?= $this->e($kontoLabel) ?>" hidden>
         <button type="button" class="ps-menu__item" role="menuitemradio" aria-checked="false" data-ps-theme="light" data-ps-gruppe="theme"><svg class="ps-icon ps-icon--s" aria-hidden="true" focusable="false"><use href="<?= $this->asset('icons.svg') ?>#ps-icon-sun"/></svg> Hell <span class="ps-menu__check"><svg class="ps-icon ps-icon--s" aria-hidden="true" focusable="false"><use href="<?= $this->asset('icons.svg') ?>#ps-icon-check"/></svg></span></button>
         <button type="button" class="ps-menu__item" role="menuitemradio" aria-checked="false" data-ps-theme="dark" data-ps-gruppe="theme"><svg class="ps-icon ps-icon--s" aria-hidden="true" focusable="false"><use href="<?= $this->asset('icons.svg') ?>#ps-icon-moon"/></svg> Dunkel <span class="ps-menu__check"><svg class="ps-icon ps-icon--s" aria-hidden="true" focusable="false"><use href="<?= $this->asset('icons.svg') ?>#ps-icon-check"/></svg></span></button>
         <button type="button" class="ps-menu__item" role="menuitemradio" aria-checked="true" data-ps-theme="system" data-ps-gruppe="theme"><svg class="ps-icon ps-icon--s" aria-hidden="true" focusable="false"><use href="<?= $this->asset('icons.svg') ?>#ps-icon-monitor"/></svg> System <span class="ps-menu__check"><svg class="ps-icon ps-icon--s" aria-hidden="true" focusable="false"><use href="<?= $this->asset('icons.svg') ?>#ps-icon-check"/></svg></span></button>
+        <?php if (!$oeffentlich) : ?>
         <div class="ps-menu__separator" role="separator"></div>
         <a class="ps-menu__item" role="menuitem" href="<?= $this->e($this->url('/einstellungen')) ?>"><?= $this->icon('settings', 's') ?> <?= $this->t('login.einstellungen') ?></a>
         <form method="post" action="<?= $this->e($this->url('/logout')) ?>" class="db-menue-form" role="none">
           <input type="hidden" name="_csrf" value="<?= $this->e($csrf) ?>">
           <button type="submit" class="ps-menu__item" role="menuitem"><?= $this->icon('log-out', 's') ?> <?= $this->t('login.abmelden') ?></button>
         </form>
+        <?php endif; ?>
       </div>
     </div>
     <button type="button" class="ps-btn ps-btn--ghost ps-btn--icon db-nur-gross" data-ps-modal-open="kuerzel-dialog" aria-label="Tastaturkürzel" data-ps-tooltip="Tastaturkürzel (?)"><svg class="ps-icon" aria-hidden="true" focusable="false"><use href="<?= $this->asset('icons.svg') ?>#ps-icon-keyboard"/></svg></button>
   </header>
 
-  <main class="db-main" id="inhalt" data-quelle="live" data-bootstrap="<?= $this->e($bootstrap) ?>" data-basis="<?= $this->e($this->url('/')) ?>">
+  <main class="db-main" id="inhalt" data-quelle="live" data-bootstrap="<?= $this->e($bootstrap) ?>" data-basis="<?= $this->e($this->url('/')) ?>" data-api="<?= $this->e($apiBasis) ?>">
     <div class="db-toolbar">
       <div class="db-toolbar__titel">
         <h1 id="titel" tabindex="-1">beispiel.de</h1>
@@ -69,6 +74,7 @@ defined('PEGELSTAND_ROOT') || exit;
           </button>
           <div class="ps-menu ps-menu--end" id="menue-zeitraum" role="menu" aria-label="Zeitraum" hidden></div>
         </div>
+        <?php if (!$oeffentlich) : ?>
         <div class="ps-menu-wrap" data-ps-menu>
           <button type="button" class="ps-btn ps-btn--secondary" aria-haspopup="menu" aria-expanded="false" aria-controls="menue-export"><?= $this->icon('download', 's') ?><?= $this->t('export.titel') ?><?= $this->icon('chevron-down', 's') ?></button>
           <div class="ps-menu ps-menu--end" id="menue-export" role="menu" aria-label="<?= $this->t('export.label') ?>" hidden>
@@ -77,6 +83,7 @@ defined('PEGELSTAND_ROOT') || exit;
             <?php endforeach; ?>
           </div>
         </div>
+        <?php endif; ?>
         <label class="ps-switch"><input type="checkbox" role="switch" id="vergleich" checked><span>Mit Vorperiode vergleichen</span></label>
       </div>
     </div>

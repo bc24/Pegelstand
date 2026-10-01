@@ -64,6 +64,7 @@ foreach ([['livedemo00000001', 'beispiel.de', 120], ['liveleer00000002', 'neue-s
         $heute = new DateTimeImmutable('today', new DateTimeZone('UTC'));
         $siteNr = (int) $db->pdo->lastInsertId();
         (new DemoDataGenerator($db))->generate($siteNr, $heute->modify('-59 days'), $heute, $sitzungen, 7);
+        $db->run('UPDATE ' . $db->table('sites') . " SET public_token = 'abcdef0123456789abcdef0123456789' WHERE id = ?", [$siteNr]);
         $db->run('INSERT INTO ' . $db->table('goals') . " (site_id, name, kind, target) VALUES (?, 'Preise angesehen', 'page', '/preise'), (?, 'Anmeldung', 'event', 'Signup')", [$siteNr, $siteNr]);
     }
 }

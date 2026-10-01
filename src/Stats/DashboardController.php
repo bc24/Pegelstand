@@ -75,6 +75,8 @@ final class DashboardController
             'benutzer' => $user->name,
             'csrf' => $this->csrf->token(),
             'version' => $this->version,
+            'oeffentlich' => false,
+            'apiBasis' => '',
         ], null));
     }
 

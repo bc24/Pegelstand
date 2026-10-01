@@ -12,6 +12,7 @@ defined('PEGELSTAND_ROOT') || exit;
 /** @var list<array{id: int, ip_range: string, label: string}> $ausschluesse */
 /** @var list<array{id: int, name: string, kind: string, target: string}> $ziele */
 /** @var array<string, string> $zielWerte */
+/** @var string $oeffentlichLink */
 /** @var string $code */
 /** @var string $ip */
 /** @var bool $admin */
@@ -89,6 +90,36 @@ $basis = $this->url('/einstellungen/websites/' . $site['public_id']);
       <?= $this->render('partials/feld', ['feld' => 'goal_target', 'label' => $this->translate('einst.ziele.ziel'), 'wert' => $zielWerte['goal_target'], 'fehler' => $fehler['goal_target'] ?? '', 'hinweis' => $this->translate('einst.ziele.ziel_hinweis')], null) ?>
       <div class="se-aktionen"><button type="submit" class="ps-btn ps-btn--secondary"><?= $this->t('einst.ziele.anlegen') ?></button></div>
     </form>
+  </div>
+</section>
+
+<section class="ps-card es-karte" id="oeffentlich" aria-labelledby="oeff-titel">
+  <div class="ps-card__body">
+    <h2 id="oeff-titel"><?= $this->t('einst.oeffentlich.titel') ?></h2>
+    <p class="se-einleitung"><?= $this->t('einst.oeffentlich.text') ?></p>
+    <?php if ($oeffentlichLink !== '') : ?>
+    <p class="ps-label"><?= $this->t('einst.oeffentlich.link') ?></p>
+    <pre class="es-code" tabindex="0"><code><?= $this->e($oeffentlichLink) ?></code></pre>
+    <div class="se-aktionen se-aktionen--getrennt">
+      <form method="post" action="<?= $this->e($basis . '/oeffentlich') ?>" class="es-inline">
+        <input type="hidden" name="_csrf" value="<?= $this->e($csrf) ?>">
+        <input type="hidden" name="aktion" value="aus">
+        <button type="submit" class="ps-btn ps-btn--secondary"><?= $this->t('einst.oeffentlich.ausschalten') ?></button>
+      </form>
+      <form method="post" action="<?= $this->e($basis . '/oeffentlich') ?>" class="es-inline">
+        <input type="hidden" name="_csrf" value="<?= $this->e($csrf) ?>">
+        <input type="hidden" name="aktion" value="an">
+        <input type="hidden" name="neu" value="1">
+        <button type="submit" class="ps-btn ps-btn--ghost"><?= $this->t('einst.oeffentlich.neuer_link') ?></button>
+      </form>
+    </div>
+    <?php else : ?>
+    <form method="post" action="<?= $this->e($basis . '/oeffentlich') ?>">
+      <input type="hidden" name="_csrf" value="<?= $this->e($csrf) ?>">
+      <input type="hidden" name="aktion" value="an">
+      <div class="se-aktionen"><button type="submit" class="ps-btn ps-btn--secondary"><?= $this->t('einst.oeffentlich.einschalten') ?></button></div>
+    </form>
+    <?php endif; ?>
   </div>
 </section>
 

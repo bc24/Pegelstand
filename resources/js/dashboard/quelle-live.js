@@ -3,6 +3,7 @@ import { JETZT } from './zeitraum.js';
 
 const wurzel = document.getElementById('inhalt');
 const basis = wurzel?.dataset.basis ?? '/';
+const api = wurzel?.dataset.api || 'api/dashboard';
 let sites = [];
 try {
   sites = JSON.parse(wurzel?.dataset.bootstrap ?? '{}').sites ?? [];
@@ -54,7 +55,7 @@ async function hole(pfad, parameter) {
 }
 
 export async function aktiveBesucher(siteId) {
-  const antwort = await hole('api/dashboard/live', new URLSearchParams({ site: siteId }).toString());
+  const antwort = await hole(`${api}/live`, new URLSearchParams({ site: siteId }).toString());
   return antwort.aktive;
 }
 
@@ -66,7 +67,7 @@ export async function ladeAnsicht({ site, zeitraum, filter, zustand }) {
   if (zustand === 'fehler') throw new Error('Simulierter Fehler');
   const parameter = new URLSearchParams({ site, von: zeitraum.von, bis: zeitraum.bis });
   for (const f of filter) parameter.append('f[]', `${f.typ}:${f.wert}`);
-  const daten = await hole('api/dashboard', parameter.toString());
+  const daten = await hole(api, parameter.toString());
   const eintrag = sites.find((s) => s.id === site);
   if (daten.leer) return { ...daten, site: eintrag ?? daten.site };
   if (daten.jetzt && eintrag) {

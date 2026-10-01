@@ -216,6 +216,16 @@ export function zeichneFilter(behaelter, zustand) {
 const CODE = '<script defer data-site="SITE_ID" src="https://example.de/p.js"></script>';
 
 export function zeichneLeer(behaelter, site) {
+  if (site.code === '') {
+    behaelter.replaceChildren(
+      h(
+        'section',
+        { class: 'ps-card', 'aria-labelledby': 'onboarding-titel' },
+        h('div', { class: 'ps-empty' }, h('span', { class: 'ps-empty__icon' }, icon('chart-line')), h('h2', { class: 'ps-empty__title', id: 'onboarding-titel' }, `Noch keine Besucher bei ${site.name}`), h('p', { class: 'ps-empty__text' }, 'Sobald die ersten Aufrufe eintreffen, erscheinen hier die Zahlen.')),
+      ),
+    );
+    return;
+  }
   const code = site.code ?? CODE.replace('SITE_ID', site.id);
   const schritt = (nr, titel, ...inhalt) =>
     h('li', { class: 'db-schritt' }, h('span', { class: 'db-schritt__nr', 'aria-hidden': 'true' }, String(nr)), h('div', {}, h('h3', {}, titel), ...inhalt));

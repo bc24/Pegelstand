@@ -138,6 +138,32 @@ final class SiteRepository
         $this->db->run('DELETE FROM ' . $this->db->table('site_ip_exclusions') . ' WHERE id = ? AND site_id = ?', [$id, $siteId]);
     }
 
+    /**
+     * @return SiteRow|null
+     */
+    public function findByPublicToken(string $token): ?array
+    {
+        if (preg_match('/^[a-f0-9]{32}$/', $token) !== 1) {
+            return null;
+        }
+        $z = $this->db->fetchAll($this->select() . ' WHERE public_token = ?', [$token])[0] ?? null;
+
+        return $z === null ? null : self::row($z);
+    }
+
+    public function publicToken(int $id): string
+    {
+        $t = $this->db->fetchValue('SELECT public_token FROM ' . $this->db->table('sites') . ' WHERE id = ?', [$id]);
+
+        return is_string($t) ? $t : '';
+    }
+
+    /** Schaltet das öffentliche Dashboard ein (neuer Link) oder aus. */
+    public function setPublic(int $id, bool $an): void
+    {
+        $this->db->run('UPDATE ' . $this->db->table('sites') . ' SET public_token = ? WHERE id = ?', [$an ? bin2hex(random_bytes(16)) : null, $id]);
+    }
+
     private function select(): string
     {
         return 'SELECT id, public_id, name, domain, allowed_hosts, timezone, retention_days, respect_dnt, respect_gpc FROM ' . $this->db->table('sites');

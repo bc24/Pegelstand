@@ -332,6 +332,13 @@ final class EinstellungenTest extends InstalliertTestCase
         return $this->app()->handle(new Request('GET', $pfad, query: $query, headers: $schluessel === null ? [] : ['authorization' => 'Bearer ' . $schluessel]));
     }
 
+    private function token(): string
+    {
+        $t = $this->db->fetchValue('SELECT public_token FROM ' . $this->db->table('sites'));
+
+        return is_string($t) ? $t : '';
+    }
+
     private function sitesAusAntwort(Response $antwort): mixed
     {
         $daten = json_decode($antwort->body, true);
@@ -406,6 +413,62 @@ final class EinstellungenTest extends InstalliertTestCase
         $letzte = 200;
         for ($i = 0; $i < 125; ++$i) {
             $letzte = $this->api('/api/v1/sites', $m[0] ?? '')->status;
+        }
+
+        self::assertSame(429, $letzte);
+    }
+
+    public function testOeffentlichesDashboard(): void
+    {
+        $id = $this->seitenOptionen();
+        self::assertSame(404, $this->get('/oeffentlich/' . str_repeat('a', 32))->status);
+
+        $this->anmelden();
+        $this->post('/einstellungen/websites/' . $id . '/oeffentlich', ['aktion' => 'an']);
+        $token = $this->db->fetchValue('SELECT public_token FROM ' . $this->db->table('sites'));
+        self::assertIsString($token);
+        self::assertMatchesRegularExpression('/^[a-f0-9]{32}$/', $token);
+        self::assertStringContainsString('/oeffentlich/' . $token, $this->get('/einstellungen/websites/' . $id)->body);
+
+        $this->db->run('INSERT INTO ' . $this->db->table('sessions') . ' (site_id, visitor_hash, started_at, last_seen_at, entry_path_id, exit_path_id) VALUES (1, ?, NOW(), NOW(), 1, 1)', [str_repeat('a', 16)]);
+        $this->session->destroy(); // jetzt ohne Anmeldung
+
+        $seite = $this->get('/oeffentlich/' . $token);
+        self::assertSame(200, $seite->status);
+        self::assertStringContainsString('data-api="oeffentlich/' . $token . '/daten"', $seite->body);
+        self::assertStringNotContainsString('/einstellungen', $seite->body, 'Keine Verwaltung in der öffentlichen Ansicht.');
+        self::assertStringNotContainsString('/logout', $seite->body);
+        self::assertStringNotContainsString('data-export', $seite->body);
+        self::assertSame('no-referrer', $seite->headers['Referrer-Policy']);
+
+        $daten = $this->get('/oeffentlich/' . $token . '/daten');
+        self::assertSame(200, $daten->status);
+        self::assertArrayHasKey('kennzahlen', (array) json_decode($daten->body, true));
+        self::assertSame(200, $this->get('/oeffentlich/' . $token . '/daten/live')->status);
+        // Nichts anderes ist ohne Anmeldung erreichbar.
+        self::assertSame('/login', $this->get('/')->headers['Location']);
+        self::assertSame(401, $this->get('/api/dashboard')->status);
+
+        // Abschalten beendet den Zugang, ein neuer Link macht den alten ungültig.
+        $this->anmelden();
+        $this->post('/einstellungen/websites/' . $id . '/oeffentlich', ['aktion' => 'an', 'neu' => '1']);
+        self::assertSame(404, $this->get('/oeffentlich/' . $token)->status);
+        $neu = $this->token();
+        $this->post('/einstellungen/websites/' . $id . '/oeffentlich', ['aktion' => 'aus']);
+        self::assertSame(404, $this->get('/oeffentlich/' . $neu)->status);
+        self::assertNull($this->db->fetchValue('SELECT public_token FROM ' . $this->db->table('sites')));
+    }
+
+    public function testOeffentlicheSchnittstelleIstBegrenzt(): void
+    {
+        $this->anmelden();
+        $this->post('/einstellungen/websites/' . $this->seitenOptionen() . '/oeffentlich', ['aktion' => 'an']);
+        $token = $this->token();
+        $this->session->destroy();
+
+        $letzte = 200;
+        for ($i = 0; $i < 65; ++$i) {
+            $letzte = $this->get('/oeffentlich/' . $token . '/daten/live')->status;
         }
 
         self::assertSame(429, $letzte);

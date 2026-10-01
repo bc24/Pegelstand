@@ -52,6 +52,7 @@ final class SettingsController
         $r->add('POST', '/einstellungen/websites/{id}/ausschluss/{eid}/loeschen', fn(Request $q, array $p): Response => $this->ausschlussLoeschen($q, $p['id'], $p['eid']));
         $r->add('POST', '/einstellungen/websites/{id}/ziele', fn(Request $q, array $p): Response => $this->zielAnlegen($q, $p['id']));
         $r->add('POST', '/einstellungen/websites/{id}/ziele/{gid}/loeschen', fn(Request $q, array $p): Response => $this->zielLoeschen($q, $p['id'], $p['gid']));
+        $r->add('POST', '/einstellungen/websites/{id}/oeffentlich', fn(Request $q, array $p): Response => $this->oeffentlich($q, $p['id']));
         $r->add('POST', '/einstellungen/websites/{id}/loeschen', fn(Request $q, array $p): Response => $this->websiteLoeschen($q, $p['id']));
         $r->add('GET', '/einstellungen/benutzer', fn(Request $q): Response => $this->benutzer($q, [], []));
         $r->add('POST', '/einstellungen/benutzer', fn(Request $q): Response => $this->benutzerAnlegen($q));
@@ -210,6 +211,7 @@ final class SettingsController
             'zeitzonen' => DateTimeZone::listIdentifiers(),
             'ausschluesse' => $this->sites->exclusions($site['id']),
             'ziele' => $this->goals->forSite($site['id']),
+            'oeffentlichLink' => $this->oeffentlicherLink($q, $site['id']),
             'zielWerte' => $zielWerte ?? ['goal_name' => '', 'goal_kind' => 'page', 'goal_target' => ''],
             'code' => $this->trackingCode($q, $site['public_id']),
             'ip' => $q->ip,
@@ -251,6 +253,38 @@ final class SettingsController
         $ok ? $this->merke('success', $this->t->get('einst.websites.ausschluss_neu')) : $this->merke('danger', $this->t->get('einst.fehler.ip'));
 
         return Response::redirect($q->url('/einstellungen/websites/' . $publicId . '#ausschluesse'));
+    }
+
+    private function oeffentlicherLink(Request $q, int $siteId): string
+    {
+        $token = $this->sites->publicToken($siteId);
+        if ($token === '') {
+            return '';
+        }
+        $host = $q->header('Host');
+        $host = preg_match('/^[A-Za-z0-9.\-:\[\]]{1,255}$/', $host) === 1 ? $host : 'example.org';
+
+        return ($q->https ? 'https' : 'http') . '://' . $host . $q->basePath . '/oeffentlich/' . $token;
+    }
+
+    private function oeffentlich(Request $q, string $publicId): Response
+    {
+        $u = $this->guard($q, true, true);
+        if ($u instanceof Response) {
+            return $u;
+        }
+        $site = $this->sites->find($publicId);
+        if ($site === null) {
+            return new Response('', 404);
+        }
+        $an = $q->input('aktion') === 'an';
+        $neu = $an && $q->input('neu') === '1';
+        if ($neu || $an !== ($this->sites->publicToken($site['id']) !== '')) {
+            $this->sites->setPublic($site['id'], $an);
+        }
+        $this->merke('success', $this->t->get($an ? ($neu ? 'einst.oeffentlich.neu' : 'einst.oeffentlich.an') : 'einst.oeffentlich.aus'));
+
+        return Response::redirect($q->url('/einstellungen/websites/' . $publicId . '#oeffentlich'));
     }
 
     private function zielAnlegen(Request $q, string $publicId): Response

@@ -308,6 +308,17 @@ return [
             'test_ok' => 'Die Testnachricht ist an {adresse} unterwegs.',
             'test_fehler' => 'Der Versand hat nicht geklappt: {grund}',
         ],
+        'oeffentlich' => [
+            'titel' => 'Öffentliches Dashboard',
+            'text' => 'Mit einem geheimen Link kann jeder die Zahlen dieser Website ansehen, auch ohne Konto. Der Link erlaubt nur Lesen, zeigt keine Einstellungen und keine Exporte. Wer den Link kennt, sieht alles, was im Dashboard steht. Gib ihn nur weiter, wenn das für dich in Ordnung ist.',
+            'link' => 'Öffentlicher Link',
+            'einschalten' => 'Öffentlichen Link erzeugen',
+            'ausschalten' => 'Öffentlichen Link abschalten',
+            'neuer_link' => 'Neuen Link erzeugen (der alte endet)',
+            'an' => 'Das öffentliche Dashboard ist eingeschaltet.',
+            'neu' => 'Es gibt einen neuen Link. Der alte funktioniert nicht mehr.',
+            'aus' => 'Das öffentliche Dashboard ist abgeschaltet. Der Link funktioniert nicht mehr.',
+        ],
         'api' => [
             'titel' => 'API-Schlüssel',
             'text' => 'Mit einem Schlüssel liest ein Programm deine Zahlen über die Schnittstelle (siehe docs/api.md). Er sieht dieselben Websites wie du und kann nur lesen.',

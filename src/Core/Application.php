@@ -42,6 +42,7 @@ use Pegelstand\Settings\UserRepository;
 use Pegelstand\Stats\Aggregator;
 use Pegelstand\Stats\DashboardController;
 use Pegelstand\Stats\DashboardService;
+use Pegelstand\Stats\PublicDashboardController;
 use Pegelstand\Stats\ReferrerClassifier;
 use Pegelstand\Version;
 use Throwable;
@@ -239,6 +240,7 @@ final class Application
             new RateLimiter($db),
             $config->int('api.rate_limit', 120),
         ))->register($router);
+        (new PublicDashboardController($view, new SiteRepository($db), $dashboardDienst, new RateLimiter($db), $salts, $clientIp, Version::CURRENT, fn(Request $r): Response => $this->fehlerseite($r, '404', 404), $config->int('public.rate_limit', 60)))->register($router);
         (new DashboardController(
             $view,
             $translator,
