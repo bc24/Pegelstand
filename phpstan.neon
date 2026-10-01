@@ -4,3 +4,5 @@ parameters:
         - src
         - tests
         - index.php
+        - database
+        - bin/e2e-prepare.php

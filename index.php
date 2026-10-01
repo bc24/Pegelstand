@@ -2,31 +2,29 @@
 
 declare(strict_types=1);
 
-use Pegelstand\Version;
+// Front Controller. Alle Anfragen, die keine vorhandene Datei treffen, landen hier (siehe .htaccess).
+define('PEGELSTAND_ROOT', __DIR__);
 
-// Platzhalter-Front-Controller (Phase 0). Router, DI-Container und Templates folgen.
+if (version_compare(PHP_VERSION, '8.2.0', '<')) {
+    http_response_code(500);
+    header('Content-Type: text/plain; charset=utf-8');
+    echo 'Pegelstand braucht PHP 8.2 oder neuer. Dein Server nutzt PHP ' . PHP_VERSION . ".\n"
+        . 'Stelle in der Verwaltung deines Hosters die PHP-Version um.';
+    exit;
+}
+
+if (!is_file(__DIR__ . '/vendor/autoload.php')) {
+    http_response_code(500);
+    header('Content-Type: text/plain; charset=utf-8');
+    echo "Der Ordner vendor/ fehlt. Lade das vollständige Release-Zip von Pegelstand hoch, es enthält alles Nötige.\n";
+    exit;
+}
+
 require __DIR__ . '/vendor/autoload.php';
 
-header('Content-Type: text/html; charset=utf-8');
+use Pegelstand\Core\Application;
+use Pegelstand\Core\Paths;
+use Pegelstand\Core\Request;
 
-$version = htmlspecialchars(Version::CURRENT, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
-?>
-<!DOCTYPE html>
-<html lang="de">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Pegelstand</title>
-    <style>
-        body { margin: 0; font-family: system-ui, sans-serif; background: #ffffff; color: #0b1f2a; }
-        main { max-width: 40rem; margin: 0 auto; padding: 4rem 1rem; }
-        @media (prefers-color-scheme: dark) { body { background: #0b1f2a; color: #e6eef2; } }
-    </style>
-</head>
-<body>
-    <main>
-        <h1>Pegelstand</h1>
-        <p>Dieses Gerüst ist noch ohne Funktion. Version <?= $version ?>.</p>
-    </main>
-</body>
-</html>
+$app = new Application(Paths::fromEnvironment(__DIR__));
+$app->handle(Request::fromGlobals($_SERVER, $_GET, $_POST))->send();
