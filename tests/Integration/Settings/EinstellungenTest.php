@@ -31,6 +31,14 @@ final class EinstellungenTest extends InstalliertTestCase
         self::assertSame(303, $antwort->status, $antwort->body);
     }
 
+    /**
+     * @param array<string, string> $query
+     */
+    private function export(string $pfad, array $query): Response
+    {
+        return $this->app()->handle(new Request('GET', $pfad, query: $query));
+    }
+
     private function seitenOptionen(): string
     {
         $id = $this->db->fetchValue('SELECT public_id FROM ' . $this->db->table('sites') . ' ORDER BY id LIMIT 1');
@@ -297,5 +305,22 @@ final class EinstellungenTest extends InstalliertTestCase
         $domain = $this->db->fetchValue('SELECT domain FROM ' . $this->db->table('sites'));
         $this->post('/einstellungen/websites/' . $id . '/loeschen', ['bestaetigung' => is_string($domain) ? $domain : '']);
         self::assertSame(0, $this->db->fetchInt('SELECT COUNT(*) FROM ' . $this->db->table('goals')));
+    }
+
+    public function testCsvExportNurAngemeldetUndNurFuerEigeneWebsite(): void
+    {
+        $id = $this->seitenOptionen();
+
+        self::assertSame('/login', $this->export('/export/seiten', ['site' => $id])->headers['Location']);
+
+        $this->anmelden();
+        $this->db->run('INSERT INTO ' . $this->db->table('sessions') . ' (site_id, visitor_hash, started_at, last_seen_at, entry_path_id, exit_path_id) VALUES (1, ?, NOW(), NOW(), 1, 1)', [str_repeat('a', 16)]);
+        $ok = $this->export('/export/zeitverlauf', ['site' => $id, 'von' => '2020-01-01', 'bis' => '2020-01-03']);
+        self::assertSame(200, $ok->status);
+        self::assertStringStartsWith("\xEF\xBB\xBFZeitpunkt;Besucher", $ok->body);
+        self::assertStringContainsString('attachment; filename="pegelstand-', $ok->headers['Content-Disposition']);
+        self::assertStringContainsString('text/csv', $ok->headers['Content-Type']);
+        self::assertSame(404, $this->export('/export/passwoerter', ['site' => $id])->status);
+        self::assertSame(404, $this->export('/export/seiten', ['site' => 'fremd'])->status);
     }
 }

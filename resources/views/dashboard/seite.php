@@ -69,6 +69,14 @@ defined('PEGELSTAND_ROOT') || exit;
           </button>
           <div class="ps-menu ps-menu--end" id="menue-zeitraum" role="menu" aria-label="Zeitraum" hidden></div>
         </div>
+        <div class="ps-menu-wrap" data-ps-menu>
+          <button type="button" class="ps-btn ps-btn--secondary" aria-haspopup="menu" aria-expanded="false" aria-controls="menue-export"><?= $this->icon('download', 's') ?><?= $this->t('export.titel') ?><?= $this->icon('chevron-down', 's') ?></button>
+          <div class="ps-menu ps-menu--end" id="menue-export" role="menu" aria-label="<?= $this->t('export.label') ?>" hidden>
+            <?php foreach (['zeitverlauf', 'seiten', 'einstiegsseiten', 'ausstiegsseiten', 'referrer', 'suchmaschinen', 'soziale-netzwerke', 'kampagnen', 'laender', 'geraete', 'browser', 'betriebssysteme', 'ziele', 'ereignisse'] as $tabelle) : ?>
+            <a class="ps-menu__item" role="menuitem" href="<?= $this->e($this->url('/export/' . $tabelle)) ?>" data-export="<?= $this->e($tabelle) ?>"><?= $this->t('export.' . str_replace('-', '_', $tabelle)) ?></a>
+            <?php endforeach; ?>
+          </div>
+        </div>
         <label class="ps-switch"><input type="checkbox" role="switch" id="vergleich" checked><span>Mit Vorperiode vergleichen</span></label>
       </div>
     </div>

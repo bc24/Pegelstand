@@ -167,6 +167,25 @@ return [
         ],
     ],
 
+    'export' => [
+        'titel' => 'Exportieren',
+        'label' => 'Als CSV-Datei exportieren',
+        'zeitverlauf' => 'Zeitverlauf (CSV)',
+        'seiten' => 'Top-Seiten (CSV)',
+        'einstiegsseiten' => 'Einstiegsseiten (CSV)',
+        'ausstiegsseiten' => 'Ausstiegsseiten (CSV)',
+        'referrer' => 'Referrer (CSV)',
+        'suchmaschinen' => 'Suchmaschinen (CSV)',
+        'soziale_netzwerke' => 'Soziale Netzwerke (CSV)',
+        'kampagnen' => 'Kampagnen (CSV)',
+        'laender' => 'Länder (CSV)',
+        'geraete' => 'Geräte (CSV)',
+        'browser' => 'Browser (CSV)',
+        'betriebssysteme' => 'Betriebssysteme (CSV)',
+        'ziele' => 'Ziele (CSV)',
+        'ereignisse' => 'Ereignisse (CSV)',
+    ],
+
     'reset' => [
         'titel' => 'Passwort vergessen',
         'einleitung' => 'Gib deine E-Mail-Adresse ein. Wenn es dazu einen Zugang gibt, schicken wir dir einen Link zum Festlegen eines neuen Passworts.',

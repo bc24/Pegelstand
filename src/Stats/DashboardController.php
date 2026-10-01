@@ -35,6 +35,7 @@ final class DashboardController
     {
         $router->add('GET', '/', fn(Request $r): Response => $this->seite($r));
         $router->add('GET', '/api/dashboard', fn(Request $r): Response => $this->daten($r));
+        $router->add('GET', '/export/{name}', fn(Request $r, array $p): Response => $this->export($r, $p['name']));
         $router->add('GET', '/api/dashboard/live', fn(Request $r): Response => $this->live($r));
     }
 
@@ -97,6 +98,30 @@ final class DashboardController
             $this->filter($request->query['f'] ?? []),
             new DateTimeImmutable('now', new DateTimeZone('UTC')),
         ));
+    }
+
+    private function export(Request $request, string $name): Response
+    {
+        $user = $this->auth->user();
+        if ($user === null) {
+            return Response::redirect($request->url('/login'));
+        }
+        $site = $this->site($user, $request);
+        if ($site === null || !isset(CsvExport::TABLES[$name])) {
+            return new Response('', 404);
+        }
+        $von = is_string($request->query['von'] ?? null) ? $request->query['von'] : null;
+        $bis = is_string($request->query['bis'] ?? null) ? $request->query['bis'] : null;
+        $daten = $this->service->ansicht($site, $von, $bis, $this->filter($request->query['f'] ?? []), new DateTimeImmutable('now', new DateTimeZone('UTC')));
+        $csv = CsvExport::build($name, $daten);
+        $zeitraum = is_array($daten['zeitraum'] ?? null) ? $daten['zeitraum'] : [];
+        $datei = sprintf('pegelstand-%s-%s-%s-%s.csv', preg_replace('/[^a-z0-9]+/', '-', strtolower($site['domain'])) ?: 'site', $name, is_string($zeitraum['von'] ?? null) ? $zeitraum['von'] : 'von', is_string($zeitraum['bis'] ?? null) ? $zeitraum['bis'] : 'bis');
+
+        return new Response($csv ?? '', 200, [
+            'Content-Type' => 'text/csv; charset=utf-8',
+            'Content-Disposition' => 'attachment; filename="' . $datei . '"',
+            'Cache-Control' => 'no-store',
+        ]);
     }
 
     private function live(Request $request): Response

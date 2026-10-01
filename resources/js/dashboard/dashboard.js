@@ -39,6 +39,17 @@ function siteName() {
   return alleSites().find((s) => s.id === z.site)?.name ?? '';
 }
 
+/** Die Export-Links tragen Website, Zeitraum und Filter der aktuellen Ansicht. */
+function aktualisiereExport(zr) {
+  if (IST_DEMO) return;
+  const parameter = new URLSearchParams({ site: z.site, von: zr.von, bis: zr.bis });
+  for (const f of z.filter) parameter.append('f[]', `${f.typ}:${f.wert}`);
+  for (const link of document.querySelectorAll('[data-export]')) {
+    const pfad = new URL(link.getAttribute('href') ?? '', location.href).pathname;
+    link.setAttribute('href', `${pfad}?${parameter}`);
+  }
+}
+
 function zeichneKopf() {
   waehleSite(z.site);
   const zr = loese(z.zeitraum, z.von, z.bis);
@@ -57,6 +68,7 @@ function zeichneKopf() {
   $('vergleich').checked = z.vergleich;
   $('zeitinfo').textContent = zeitinfo(zr, z.vergleich);
   zeichneFilter($('filter'), z);
+  aktualisiereExport(zr);
 }
 
 function baueMenues() {

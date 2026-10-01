@@ -161,6 +161,15 @@ test.describe('Dashboard mit echten Daten', () => {
     await expect(page.locator('.ps-kpi--waehlbar').first()).toBeVisible();
   });
 
+  test('CSV-Export lädt die Tabelle zur aktuellen Ansicht herunter', async ({ page }) => {
+    await geladen(page);
+    await page.getByRole('button', { name: /Exportieren/ }).click();
+    const download = page.waitForEvent('download');
+    await page.getByRole('menuitem', { name: 'Top-Seiten (CSV)' }).click();
+    const datei = await download;
+    expect(datei.suggestedFilename()).toMatch(/^pegelstand-.*-seiten-\d{4}-\d{2}-\d{2}-\d{4}-\d{2}-\d{2}\.csv$/);
+  });
+
   test('benutzerdefinierter Zeitraum und Prüfung der Eingabe', async ({ page }) => {
     await geladen(page);
     await page.getByRole('button', { name: /Zeitraum/ }).click();
