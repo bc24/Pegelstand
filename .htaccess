@@ -1,0 +1,27 @@
+# Pegelstand – Apache 2.4
+# Das Projektverzeichnis ist zugleich das Document Root (kein public/-Ordner).
+# Deshalb wird hier alles gesperrt, was nicht öffentlich sein darf.
+# TODO(prüfen): Options kann bei Hostern ohne AllowOverride Options einen 500-Fehler auslösen.
+Options -Indexes -MultiViews
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Sensible Ordner: Antwort 404 statt 403, damit ihre Existenz nichts verrät
+    RewriteRule ^(config|src|storage|vendor|bin|tests|docs|website|docker|resources|node_modules|dist|\.git|\.github|\.claude)(/|$) - [R=404,L]
+
+    # Projekt- und Werkzeugdateien im Wurzelverzeichnis
+    RewriteRule ^(composer\.(json|lock)|package(-lock)?\.json|phpunit\.xml\.dist|phpstan\.neon|playwright\.config\.ts|CLAUDE\.md|CHANGELOG\.md)$ - [R=404,L]
+
+    # Versteckte Dateien (.env, .htaccess, .gitignore, ...)
+    RewriteRule (^|/)\. - [R=404,L]
+
+    # Alles, was keine vorhandene Datei ist, geht an den Front Controller
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^ index.php [L]
+</IfModule>
+
+<IfModule mod_headers.c>
+    Header always set X-Content-Type-Options "nosniff"
+</IfModule>
