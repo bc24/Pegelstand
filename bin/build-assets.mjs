@@ -20,7 +20,7 @@ const ICONS = [
 ];
 
 async function leeren() {
-  for (const ziel of ['css', 'js', 'fonts', 'icons.svg']) {
+  for (const ziel of ['css', 'js', 'fonts', 'icons.svg', 'p.js']) {
     await rm(pfad('assets', ziel), { recursive: true, force: true });
   }
 }
@@ -54,6 +54,19 @@ async function bundles() {
   });
 }
 
+// Das Tracking-Script läuft auf fremden Seiten: eine einzelne, kleine Datei ohne Module (Grenze: 2 KB gzip).
+async function tracker() {
+  await build({
+    entryPoints: [pfad('resources/js/tracker/p.js')],
+    outfile: pfad('assets/p.js'),
+    bundle: true,
+    minify: true,
+    format: 'iife',
+    target: 'es2018',
+    logLevel: 'warning',
+  });
+}
+
 async function schrift() {
   const quelle = pfad('node_modules/@fontsource-variable/inter/files/inter-latin-wght-normal.woff2');
   await mkdir(pfad('assets/fonts'), { recursive: true });
@@ -78,5 +91,5 @@ async function iconSprite() {
 }
 
 await leeren();
-await Promise.all([bundles(), schrift(), iconSprite()]);
+await Promise.all([bundles(), tracker(), schrift(), iconSprite()]);
 console.log('Assets gebaut: assets/css, assets/js, assets/fonts, assets/icons.svg');

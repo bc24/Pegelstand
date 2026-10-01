@@ -13,6 +13,7 @@ final class Request
     /**
      * @param array<string, mixed> $query
      * @param array<string, mixed> $post
+     * @param array<string, string> $headers Kopfzeilen mit klein geschriebenen Namen, z. B. "user-agent"
      */
     public function __construct(
         public readonly string $method,
@@ -21,6 +22,9 @@ final class Request
         public readonly array $query = [],
         public readonly array $post = [],
         public readonly bool $https = false,
+        public readonly array $headers = [],
+        public readonly string $ip = '',
+        public readonly string $body = '',
     ) {}
 
     /**
@@ -28,7 +32,7 @@ final class Request
      * @param array<mixed> $query
      * @param array<mixed> $post
      */
-    public static function fromGlobals(array $server, array $query, array $post): self
+    public static function fromGlobals(array $server, array $query, array $post, string $body = ''): self
     {
         $skript = is_string($server['SCRIPT_NAME'] ?? null) ? $server['SCRIPT_NAME'] : '/index.php';
         $basis = rtrim(str_replace('\\', '/', dirname($skript)), '/');
@@ -53,7 +57,36 @@ final class Request
             array_filter($query, 'is_string', ARRAY_FILTER_USE_KEY),
             array_filter($post, 'is_string', ARRAY_FILTER_USE_KEY),
             $https,
+            self::headersFrom($server),
+            is_string($server['REMOTE_ADDR'] ?? null) ? $server['REMOTE_ADDR'] : '',
+            $body,
         );
+    }
+
+    /**
+     * @param array<mixed> $server
+     * @return array<string, string>
+     */
+    private static function headersFrom(array $server): array
+    {
+        $headers = [];
+        foreach ($server as $name => $wert) {
+            if (!is_string($name) || !is_string($wert)) {
+                continue;
+            }
+            if (str_starts_with($name, 'HTTP_')) {
+                $headers[strtolower(str_replace('_', '-', substr($name, 5)))] = $wert;
+            } elseif ($name === 'CONTENT_TYPE') {
+                $headers['content-type'] = $wert;
+            }
+        }
+
+        return $headers;
+    }
+
+    public function header(string $name): string
+    {
+        return $this->headers[strtolower($name)] ?? '';
     }
 
     /**

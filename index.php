@@ -27,4 +27,6 @@ use Pegelstand\Core\Paths;
 use Pegelstand\Core\Request;
 
 $app = new Application(Paths::fromEnvironment(__DIR__));
-$app->handle(Request::fromGlobals($_SERVER, $_GET, $_POST))->send();
+// Der Body wird nur für den Erfassungs-Endpunkt gebraucht und auf 16 KB begrenzt.
+$body = ($_SERVER['REQUEST_METHOD'] ?? '') === 'POST' && empty($_POST) ? (string) file_get_contents('php://input', false, null, 0, 16384) : '';
+$app->handle(Request::fromGlobals($_SERVER, $_GET, $_POST, $body))->send();

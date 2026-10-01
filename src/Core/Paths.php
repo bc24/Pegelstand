@@ -57,4 +57,14 @@ final class Paths
     {
         return $this->root . '/database/migrations';
     }
+
+    public function assetsDir(): string
+    {
+        return $this->root . '/assets';
+    }
+
+    public function geoIpFile(): string
+    {
+        return $this->storageDir() . '/geoip/country.mmdb';
+    }
 }

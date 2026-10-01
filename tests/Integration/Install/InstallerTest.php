@@ -69,7 +69,7 @@ final class InstallerTest extends DatenbankTestCase
         self::assertIsString($benutzer[0]['password_hash']);
         self::assertTrue(password_verify('ein sehr langer satz', $benutzer[0]['password_hash']));
         self::assertSame(Version::CURRENT, $db->fetchValue('SELECT value FROM ' . $db->table('settings') . " WHERE name = 'installed_version'"));
-        self::assertSame(1, $db->fetchInt('SELECT COUNT(*) FROM ' . $db->table('migrations')));
+        self::assertSame(2, $db->fetchInt('SELECT COUNT(*) FROM ' . $db->table('migrations')));
 
         $config = Config::load($this->configDir . '/config.php');
         self::assertNotNull($config);

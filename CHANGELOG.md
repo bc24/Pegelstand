@@ -9,6 +9,7 @@ die Versionierung folgt [Semantic Versioning](https://semver.org/lang/de/).
 
 ### Hinzugefügt
 
+- Erfassung (Phase 3): Endpunkt `POST /api/event`, Tracking-Script `p.js` (unter 2 KB gzip), Migration `0002` (Salt, Wörterbücher, Sitzungen, Ereignisse), Besucher-Hash mit Tages-Salt, Sitzungszuordnung, Bot-Filter, Hostprüfung, Ratenbegrenzung, UTM und Referrer, eigener MMDB-Leser für Länder, Proxy-Unterstützung. Doku in `docs/tracking.md`, Entscheidungen in `docs/entscheidungen.md`.
 - Installer in vier Schritten (Systemprüfung, Datenbank, Administrator, Fertig) mit verständlichen Fehlermeldungen, Selbstsperre und Konfigurationsdatei (Phase 2).
 - Anwendungskern (Router, Container, Sitzung, CSRF, Templates, Übersetzer) und Migrationssystem mit Migration `0001` (Einstellungen, Benutzer, Sites).
 - Komponenten Hinweis, Fortschrittsanzeige und Chip im Designsystem.

@@ -20,4 +20,11 @@ return [
     // Zeitzone, in der das Tages-Salt der Besucherkennung wechselt.
     'rotation_timezone' => 'Europe/Berlin',
     'debug' => false,
+    // Optional: Namen von Script und Endpunkt ändern (Blocker-Listen kennen die Standardnamen).
+    // 'tracker' => ['script_path' => '/stats.js', 'endpoint_path' => '/stats/senden'],
+    // Optional: Anfragen pro Minute und Besucher-Adresse, danach Antwort 429.
+    // 'ingest' => ['rate_limit' => 300],
+    // Optional: Läuft Pegelstand hinter einem Reverse-Proxy, steht die Besucher-Adresse in einer Kopfzeile.
+    // Sie wird nur beachtet, wenn die Verbindung von einer der vertrauten Adressen kommt.
+    // 'proxy' => ['header' => 'X-Forwarded-For', 'trusted' => ['127.0.0.1', '10.0.0.0/8']],
 ];

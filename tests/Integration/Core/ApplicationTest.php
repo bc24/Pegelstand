@@ -185,7 +185,7 @@ final class ApplicationTest extends DatenbankTestCase
 
         self::assertSame(200, $this->anfrage('GET', '/')->status);
         self::assertTrue($db->tableExists('site_users'), 'Die Migration hat die Tabelle wieder angelegt.');
-        self::assertSame('0001', file_get_contents($this->temp . '/storage/cache/schema-version'));
+        self::assertSame('0002', file_get_contents($this->temp . '/storage/cache/schema-version'));
     }
 
     public function testWartungsseiteWennGerademigriertWird(): void

@@ -1,6 +1,6 @@
 # Schema-Entwurf (Phase 2) – zur Freigabe
 
-Status: freigegeben am 01.10.2026. Umgesetzt ist Migration `0001` (Abschnitt 1). Alles Weitere entsteht mit der jeweiligen Phase. Alle Tabellennamen tragen einen konfigurierbaren Präfix (hier `ps_`). Die Migrationen entstehen schrittweise: `0001` in Phase 2, die übrigen mit der Phase, die sie braucht.
+Status: freigegeben am 01.10.2026. Umgesetzt sind Migration `0001` (Abschnitt 1) und `0002` (Salt, Ratenbegrenzung, Wörterbücher, Sitzungen, Ereignisse, `site_ip_exclusions`). Alles Weitere entsteht mit der jeweiligen Phase. Alle Tabellennamen tragen einen konfigurierbaren Präfix (hier `ps_`). Die Migrationen entstehen schrittweise: `0001` in Phase 2, die übrigen mit der Phase, die sie braucht.
 
 ## Konventionen
 

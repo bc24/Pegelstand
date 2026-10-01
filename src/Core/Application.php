@@ -4,10 +4,21 @@ declare(strict_types=1);
 
 namespace Pegelstand\Core;
 
+use DateTimeZone;
 use PDOException;
 use Pegelstand\Database\Database;
 use Pegelstand\Database\MigrationException;
 use Pegelstand\Database\Migrator;
+use Pegelstand\Geo\MmdbCountryLookup;
+use Pegelstand\Ingest\BotFilter;
+use Pegelstand\Ingest\ClientIp;
+use Pegelstand\Ingest\Collector;
+use Pegelstand\Ingest\Dictionary;
+use Pegelstand\Ingest\IngestController;
+use Pegelstand\Ingest\RateLimiter;
+use Pegelstand\Ingest\SaltService;
+use Pegelstand\Ingest\UrlParser;
+use Pegelstand\Ingest\UserAgentParser;
 use Pegelstand\Install\ConfigWriter;
 use Pegelstand\Install\InstallController;
 use Pegelstand\Install\Installer;
@@ -99,6 +110,28 @@ final class Application
             'titel' => $view->translate('start.titel'),
             'version' => Version::CURRENT,
         ])));
+
+        $proxy = $config->get('proxy.trusted', []);
+        (new IngestController(
+            new Collector(
+                $db,
+                new SaltService($db, new DateTimeZone($config->string('rotation_timezone', 'Europe/Berlin'))),
+                new Dictionary($db),
+                new UrlParser(),
+                new UserAgentParser(),
+                BotFilter::fromFile($this->paths->resourcesDir() . '/data/bots.php'),
+                new MmdbCountryLookup($this->paths->geoIpFile()),
+                new RateLimiter($db),
+                new ClientIp(
+                    $config->string('proxy.header'),
+                    is_array($proxy) ? array_values(array_filter($proxy, 'is_string')) : [],
+                ),
+                $config->int('ingest.rate_limit', 300),
+            ),
+            $this->paths->assetsDir() . '/p.js',
+            $config->string('tracker.script_path', '/p.js'),
+            $config->string('tracker.endpoint_path', '/api/event'),
+        ))->register($router);
 
         return $router->dispatch($request) ?? $this->fehlerseite($request, '404', 404);
     }

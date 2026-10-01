@@ -19,7 +19,12 @@ final class Router
      */
     public function add(string $method, string $pfad, Closure $handler): void
     {
-        $muster = preg_replace('#\{([a-z_]+)\}#i', '(?P<$1>[^/]+)', $pfad);
+        $muster = '';
+        foreach (preg_split('#(\{[a-z_]+\})#i', $pfad, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY) ?: [] as $teil) {
+            $muster .= preg_match('#^\{([a-z_]+)\}$#i', $teil, $name) === 1
+                ? '(?P<' . $name[1] . '>[^/]+)'
+                : preg_quote($teil, '#');
+        }
         $this->routes[] = [
             'method' => strtoupper($method),
             'pattern' => '#^' . $muster . '$#',

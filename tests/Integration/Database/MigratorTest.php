@@ -43,19 +43,30 @@ final class MigratorTest extends DatenbankTestCase
         return $this->tempDir;
     }
 
+    /**
+     * @return list<string> Versionen aller mitgelieferten Migrationen
+     */
+    private static function versionen(): array
+    {
+        return array_map(
+            static fn(string $datei): string => substr(basename($datei), 0, 4),
+            glob(PEGELSTAND_ROOT . '/database/migrations/[0-9][0-9][0-9][0-9]_*.php') ?: [],
+        );
+    }
+
     public function testLegtAlleTabellenAnUndMerktSichDieVersion(): void
     {
         $db = $this->datenbank();
         $migrator = $this->migrator($db);
 
-        self::assertSame(['0001'], $migrator->pending());
-        self::assertSame(['0001'], $migrator->migrate());
+        self::assertSame(self::versionen(), $migrator->pending());
+        self::assertSame(self::versionen(), $migrator->migrate());
 
-        foreach (['migrations', 'settings', 'users', 'sites', 'site_users'] as $tabelle) {
+        foreach (['migrations', 'settings', 'users', 'sites', 'site_users', 'daily_salts', 'sessions', 'events'] as $tabelle) {
             self::assertTrue($db->tableExists($tabelle), $tabelle);
         }
         self::assertSame([], $migrator->pending());
-        self::assertSame(['0001'], array_keys($migrator->applied()));
+        self::assertSame(self::versionen(), array_keys($migrator->applied()));
     }
 
     public function testZweiterLaufTutNichts(): void
@@ -65,7 +76,7 @@ final class MigratorTest extends DatenbankTestCase
         $migrator->migrate();
 
         self::assertSame([], $migrator->migrate());
-        self::assertSame(1, $db->fetchInt('SELECT COUNT(*) FROM ' . $db->table('migrations')));
+        self::assertSame(count(self::versionen()), $db->fetchInt('SELECT COUNT(*) FROM ' . $db->table('migrations')));
     }
 
     public function testFunktioniertOhnePraefix(): void
@@ -87,7 +98,7 @@ final class MigratorTest extends DatenbankTestCase
         $b = $this->datenbank();
         $this->migrator($a)->migrate();
 
-        self::assertSame(['0001'], $this->migrator($b)->pending(), 'Die zweite Installation hat noch nichts angewendet.');
+        self::assertSame(self::versionen(), $this->migrator($b)->pending(), 'Die zweite Installation hat noch nichts angewendet.');
         $this->migrator($b)->migrate();
         self::assertSame(0, $a->fetchInt('SELECT COUNT(*) FROM ' . $a->table('users')));
     }
@@ -125,7 +136,7 @@ final class MigratorTest extends DatenbankTestCase
         } finally {
             $anderer->run('SELECT RELEASE_LOCK(?)', [$sperre]);
         }
-        self::assertSame(['0001'], $this->migrator($db)->migrate(), 'Nach Freigabe läuft die Migration.');
+        self::assertSame(self::versionen(), $this->migrator($db)->migrate(), 'Nach Freigabe läuft die Migration.');
     }
 
     public function testFehlerNenntBackupAlsLoesungswegUndMerktSichNichts(): void
@@ -147,7 +158,7 @@ final class MigratorTest extends DatenbankTestCase
 
     public function testLatestVersion(): void
     {
-        self::assertSame('0001', $this->migrator($this->datenbank())->latestVersion());
+        self::assertSame(self::versionen()[count(self::versionen()) - 1], $this->migrator($this->datenbank())->latestVersion());
     }
 
     public function testSchemaGrundlagen(): void
@@ -159,7 +170,7 @@ final class MigratorTest extends DatenbankTestCase
             'SELECT table_name AS t, engine AS e, table_collation AS c FROM information_schema.tables WHERE table_schema = DATABASE() AND table_name LIKE ?',
             [str_replace('_', '\\_', $db->prefix) . '%'],
         );
-        self::assertCount(5, $eigenschaften);
+        self::assertGreaterThanOrEqual(5, count($eigenschaften));
         foreach ($eigenschaften as $zeile) {
             self::assertSame('InnoDB', $zeile['e'], is_string($zeile['t']) ? $zeile['t'] : '');
             self::assertSame('utf8mb4_unicode_ci', $zeile['c'], is_string($zeile['t']) ? $zeile['t'] : '');
