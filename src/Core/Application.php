@@ -28,6 +28,9 @@ use Pegelstand\Jobs\AggregationJob;
 use Pegelstand\Jobs\CleanupJob;
 use Pegelstand\Jobs\JobRunner;
 use Pegelstand\Jobs\Scheduler;
+use Pegelstand\Settings\SettingsController;
+use Pegelstand\Settings\SiteRepository;
+use Pegelstand\Settings\UserRepository;
 use Pegelstand\Stats\Aggregator;
 use Pegelstand\Stats\DashboardController;
 use Pegelstand\Stats\DashboardService;
@@ -211,6 +214,7 @@ final class Application
         $csrf = new Csrf($session);
         $auth = new AuthService($db, $session);
         (new LoginController($view, $translator, $csrf, $auth, new RateLimiter($db), $salts, $clientIp, $config->int('login.rate_limit', 10)))->register($router);
+        (new SettingsController($view, $translator, $csrf, $session, $auth, new SiteRepository($db), new UserRepository($db), $skript, $endpunkt))->register($router);
         (new DashboardController(
             $view,
             $translator,

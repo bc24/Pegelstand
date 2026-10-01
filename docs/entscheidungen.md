@@ -50,3 +50,12 @@ Frank hat die Entscheidungen ab Phase 3 an den Entwickler delegiert ("löse alle
 | 27 | Ziele (Phase 7) fehlen noch: Tabelle "Ziele" ist leer, Filter `ziel` wird ignoriert. | Gehört zu Phase 7. |
 | 28 | Anmeldung ist minimal (E-Mail, Passwort, Sperre nach 10 Fehlversuchen je 15 Minuten, Abmelden per POST). 2FA, Passwort-Reset, Benutzerverwaltung folgen in Phase 6. | Phasenplan. |
 | 29 | Startseite `/` ist das Dashboard (erste Site des Benutzers); ohne Site eine Hinweisseite. Sites anlegen per Oberfläche folgt in Phase 6. | Phasenplan. |
+
+## Phase 6: Verwaltung
+
+| # | Entscheidung | Begründung |
+|---|---|---|
+| 30 | Einstellungen unter `/einstellungen`: Websites (anlegen, ändern, Tracking-Code, Ausschlussliste, Löschen mit Domain-Bestätigung), Benutzer (anlegen, Rolle, Websites freigeben, sperren, löschen), Mein Konto (Passwort). Betrachter sehen nur Mein Konto. | Lastenheft Phase 6. |
+| 31 | Der letzte aktive Administrator lässt sich nicht herabstufen, sperren oder löschen; niemand löscht sich selbst. | Aussperren verhindern. |
+| 32 | Rollen bleiben bei zwei (Administrator, Betrachter) wie im Schema. | Schema freigegeben. |
+| 33 | Reihenfolge der Restarbeiten von Phase 6: 2FA (TOTP, eigene Umsetzung ohne Abhängigkeit), Passwort-Reset und E-Mail-Versand (eigener SMTP-Client) folgen mit Phase 7, weil beides E-Mail-Einstellungen braucht. | Gemeinsame Grundlage mit den Berichten. |

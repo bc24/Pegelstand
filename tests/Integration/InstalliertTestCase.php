@@ -19,9 +19,11 @@ abstract class InstalliertTestCase extends DatenbankTestCase
 {
     protected string $temp = '';
     protected Database $db;
+    protected ArraySession $session;
 
     protected function setUp(): void
     {
+        $this->session = new ArraySession();
         $this->temp = sys_get_temp_dir() . '/ps-inst-' . bin2hex(random_bytes(4));
         mkdir($this->temp . '/config', 0777, true);
         mkdir($this->temp . '/storage', 0777, true);
@@ -51,7 +53,7 @@ abstract class InstalliertTestCase extends DatenbankTestCase
 
     protected function app(): Application
     {
-        return new Application($this->paths(), new ArraySession());
+        return new Application($this->paths(), $this->session);
     }
 
     protected function konfiguration(string $zusatz): void

@@ -56,3 +56,18 @@ if (zugriff instanceof HTMLElement) {
     if (hinweis instanceof HTMLElement) hinweis.hidden = !offen;
   });
 }
+
+/* Tracking-Code kopieren */
+for (const knopf of document.querySelectorAll('[data-kopiere]')) {
+  knopf.addEventListener('click', async () => {
+    const text = knopf.dataset.kopiere ?? '';
+    const alt = [...knopf.childNodes].map((n) => n.cloneNode(true));
+    try {
+      await navigator.clipboard.writeText(text);
+      knopf.textContent = document.documentElement.lang === 'de' ? 'Kopiert' : 'Copied';
+    } catch {
+      knopf.textContent = 'Bitte von Hand kopieren';
+    }
+    setTimeout(() => knopf.replaceChildren(...alt), 2500);
+  });
+}

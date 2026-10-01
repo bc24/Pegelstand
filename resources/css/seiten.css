@@ -214,3 +214,76 @@ body.se {
 .in-punkt--pruefe .in-punkt__symbol {
   color: var(--ps-text-muted);
 }
+
+/* Einstellungen: breiterer Rahmen, Navigation, Tabellen und Aktionen */
+.se-haupt--breit {
+  max-width: 56rem;
+}
+
+.es-nav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--ps-space-2);
+}
+
+.es-nav a[aria-current='page'] {
+  background: var(--ps-primary-subtle);
+  color: var(--ps-primary);
+}
+
+.es-nav__abstand {
+  flex: 1;
+}
+
+.es-karte h1,
+.es-karte h2 {
+  margin: 0 0 var(--ps-space-3);
+}
+
+.es-karte h2 {
+  font-size: var(--ps-text-lg);
+}
+
+.es-karte + .es-karte {
+  margin-top: 0;
+}
+
+.es-code {
+  overflow-x: auto;
+  padding: var(--ps-space-3);
+  border: 1px solid var(--ps-border);
+  border-radius: var(--ps-radius-m);
+  background: var(--ps-surface-sunken);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: var(--ps-text-sm);
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.es-inline {
+  display: inline;
+  margin: 0;
+}
+
+.es-checks {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ps-space-2);
+}
+
+.es-gefahr {
+  border-color: var(--ps-danger);
+}
+
+.es-fieldset {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.se-haupt > *,
+.es-karte .ps-card__body {
+  min-width: 0;
+}

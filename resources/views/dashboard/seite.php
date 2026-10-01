@@ -46,6 +46,7 @@ defined('PEGELSTAND_ROOT') || exit;
         <button type="button" class="ps-menu__item" role="menuitemradio" aria-checked="false" data-ps-theme="dark" data-ps-gruppe="theme"><svg class="ps-icon ps-icon--s" aria-hidden="true" focusable="false"><use href="<?= $this->asset('icons.svg') ?>#ps-icon-moon"/></svg> Dunkel <span class="ps-menu__check"><svg class="ps-icon ps-icon--s" aria-hidden="true" focusable="false"><use href="<?= $this->asset('icons.svg') ?>#ps-icon-check"/></svg></span></button>
         <button type="button" class="ps-menu__item" role="menuitemradio" aria-checked="true" data-ps-theme="system" data-ps-gruppe="theme"><svg class="ps-icon ps-icon--s" aria-hidden="true" focusable="false"><use href="<?= $this->asset('icons.svg') ?>#ps-icon-monitor"/></svg> System <span class="ps-menu__check"><svg class="ps-icon ps-icon--s" aria-hidden="true" focusable="false"><use href="<?= $this->asset('icons.svg') ?>#ps-icon-check"/></svg></span></button>
         <div class="ps-menu__separator" role="separator"></div>
+        <a class="ps-menu__item" role="menuitem" href="<?= $this->e($this->url('/einstellungen')) ?>"><?= $this->icon('settings', 's') ?> <?= $this->t('login.einstellungen') ?></a>
         <form method="post" action="<?= $this->e($this->url('/logout')) ?>" class="db-menue-form" role="none">
           <input type="hidden" name="_csrf" value="<?= $this->e($csrf) ?>">
           <button type="submit" class="ps-menu__item" role="menuitem"><?= $this->icon('log-out', 's') ?> <?= $this->t('login.abmelden') ?></button>

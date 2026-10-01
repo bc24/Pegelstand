@@ -39,7 +39,7 @@ defined('PEGELSTAND_ROOT') || exit;
     </div>
   </header>
 
-  <main class="se-haupt" id="inhalt" tabindex="-1">
+  <main class="se-haupt<?= !empty($breit) ? ' se-haupt--breit' : '' ?>" id="inhalt" tabindex="-1">
 <?= $inhalt ?>
   </main>
 
