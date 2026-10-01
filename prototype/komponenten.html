@@ -48,6 +48,8 @@
       <a href="#tooltip">Tooltips</a>
       <a href="#skeleton">Skeletons</a>
       <a href="#leer">Leerzustände</a>
+      <a href="#hinweise">Hinweise</a>
+      <a href="#fortschritt">Fortschritt</a>
       <a href="#chips">Chips</a>
       <a href="#badges">Badges</a>
     </nav>
@@ -459,6 +461,30 @@
             <p class="ps-empty__text">Die Verbindung zur Datenbank ist fehlgeschlagen. Prüfe die Zugangsdaten in der Konfiguration oder versuche es gleich noch einmal.</p>
             <div class="ps-empty__actions"><button type="button" class="ps-btn ps-btn--primary"><svg class="ps-icon ps-icon--s" aria-hidden="true" focusable="false"><use href="/assets/icons.svg#ps-icon-refresh-cw"/></svg> Erneut versuchen</button><button type="button" class="ps-btn ps-btn--ghost">Hilfe öffnen</button></div>
           </div></div>
+        </div>
+      </section>
+
+      <section class="kp-section" id="hinweise" aria-labelledby="h-hinweise">
+        <h2 id="h-hinweise">Hinweise</h2>
+        <p>Ein Hinweis erklärt etwas Wichtiges im Fluss der Seite. Er hat immer ein Icon und einen Text, die Farbe ist nie das einzige Signal.</p>
+        <div class="kp-demo">
+          <div class="ps-alert"><svg class="ps-icon" aria-hidden="true" focusable="false"><use href="/assets/icons.svg#ps-icon-info"/></svg><div class="ps-alert__inhalt"><p class="ps-alert__titel">Information</p><p>Neue Daten erscheinen nach wenigen Minuten im Dashboard.</p></div></div>
+          <div class="ps-alert ps-alert--success"><svg class="ps-icon" aria-hidden="true" focusable="false"><use href="/assets/icons.svg#ps-icon-circle-check"/></svg><div class="ps-alert__inhalt"><p class="ps-alert__titel">Verbindung hergestellt</p><p>Der erste Seitenaufruf ist eingetroffen.</p></div></div>
+          <div class="ps-alert ps-alert--warning"><svg class="ps-icon" aria-hidden="true" focusable="false"><use href="/assets/icons.svg#ps-icon-triangle-alert"/></svg><div class="ps-alert__inhalt"><p class="ps-alert__titel">Interne Ordner sind von außen erreichbar</p><p>Prüfe, ob die Datei .htaccess hochgeladen wurde.</p></div></div>
+          <div class="ps-alert ps-alert--danger" role="alert"><svg class="ps-icon" aria-hidden="true" focusable="false"><use href="/assets/icons.svg#ps-icon-circle-alert"/></svg><div class="ps-alert__inhalt"><p class="ps-alert__titel">Bitte prüfe deine Angaben</p><ul><li><a href="#hinweise">Diese E-Mail-Adresse ist ungültig.</a></li><li><a href="#hinweise">Das Passwort ist zu kurz.</a></li></ul></div></div>
+        </div>
+      </section>
+
+      <section class="kp-section" id="fortschritt" aria-labelledby="h-fortschritt">
+        <h2 id="h-fortschritt">Fortschrittsanzeige</h2>
+        <p>Für mehrstufige Abläufe wie den Installer. Auf schmalen Bildschirmen zeigt nur der aktuelle Schritt seine Beschriftung.</p>
+        <div class="kp-demo">
+          <nav aria-label="Beispiel Fortschritt"><ol class="ps-stepper">
+            <li class="ps-stepper__item ps-stepper__item--fertig"><span class="ps-stepper__marke" aria-hidden="true"><svg class="ps-icon ps-icon--s" aria-hidden="true" focusable="false"><use href="/assets/icons.svg#ps-icon-check"/></svg></span><span class="ps-stepper__label">Prüfung<span class="ps-visually-hidden"> (erledigt)</span></span></li>
+            <li class="ps-stepper__item ps-stepper__item--aktuell" aria-current="step"><span class="ps-stepper__marke" aria-hidden="true">2</span><span class="ps-stepper__label">Datenbank</span></li>
+            <li class="ps-stepper__item"><span class="ps-stepper__marke" aria-hidden="true">3</span><span class="ps-stepper__label">Administrator</span></li>
+            <li class="ps-stepper__item"><span class="ps-stepper__marke" aria-hidden="true">4</span><span class="ps-stepper__label">Fertig</span></li>
+          </ol></nav>
         </div>
       </section>
 

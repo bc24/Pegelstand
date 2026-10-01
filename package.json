@@ -7,8 +7,10 @@
   "scripts": {
     "test:e2e": "playwright test",
     "build": "node bin/build-assets.mjs",
-    "screenshots": "playwright test tests/e2e/screenshots.spec.ts",
-    "check:groesse": "node bin/check-bundle-size.mjs"
+    "screenshots": "playwright test tests/e2e/screenshots.spec.ts tests/e2e/installer.spec.ts",
+    "check:groesse": "node bin/check-bundle-size.mjs",
+    "pretest:e2e": "npm run build",
+    "prescreenshots": "npm run build"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.13.0",
