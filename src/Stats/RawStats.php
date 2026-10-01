@@ -101,17 +101,21 @@ final class RawStats implements StatsSource
         return $reihe;
     }
 
-    public function dimension(int $siteId, int $dim, Period $period, int $limit): array
+    public function dimension(int $siteId, int $dim, Period $period, int $limit, ?array $keys = null): array
     {
+        if ($keys !== null && $keys === []) {
+            return [];
+        }
+        $in = $keys === null ? '' : ' IN (' . implode(',', array_map('intval', $keys)) . ')';
         $basis = [$siteId, $period->startUtc, $period->endUtc, ...$this->filter->params];
         if ($dim === Dimension::PAGE) {
             $sql = 'SELECT e.path_id AS k, COUNT(DISTINCT s.visitor_hash) AS besucher, COUNT(*) AS aufrufe, COUNT(DISTINCT e.session_id) AS besuche, 0 AS bounces FROM '
                 . $this->db->table('events') . ' e JOIN ' . $this->db->table('sessions') . ' s ON s.id = e.session_id'
-                . ' WHERE e.site_id = ? AND e.kind = 1 AND e.occurred_at >= ? AND e.occurred_at < ?' . $this->filter->sql . ' GROUP BY e.path_id';
+                . ' WHERE e.site_id = ? AND e.kind = 1 AND e.occurred_at >= ? AND e.occurred_at < ?' . $this->filter->sql . ($in !== '' ? ' AND e.path_id' . $in : '') . ' GROUP BY e.path_id';
         } elseif ($dim === Dimension::EVENT_NAME) {
             $sql = 'SELECT e.name_id AS k, COUNT(DISTINCT s.visitor_hash) AS besucher, COUNT(*) AS aufrufe, COUNT(DISTINCT e.session_id) AS besuche, 0 AS bounces FROM '
                 . $this->db->table('events') . ' e JOIN ' . $this->db->table('sessions') . ' s ON s.id = e.session_id'
-                . ' WHERE e.site_id = ? AND e.kind = 2 AND e.name_id IS NOT NULL AND e.occurred_at >= ? AND e.occurred_at < ?' . $this->filter->sql . ' GROUP BY e.name_id';
+                . ' WHERE e.site_id = ? AND e.kind = 2 AND e.name_id IS NOT NULL AND e.occurred_at >= ? AND e.occurred_at < ?' . $this->filter->sql . ($in !== '' ? ' AND e.name_id' . $in : '') . ' GROUP BY e.name_id';
         } elseif (isset(self::SESSION_DIMS[$dim])) {
             $ausdruck = self::SESSION_DIMS[$dim];
             $sql = 'SELECT ' . $ausdruck . ' AS k, COUNT(DISTINCT s.visitor_hash) AS besucher, SUM(s.pageviews) AS aufrufe, COUNT(*) AS besuche,'

@@ -48,11 +48,15 @@ final class AggregateStats implements StatsSource
         return array_map(static fn(Bucket $b): array => $nachTag[$b->day] ?? ['besucher' => 0, 'aufrufe' => 0, 'besuche' => 0, 'bounces' => 0, 'dauer' => 0], $buckets);
     }
 
-    public function dimension(int $siteId, int $dim, Period $period, int $limit): array
+    public function dimension(int $siteId, int $dim, Period $period, int $limit, ?array $keys = null): array
     {
+        if ($keys !== null && $keys === []) {
+            return [];
+        }
+        $in = $keys === null ? '' : ' AND value_id IN (' . implode(',', array_map('intval', $keys)) . ')';
         return RawStats::zeilen($this->db->fetchAll(
             'SELECT value_id AS k, SUM(visitors) AS besucher, SUM(hits) AS aufrufe, SUM(sessions) AS besuche, SUM(bounces) AS bounces FROM '
-            . $this->db->table('agg_daily_dim') . ' WHERE site_id = ? AND dim = ? AND day BETWEEN ? AND ? GROUP BY value_id ORDER BY besucher DESC, k LIMIT ' . $limit,
+            . $this->db->table('agg_daily_dim') . ' WHERE site_id = ? AND dim = ? AND day BETWEEN ? AND ?' . $in . ' GROUP BY value_id ORDER BY besucher DESC, k LIMIT ' . $limit,
             [$siteId, $dim, $period->firstDay, $period->lastDay],
         ));
     }

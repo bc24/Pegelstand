@@ -31,7 +31,7 @@ final class SessionFilter
     /**
      * @param list<array{typ: string, wert: string}> $filter
      */
-    public static function build(Database $db, array $filter, ReferrerClassifier $referrer): self
+    public static function build(Database $db, array $filter, ReferrerClassifier $referrer, int $siteId = 0): self
     {
         $teile = [];
         $params = [];
@@ -86,6 +86,18 @@ final class SessionFilter
                     break;
                 case 'os':
                     self::gleich($teile, $params, 's.os_id', $suche('os', $wert));
+                    break;
+                case 'ziel':
+                    $ziel = $db->fetchAll('SELECT kind, target FROM ' . $db->table('goals') . ' WHERE id = ? AND site_id = ?', [(int) $wert, $siteId])[0] ?? null;
+                    if ($ziel === null || !is_string($ziel['target'])) {
+                        $teile[] = '1 = 0';
+                        break;
+                    }
+                    if ($ziel['kind'] === 'event') {
+                        self::exists($teile, $params, 2, $suche('event_name', $ziel['target']), 'name_id', $db);
+                    } else {
+                        self::exists($teile, $params, 1, $suche('path', $ziel['target']), 'path_id', $db);
+                    }
                     break;
                 case 'ereignis':
                     self::exists($teile, $params, 2, $suche('event_name', $wert), 'name_id', $db);

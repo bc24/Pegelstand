@@ -7,6 +7,7 @@ namespace Pegelstand\Stats;
 use DateTimeImmutable;
 use DateTimeZone;
 use Pegelstand\Database\Database;
+use Pegelstand\Settings\GoalRepository;
 
 /**
  * Baut die Daten, die das Dashboard braucht: Kennzahlen mit Vorperiode, Zeitreihe und die Tabellen.
@@ -45,7 +46,7 @@ final class DashboardService
             return ['leer' => true, 'site' => $siteInfo, 'jetzt' => $jetzt];
         }
 
-        $sitzungsFilter = SessionFilter::build($this->db, $filter, $this->referrer);
+        $sitzungsFilter = SessionFilter::build($this->db, $filter, $this->referrer, $site['id']);
         $quelle = $sitzungsFilter->isEmpty() && !$bereich->hourly
             ? new AggregateStats($this->db)
             : new RawStats($this->db, $sitzungsFilter);
@@ -171,9 +172,61 @@ final class DashboardService
                 'browser' => $this->zeilen($browserRoh, $browserNamen, 'browser', $gesamt),
                 'os' => $this->zeilen($osRoh, $osNamen, 'os', $gesamt),
             ],
-            'ziele' => [],
+            'ziele' => $this->ziele($q, $id, $zeitraum, $gesamt),
             'ereignisse' => $this->ereignisse($q, $id, $zeitraum, $ereignisRoh, $ereignisNamen, $gesamt),
         ];
+    }
+
+    /**
+     * Ziele der Website mit Besuchern, Anzahl und Conversion-Rate.
+     *
+     * @return list<array<string, mixed>>
+     */
+    private function ziele(StatsSource $q, int $id, Period $zeitraum, int $gesamt): array
+    {
+        $ziele = (new GoalRepository($this->db))->forSite($id);
+        if ($ziele === []) {
+            return [];
+        }
+        $schluessel = ['page' => [], 'event' => []];
+        foreach ($ziele as $z) {
+            $tabelle = $z['kind'] === 'event' ? 'event_name' : 'path';
+            $wb = $this->db->fetchInt(
+                'SELECT id FROM ' . $this->db->table('dict_' . $tabelle) . ' WHERE value_hash = UNHEX(MD5(?)) AND value = ?',
+                [$z['target'], $z['target']],
+            );
+            if ($wb > 0) {
+                $schluessel[$z['kind']][$z['target']] = $wb;
+            }
+        }
+        $seiten = $q->dimension($id, Dimension::PAGE, $zeitraum, 1000, array_values($schluessel['page']));
+        $ereignisse = $q->dimension($id, Dimension::EVENT_NAME, $zeitraum, 1000, array_values($schluessel['event']));
+
+        $ergebnis = [];
+        foreach ($ziele as $z) {
+            $wb = $schluessel[$z['kind']][$z['target']] ?? 0;
+            // Seiten- und Ereignis-IDs stammen aus getrennten Wörterbüchern, deshalb getrennt nachschlagen.
+            $liste = $z['kind'] === 'event' ? $ereignisse : $seiten;
+            $zeile = null;
+            foreach ($liste as $l) {
+                if ($l['key'] === $wb) {
+                    $zeile = $l;
+                }
+            }
+            $besucher = $zeile['besucher'] ?? 0;
+            $ergebnis[] = [
+                'id' => (string) $z['id'],
+                'name' => $z['name'],
+                'art' => $z['kind'] === 'event' ? 'Ereignis ' . $z['target'] : 'Seite ' . $z['target'],
+                'filterTyp' => 'ziel',
+                'besucher' => $besucher,
+                'anzahl' => $zeile['aufrufe'] ?? 0,
+                'rate' => self::anteil($besucher, $gesamt),
+            ];
+        }
+        usort($ergebnis, static fn(array $a, array $b): int => $b['besucher'] <=> $a['besucher']);
+
+        return $ergebnis;
     }
 
     /**

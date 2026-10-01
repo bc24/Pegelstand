@@ -28,10 +28,12 @@ interface StatsSource
 
     /**
      * Aufschlüsselung nach einer Dimension (siehe Dimension), absteigend nach Besuchern, höchstens $limit Zeilen.
+     * Mit $keys nur diese Schlüssel (für Seiten und Ereignisse, etwa bei Zielen).
      *
+     * @param list<int>|null $keys
      * @return list<Row>
      */
-    public function dimension(int $siteId, int $dim, Period $period, int $limit): array;
+    public function dimension(int $siteId, int $dim, Period $period, int $limit, ?array $keys = null): array;
 
     /**
      * Seitenaufrufe je Seite (Wörterbuch-ID), für die Ausstiegsrate.

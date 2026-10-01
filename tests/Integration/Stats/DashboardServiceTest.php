@@ -231,7 +231,7 @@ final class DashboardServiceTest extends SiteTestCase
         self::assertSame(0, $this->besucher([['typ' => 'seite', 'wert' => '/gibt-es-nicht']]));
         self::assertSame(0, $this->besucher([['typ' => 'land', 'wert' => 'FR']]));
         self::assertSame(1, $this->besucher([['typ' => 'land', 'wert' => 'DE'], ['typ' => 'geraet', 'wert' => 'tablet']]), 'Mehrere Filter gelten zusammen.');
-        self::assertSame(5, $this->besucher([['typ' => 'ziel', 'wert' => 'egal']]), 'Ziele gibt es noch nicht, der Filter wird ignoriert.');
+        self::assertSame(0, $this->besucher([['typ' => 'ziel', 'wert' => '999']]), 'Ein unbekanntes Ziel findet nichts.');
     }
 
     public function testHeuteKommtAusRohdatenUndOhneAggregation(): void
@@ -300,5 +300,37 @@ final class DashboardServiceTest extends SiteTestCase
         self::assertTrue($this->p($roh, 'keineDaten'));
         $summe = array_sum((array) $this->p($agg, 'diagramm.reihen.besucher.aktuell'));
         self::assertSame($this->p($agg, 'kennzahlen.aktuell.besucher'), $summe, 'Die Zeitreihe summiert sich zur Kennzahl.');
+    }
+
+    public function testZieleMitConversionUndFilter(): void
+    {
+        $this->beispiel();
+        $this->sitzung('2026-09-29 12:00:00', ['/', '/danke'], ['besucher' => 'F']);
+        $this->aggregiere('2026-09-28', '2026-10-01');
+        $this->db->run('INSERT INTO ' . $this->db->table('goals') . " (site_id, name, kind, target) VALUES (1, 'Kontakt', 'page', '/danke'), (1, 'Anmeldung', 'event', 'Signup'), (1, 'Nie erreicht', 'page', '/gibt-es-nicht')");
+        $ids = array_map(
+            static fn(array $z): string => is_scalar($z['id']) ? (string) $z['id'] : '',
+            $this->db->fetchAll('SELECT id FROM ' . $this->db->table('goals') . ' ORDER BY id'),
+        );
+
+        $a = $this->ansicht('2026-09-28', '2026-10-01');
+        $ziele = $this->p($a, 'tabellen.ziele');
+        self::assertIsArray($ziele);
+        self::assertCount(3, $ziele);
+        $nachName = array_column($ziele, null, 'name');
+        self::assertSame(1, $this->p($nachName, 'Kontakt.besucher'));
+        self::assertSame(1, $this->p($nachName, 'Anmeldung.besucher'));
+        self::assertSame(0, $this->p($nachName, 'Nie erreicht.besucher'));
+        self::assertEqualsWithDelta(100 / 6, $this->zahl($nachName, 'Kontakt.rate'), 0.01, '1 von 6 Besuchern.');
+        self::assertSame('ziel', $this->p($nachName, 'Kontakt.filterTyp'));
+
+        $kontakt = $ids[0];
+        self::assertSame(1, $this->besucher([['typ' => 'ziel', 'wert' => $kontakt]]));
+        self::assertSame(1, $this->besucher([['typ' => 'ziel', 'wert' => $ids[1]]]));
+        self::assertSame(0, $this->besucher([['typ' => 'ziel', 'wert' => $ids[2]]]));
+
+        // Mit Filter (Rohdaten) kommen dieselben Zahlen heraus.
+        $gefiltert = $this->ansicht('2026-09-28', '2026-10-01', [['typ' => 'land', 'wert' => 'DE']]);
+        self::assertSame(1, $this->p(array_column((array) $this->p($gefiltert, 'tabellen.ziele'), null, 'name'), 'Anmeldung.besucher'));
     }
 }

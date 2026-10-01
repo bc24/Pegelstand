@@ -274,4 +274,28 @@ final class EinstellungenTest extends InstalliertTestCase
         self::assertSame('/login', $antwort->headers['Location'], 'Ohne vorherige Passworteingabe gibt es keinen Code-Schritt.');
         self::assertSame('/login', $this->get('/login/2fa')->headers['Location']);
     }
+
+    public function testZieleAnlegenUndLoeschen(): void
+    {
+        $this->anmelden();
+        $id = $this->seitenOptionen();
+
+        $schlecht = $this->post('/einstellungen/websites/' . $id . '/ziele', ['goal_name' => '', 'goal_kind' => 'page', 'goal_target' => 'danke']);
+        self::assertSame(422, $schlecht->status);
+        self::assertStringContainsString('beginnt mit einem Schrägstrich', $schlecht->body);
+
+        $this->post('/einstellungen/websites/' . $id . '/ziele', ['goal_name' => 'Kontakt', 'goal_kind' => 'page', 'goal_target' => '/danke']);
+        $this->post('/einstellungen/websites/' . $id . '/ziele', ['goal_name' => 'Anmeldung', 'goal_kind' => 'event', 'goal_target' => 'Signup']);
+        self::assertSame(2, $this->db->fetchInt('SELECT COUNT(*) FROM ' . $this->db->table('goals')));
+        self::assertStringContainsString('/danke', $this->get('/einstellungen/websites/' . $id)->body);
+
+        $gid = $this->db->fetchInt('SELECT id FROM ' . $this->db->table('goals') . ' ORDER BY id LIMIT 1');
+        $this->post('/einstellungen/websites/' . $id . '/ziele/' . $gid . '/loeschen');
+        self::assertSame(1, $this->db->fetchInt('SELECT COUNT(*) FROM ' . $this->db->table('goals')));
+
+        // Mit der Website verschwinden auch ihre Ziele.
+        $domain = $this->db->fetchValue('SELECT domain FROM ' . $this->db->table('sites'));
+        $this->post('/einstellungen/websites/' . $id . '/loeschen', ['bestaetigung' => is_string($domain) ? $domain : '']);
+        self::assertSame(0, $this->db->fetchInt('SELECT COUNT(*) FROM ' . $this->db->table('goals')));
+    }
 }

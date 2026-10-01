@@ -35,6 +35,7 @@ final class SettingsController
         private readonly AuthService $auth,
         private readonly SiteRepository $sites,
         private readonly UserRepository $users,
+        private readonly GoalRepository $goals,
         private readonly string $scriptPath,
         private readonly string $endpointPath,
     ) {}
@@ -48,6 +49,8 @@ final class SettingsController
         $r->add('POST', '/einstellungen/websites/{id}', fn(Request $q, array $p): Response => $this->websiteSpeichern($q, $p['id']));
         $r->add('POST', '/einstellungen/websites/{id}/ausschluss', fn(Request $q, array $p): Response => $this->ausschlussAnlegen($q, $p['id']));
         $r->add('POST', '/einstellungen/websites/{id}/ausschluss/{eid}/loeschen', fn(Request $q, array $p): Response => $this->ausschlussLoeschen($q, $p['id'], $p['eid']));
+        $r->add('POST', '/einstellungen/websites/{id}/ziele', fn(Request $q, array $p): Response => $this->zielAnlegen($q, $p['id']));
+        $r->add('POST', '/einstellungen/websites/{id}/ziele/{gid}/loeschen', fn(Request $q, array $p): Response => $this->zielLoeschen($q, $p['id'], $p['gid']));
         $r->add('POST', '/einstellungen/websites/{id}/loeschen', fn(Request $q, array $p): Response => $this->websiteLoeschen($q, $p['id']));
         $r->add('GET', '/einstellungen/benutzer', fn(Request $q): Response => $this->benutzer($q, [], []));
         $r->add('POST', '/einstellungen/benutzer', fn(Request $q): Response => $this->benutzerAnlegen($q));
@@ -180,8 +183,9 @@ final class SettingsController
     /**
      * @param array<string, string> $fehler
      * @param array<string, string>|null $werte
+     * @param array<string, string>|null $zielWerte
      */
-    private function website(Request $q, string $publicId, array $fehler, ?array $werte, int $status = 200): Response
+    private function website(Request $q, string $publicId, array $fehler, ?array $werte, int $status = 200, ?array $zielWerte = null): Response
     {
         $u = $this->guard($q, true, false);
         if ($u instanceof Response) {
@@ -202,6 +206,8 @@ final class SettingsController
             'fehler' => $fehler,
             'zeitzonen' => DateTimeZone::listIdentifiers(),
             'ausschluesse' => $this->sites->exclusions($site['id']),
+            'ziele' => $this->goals->forSite($site['id']),
+            'zielWerte' => $zielWerte ?? ['goal_name' => '', 'goal_kind' => 'page', 'goal_target' => ''],
             'code' => $this->trackingCode($q, $site['public_id']),
             'ip' => $q->ip,
         ], $status);
@@ -242,6 +248,43 @@ final class SettingsController
         $ok ? $this->merke('success', $this->t->get('einst.websites.ausschluss_neu')) : $this->merke('danger', $this->t->get('einst.fehler.ip'));
 
         return Response::redirect($q->url('/einstellungen/websites/' . $publicId . '#ausschluesse'));
+    }
+
+    private function zielAnlegen(Request $q, string $publicId): Response
+    {
+        $u = $this->guard($q, true, true);
+        if ($u instanceof Response) {
+            return $u;
+        }
+        $site = $this->sites->find($publicId);
+        if ($site === null) {
+            return new Response('', 404);
+        }
+        $werte = ['goal_name' => trim($q->input('goal_name')), 'goal_kind' => $q->input('goal_kind'), 'goal_target' => trim($q->input('goal_target'))];
+        $fehler = GoalRepository::validate(['name' => $werte['goal_name'], 'kind' => $werte['goal_kind'], 'target' => $werte['goal_target']]);
+        if ($fehler !== []) {
+            return $this->website($q, $publicId, $this->uebersetze($fehler), null, 422, $werte);
+        }
+        $this->goals->add($site['id'], $werte['goal_name'], $werte['goal_kind'], $werte['goal_target']);
+        $this->merke('success', $this->t->get('einst.ziele.angelegt'));
+
+        return Response::redirect($q->url('/einstellungen/websites/' . $publicId . '#ziele'));
+    }
+
+    private function zielLoeschen(Request $q, string $publicId, string $gid): Response
+    {
+        $u = $this->guard($q, true, true);
+        if ($u instanceof Response) {
+            return $u;
+        }
+        $site = $this->sites->find($publicId);
+        if ($site === null) {
+            return new Response('', 404);
+        }
+        $this->goals->delete($site['id'], (int) $gid);
+        $this->merke('success', $this->t->get('einst.ziele.geloescht'));
+
+        return Response::redirect($q->url('/einstellungen/websites/' . $publicId . '#ziele'));
     }
 
     private function ausschlussLoeschen(Request $q, string $publicId, string $eid): Response

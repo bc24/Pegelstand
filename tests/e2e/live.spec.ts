@@ -150,6 +150,17 @@ test.describe('Dashboard mit echten Daten', () => {
     await expect(page.locator('.ps-chip')).toContainText('Seite:');
   });
 
+  test('Ziele zeigen Conversion-Rate und lassen sich als Filter setzen', async ({ page }) => {
+    await geladen(page);
+    const zeile = page.locator('[data-bereich="ziele"] tbody tr', { hasText: 'Preise angesehen' });
+    await expect(zeile).toBeVisible();
+    await expect(zeile).toContainText('%');
+    await zeile.getByRole('button').click();
+    await expect(page.locator('.ps-chip')).toContainText('Ziel: Preise angesehen');
+    await geladen(page);
+    await expect(page.locator('.ps-kpi--waehlbar').first()).toBeVisible();
+  });
+
   test('benutzerdefinierter Zeitraum und Prüfung der Eingabe', async ({ page }) => {
     await geladen(page);
     await page.getByRole('button', { name: /Zeitraum/ }).click();

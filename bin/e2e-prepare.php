@@ -62,7 +62,9 @@ foreach ([['livedemo00000001', 'beispiel.de', 120], ['liveleer00000002', 'neue-s
     );
     if ($sitzungen > 0) {
         $heute = new DateTimeImmutable('today', new DateTimeZone('UTC'));
-        (new DemoDataGenerator($db))->generate((int) $db->pdo->lastInsertId(), $heute->modify('-59 days'), $heute, $sitzungen, 7);
+        $siteNr = (int) $db->pdo->lastInsertId();
+        (new DemoDataGenerator($db))->generate($siteNr, $heute->modify('-59 days'), $heute, $sitzungen, 7);
+        $db->run('INSERT INTO ' . $db->table('goals') . " (site_id, name, kind, target) VALUES (?, 'Preise angesehen', 'page', '/preise'), (?, 'Anmeldung', 'event', 'Signup')", [$siteNr, $siteNr]);
     }
 }
 $app = new Application($paths);
