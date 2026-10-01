@@ -72,6 +72,9 @@ Stile: `resources/css/components/`. Verhalten: `resources/js/`, ereignisgesteuer
 | Tooltip | `data-ps-tooltip` | Hover und Fokus, Esc, `aria-describedby`. |
 | Skeleton | `ps-skeleton` | Feste Maße gegen Layout-Verschiebungen, ohne Animation bei reduzierter Bewegung. |
 | Leerzustand | `ps-empty` | Grund und nächster Schritt. |
+| Chip | `ps-chip` | Aktiver Filter mit Entfernen-Knopf, Text und Kreuz sind getrennte, benannte Bedienelemente. |
+| Hinweis | `ps-alert` + `--danger`, `--warning`, `--success` | Immer Icon plus Text. Fehlerzusammenfassungen erhalten den Fokus und verlinken auf die Felder. |
+| Fortschritt | `ps-stepper` | Mehrstufige Abläufe, `aria-current="step"`. Auf schmalen Bildschirmen nur der aktuelle Schritt beschriftet. |
 | Badge | `ps-badge` | Farbe nie als einziges Signal: Text oder Pfeil begleitet sie. |
 
 ## Icons
@@ -124,3 +127,9 @@ Das „Jetzt“ der Demo ist fest auf den 29.09.2026, 14:30 Uhr gesetzt, damit P
 ### Bewusst nicht enthalten
 
 Öffentlicher Link, Einbettung, CSV-Export (Phase 7), Einrichtungsassistent mit Live-Verbindungsprüfung (Phase 6), Einstellungen (Phase 6). Der Befehl „Einstellungen“ zeigt im Prototyp nur einen Hinweis.
+
+## Installer und Seiten (Phase 2)
+
+Installer, Startseite und Fehlerseiten nutzen den Rahmen `resources/views/layout.php` mit `seiten.css`. Texte stehen in `resources/lang/de.php`, ein Test stellt sicher, dass jeder in Templates verwendete Schlüssel existiert und die Ansprache „du“ bleibt. Formularfelder kommen aus `partials/feld.php`, Fehlerzusammenfassungen aus `partials/fehlerliste.php`.
+
+Regeln für Fehlermeldungen: Sie sagen, was passiert ist und was die Person jetzt tun kann. Passwörter werden nach einem Fehler nie zurück ins Formular geschrieben, das Formular erklärt dies.

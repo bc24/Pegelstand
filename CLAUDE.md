@@ -22,6 +22,9 @@ Deutsch: Oberfläche, Texte, README, Doku, Code-Kommentare, Commit-Beschreibunge
 - PHP >= 8.2, MySQL 8.0+ und MariaDB 10.6+, Zugriff ausschließlich über PDO mit Prepared Statements.
 - Kein Full-Stack-Framework: Front Controller, Router, PSR-4 (`Pegelstand\` nach `src/`), einfacher DI-Container, Templates in plain PHP mit konsequentem Escaping.
 - **Das Projektverzeichnis ist das Document Root, es gibt kein `public/`** (Apache). Sensible Pfade sperren die Root-`.htaccess` (404) und je eine `.htaccess` mit `Require all denied` (403; mit Apache 2.4 und mod_php geprüft) in `config`, `src`, `storage`, `bin`, `tests`, `resources`; `vendor/` erhält sie beim Build. Zusätzlich Direktzugriffsschutz in PHP-Dateien mit Nebenwirkungen. Öffentlich sind nur `index.php` und `assets/`. Beispielkonfiguration für nginx folgt in Phase 8.
+- Kern (`src/Core`): `Application` (Installer ohne Konfiguration, sonst Betrieb), `Request` (Pfade relativ zum Unterverzeichnis), `Response` (Sicherheits-Header auf jeder Antwort, strenge CSP ohne Inline-Skripte), `Router`, `Container`, `View` (plain PHP, `e()` und `t()` maskieren), `Translator`, `Csrf`, `Session` (nur für Installer und angemeldete Bereiche, nie für Besucher), `ErrorLog` (keine Besucherdaten). Datenbank (`src/Database`): `Database` (PDO, Prepared Statements, gepufferte Abfragen), `Migrator`. Installer (`src/Install`). Texte in `resources/lang/de.php`, Templates in `resources/views`.
+- Migrationen: `database/migrations/NNNN_name.php`, wiederholbar (`CREATE TABLE IF NOT EXISTS`), Prüfsumme wird gespeichert, Schema-Entwurf und Entscheidungen in `docs/schema-entwurf.md`. Migrationen laufen bei Updates automatisch.
+- Konfiguration: `config/config.php` (vom Installer erzeugt, mit Direktzugriffsschutz), `config/installed.lock`. Für Tests lassen sich `PEGELSTAND_CONFIG_DIR` und `PEGELSTAND_STORAGE_DIR` umlenken.
 - Laufzeit-Abhängigkeiten: derzeit keine. Jede neue vorher mit Frank abstimmen, Lizenz muss MIT-kompatibel sein. Pflicht-Erweiterungen: pdo_mysql, json, mbstring, openssl.
 - Das Release-Zip enthält `vendor/` und gebaute Assets (`bin/build-release.sh`, Allowlist). Endnutzer brauchen weder Composer noch Node.
 - Frontend: Vanilla JS oder Alpine.js (Entscheidung in Phase 1), lokale Diagramm-Bibliothek, keine CDNs, keine externen Schriften, keine Requests an Dritte. Eigene CSS-Design-Tokens statt Tailwind. Build-Werkzeuge (esbuild) nur für Entwickler.
@@ -35,10 +38,13 @@ Deutsch: Oberfläche, Texte, README, Doku, Code-Kommentare, Commit-Beschreibunge
 
 - `composer cs` / `composer cs:fix` (PHP-CS-Fixer, `@PER-CS`, strict_types), `composer analyse` (PHPStan Level max, keine Baseline), `composer test` (PHPUnit: Suites Unit und Integration), `composer check` (alles).
 - Integrationstests nutzen `PEGELSTAND_TEST_DB_DSN`, `PEGELSTAND_TEST_DB_USER`, `PEGELSTAND_TEST_DB_PASSWORD`; ohne diese werden sie übersprungen.
-- E2E: Playwright mit axe-core, vier Projekte (desktop-hell, desktop-dunkel, smartphone-hell, smartphone-dunkel). `PEGELSTAND_CHROMIUM` kann den Browserpfad vorgeben.
+- E2E: Playwright mit axe-core, vier Projekte (desktop-hell, desktop-dunkel, smartphone-hell, smartphone-dunkel), jedes mit eigenem PHP-Server (Ports 8091 bis 8094), eigener temporärer Konfiguration und eigenem Tabellenpräfix (`e2e1_` bis `e2e4_`). `npm run test:e2e` baut vorher die Assets. Installer-Tests brauchen `PEGELSTAND_TEST_DB_*`, ohne sie werden sie übersprungen. `PEGELSTAND_CHROMIUM` kann den Browserpfad vorgeben.
 - CI (`.github/workflows`): Stil und Analyse, Test-Matrix PHP 8.2 bis 8.5 gegen MySQL 8.0/8.4 und MariaDB 10.6/11.4 (`TODO(prüfen)` gegen offizielle Quellen), Script-Größe, E2E; `release.yml` baut bei Tags das Zip.
 
 ## Hinweise für Cloud-Sessions
+
+- Kein `pkill -f` mit einem Muster, das im eigenen Befehl vorkommt: Die Shell beendet sich sonst selbst.
+- Das lokale `vendor/` ist durch die Quell-Installation riesig (alle Git-Historien). Das Release-Zip entsteht in der CI mit `composer install --no-dev`.
 
 - `composer` braucht `COMPOSER_ALLOW_SUPERUSER=1`.
 - Zip-Downloads von `api.github.com` und `codeload.github.com` sind gesperrt (403), `git clone` über github.com funktioniert. Lokale Installation daher mit temporär angepasstem Lockfile (ohne `dist`-Einträge, `--prefer-source`; PHPStan ist dist-only und wird aus einem flachen Clone eingebunden). Das committete `composer.lock` bleibt unverändert.

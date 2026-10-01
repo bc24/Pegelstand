@@ -17,7 +17,7 @@ composer check        # Code-Style, statische Analyse und PHPUnit
 npm run test:e2e      # Playwright (startet den PHP-Entwicklungsserver selbst)
 ```
 
-Integrationstests laufen gegen eine echte MySQL- oder MariaDB-Instanz, wenn
+Die Ende-zu-Ende-Tests starten pro Darstellungsvariante einen eigenen PHP-Server und brauchen für die Installer-Tests dieselben Datenbank-Variablen. Integrationstests laufen gegen eine echte MySQL- oder MariaDB-Instanz, wenn
 `PEGELSTAND_TEST_DB_DSN`, `PEGELSTAND_TEST_DB_USER` und `PEGELSTAND_TEST_DB_PASSWORD`
 gesetzt sind. Ohne diese Variablen werden sie übersprungen.
 

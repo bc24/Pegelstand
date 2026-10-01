@@ -1,6 +1,6 @@
 # Schema-Entwurf (Phase 2) – zur Freigabe
 
-Status: Entwurf, noch keine Migration geschrieben. Alle Tabellennamen tragen einen konfigurierbaren Präfix (hier `ps_`). Die Migrationen entstehen schrittweise: `0001` in Phase 2, die übrigen mit der Phase, die sie braucht.
+Status: freigegeben am 01.10.2026. Umgesetzt ist Migration `0001` (Abschnitt 1). Alles Weitere entsteht mit der jeweiligen Phase. Alle Tabellennamen tragen einen konfigurierbaren Präfix (hier `ps_`). Die Migrationen entstehen schrittweise: `0001` in Phase 2, die übrigen mit der Phase, die sie braucht.
 
 ## Konventionen
 
@@ -287,6 +287,27 @@ Ein Aufräumjob löscht je Site Rohdaten (`sessions`, `events`, `event_props`) i
 
 Rohdaten liegen in UTC. Tages- und Stundengrenzen der Aggregate folgen der Zeitzone der Site zum Zeitpunkt der Aggregation. Ändert jemand die Zeitzone später, gilt das für neue Aggregate. Vorhandene Rohdaten lassen sich bei Bedarf neu aggregieren.
 
-## Offene Entscheidungen
+## Entscheidungen (freigegeben)
 
-Siehe die nummerierten Fragen im Bericht. Sie betreffen: Präfix (1), Sitzungszuordnung (2), Query-Strings (3), Versionen (4), Aufbewahrung (5), Salt-Wechsel (6), Ratenbegrenzung (7), Zeitzonen (8), Land (9), Installer-Umfang (10), Einstellungen (11), Hash-Verfahren (12).
+| # | Entscheidung |
+|---|---|
+| 1 | Tabellenpräfix `ps_` als Standard, im Installer änderbar (auch leer möglich). |
+| 2 | Sitzungen werden beim Eintreffen eines Aufrufs zugeordnet. Der Lasttest in Phase 3 prüft das Ziel von unter 50 ms. |
+| 3 | Query-Strings werden verworfen, außer UTM-Parametern. |
+| 4 | Browser und Betriebssystem nur als Name ohne Version. |
+| 5 | Aufbewahrung der Rohdaten standardmäßig 24 Monate (730 Tage), pro Site änderbar. Aggregate bleiben dauerhaft. |
+| 6 | Das Tages-Salt wechselt um Mitternacht in Europe/Berlin (`rotation_timezone`, einstellbar). |
+| 7 | Ratenbegrenzung über kurz gehaltene, gesalzene Hashes (Tabelle `rate_limits`, Löschung nach Minuten). Die Doku erklärt das offen. |
+| 8 | Rohdaten in UTC, Tagesgrenzen der Aggregate in der Zeitzone der Site. |
+| 9 | Land als `CHAR(2)` direkt in der Sitzung. |
+| 10 | Der Installer legt nur den Administrator an. Die erste Site entsteht im Onboarding (Phase 6). |
+| 11 | Datenbankzugang und `app_key` in `config/config.php`, zur Laufzeit änderbare Einstellungen in `settings` (SMTP-Passwort verschlüsselt mit `app_key`). |
+| 12 | Besucher-Hash: `HMAC-SHA-256(salt, site_id | ip | user-agent)`, gekürzt auf 16 Byte. |
+
+## Migrationssystem
+
+- Dateien `database/migrations/NNNN_name.php` geben ein Objekt zurück, das `Migration` implementiert (`name()`, `statements($prefix)`).
+- Der Migrator legt `migrations` selbst an, wendet offene Versionen in Reihenfolge an und speichert Version, Name und SHA-256-Prüfsumme. Eine nachträglich veränderte, bereits angewendete Migration bricht mit einem klaren Hinweis ab.
+- Ein Sperrbefehl der Datenbank (`GET_LOCK`) verhindert gleichzeitiges Migrieren. Parallele Aufrufe sehen eine Wartungsseite mit Auto-Reload.
+- MySQL und MariaDB können Strukturänderungen nicht zurückrollen. Deshalb nutzt jede Migration `CREATE TABLE IF NOT EXISTS` und lässt sich nach einem Abbruch wiederholen. Eine Fehlermeldung nennt das Backup als Lösungsweg. Ein Test (`MigrationDateienTest`) erzwingt die Regeln für alle Migrationen.
+- Nach einem Update läuft die Migration automatisch beim ersten Aufruf. Der Merker `storage/cache/schema-version` erspart bei jedem weiteren Aufruf die Datenbankabfrage.
