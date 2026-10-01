@@ -195,6 +195,17 @@ final class AuthService
         );
     }
 
+    /** Der aktive Benutzer mit dieser ID, etwa für die API. */
+    public function userById(int $id): ?AuthUser
+    {
+        $z = $this->db->fetchAll('SELECT id, name, email, role FROM ' . $this->db->table('users') . ' WHERE id = ? AND disabled_at IS NULL', [$id])[0] ?? null;
+        if ($z === null) {
+            return null;
+        }
+
+        return new AuthUser($id, is_string($z['name']) ? $z['name'] : '', is_string($z['email']) ? $z['email'] : '', is_string($z['role']) ? $z['role'] : 'viewer');
+    }
+
     public function logout(): void
     {
         $this->cache = null;

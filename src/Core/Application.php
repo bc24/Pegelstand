@@ -6,6 +6,7 @@ namespace Pegelstand\Core;
 
 use DateTimeZone;
 use PDOException;
+use Pegelstand\Api\ApiController;
 use Pegelstand\Auth\AuthService;
 use Pegelstand\Auth\Crypto;
 use Pegelstand\Auth\LoginController;
@@ -31,6 +32,7 @@ use Pegelstand\Jobs\CleanupJob;
 use Pegelstand\Jobs\JobRunner;
 use Pegelstand\Jobs\Scheduler;
 use Pegelstand\Mail\Mailer;
+use Pegelstand\Settings\ApiKeyRepository;
 use Pegelstand\Settings\GoalRepository;
 use Pegelstand\Settings\MailController;
 use Pegelstand\Settings\SettingsController;
@@ -220,21 +222,29 @@ final class Application
         $csrf = new Csrf($session);
         $auth = new AuthService($db, $session, new Crypto($config->string('app_key')));
         (new LoginController($view, $translator, $csrf, $auth, new RateLimiter($db), $salts, $clientIp, $config->int('login.rate_limit', 10)))->register($router);
-        (new SettingsController($view, $translator, $csrf, $session, $auth, new SiteRepository($db), new UserRepository($db), new GoalRepository($db), $skript, $endpunkt))->register($router);
+        (new SettingsController($view, $translator, $csrf, $session, $auth, new SiteRepository($db), new UserRepository($db), new GoalRepository($db), new ApiKeyRepository($db), $skript, $endpunkt))->register($router);
+        $dashboardDienst = new DashboardService(
+            $db,
+            ReferrerClassifier::fromFile($this->paths->resourcesDir() . '/data/quellen.php'),
+            self::laender($this->paths->resourcesDir() . '/data/laender.php'),
+        );
         $einstellungen = new SettingsStore($db, new Crypto($config->string('app_key')));
         $mailer = new Mailer($einstellungen);
         (new MailController($view, $translator, $csrf, $session, $auth, $einstellungen, $mailer))->register($router);
         (new PasswordResetController($view, $translator, $csrf, $db, $mailer, $einstellungen, new RateLimiter($db), $salts, $clientIp))->register($router);
+        (new ApiController(
+            new ApiKeyRepository($db),
+            $auth,
+            $dashboardDienst,
+            new RateLimiter($db),
+            $config->int('api.rate_limit', 120),
+        ))->register($router);
         (new DashboardController(
             $view,
             $translator,
             $csrf,
             $auth,
-            new DashboardService(
-                $db,
-                ReferrerClassifier::fromFile($this->paths->resourcesDir() . '/data/quellen.php'),
-                self::laender($this->paths->resourcesDir() . '/data/laender.php'),
-            ),
+            $dashboardDienst,
             Version::CURRENT,
             $skript,
             $endpunkt,

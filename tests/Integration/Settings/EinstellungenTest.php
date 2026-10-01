@@ -323,4 +323,91 @@ final class EinstellungenTest extends InstalliertTestCase
         self::assertSame(404, $this->export('/export/passwoerter', ['site' => $id])->status);
         self::assertSame(404, $this->export('/export/seiten', ['site' => 'fremd'])->status);
     }
+
+    /**
+     * @param array<string, string> $query
+     */
+    private function api(string $pfad, ?string $schluessel, array $query = []): Response
+    {
+        return $this->app()->handle(new Request('GET', $pfad, query: $query, headers: $schluessel === null ? [] : ['authorization' => 'Bearer ' . $schluessel]));
+    }
+
+    private function sitesAusAntwort(Response $antwort): mixed
+    {
+        $daten = json_decode($antwort->body, true);
+
+        return is_array($daten) ? ($daten['sites'] ?? null) : null;
+    }
+
+    public function testApiSchluesselUndSchnittstelle(): void
+    {
+        $this->anmelden();
+        $id = $this->seitenOptionen();
+        self::assertSame(422, $this->post('/einstellungen/konto/api-schluessel', ['key_name' => ''])->status);
+        $this->post('/einstellungen/konto/api-schluessel', ['key_name' => 'Monitoring']);
+
+        $seite = $this->get('/einstellungen/konto')->body;
+        preg_match('/psk_[a-f0-9]{40}/', $seite, $m);
+        $schluessel = $m[0] ?? '';
+        self::assertNotSame('', $schluessel, 'Der neue Schlüssel wird einmal angezeigt.');
+        self::assertStringNotContainsString($schluessel, $this->get('/einstellungen/konto')->body, 'Beim nächsten Aufruf nicht mehr.');
+        $gespeichert = $this->db->fetchAll('SELECT key_prefix, key_hash FROM ' . $this->db->table('api_keys'))[0] ?? [];
+        self::assertSame(hash('sha256', $schluessel), $gespeichert['key_hash'] ?? '');
+        self::assertSame(substr($schluessel, 0, 8), $gespeichert['key_prefix'] ?? '');
+
+        $this->session->destroy(); // Die Schnittstelle braucht keine Sitzung.
+        self::assertSame(401, $this->api('/api/v1/sites', null)->status);
+        self::assertSame(401, $this->api('/api/v1/sites', 'psk_' . str_repeat('0', 40))->status);
+        self::assertSame(401, $this->api('/api/v1/sites', 'falsch')->status);
+
+        $liste = $this->api('/api/v1/sites', $schluessel);
+        self::assertSame(200, $liste->status);
+        self::assertSame([['id' => $id, 'name' => 'Test', 'domain' => 'beispiel.de', 'zeitzone' => 'Europe/Berlin']], $this->sitesAusAntwort($liste));
+
+        $stats = $this->api('/api/v1/sites/' . $id . '/stats', $schluessel, ['von' => '2020-01-01', 'bis' => '2020-01-31']);
+        self::assertSame(200, $stats->status);
+        $daten = json_decode($stats->body, true);
+        self::assertIsArray($daten);
+        self::assertArrayHasKey('leer', $daten);
+        self::assertSame(404, $this->api('/api/v1/sites/gibtesnicht/stats', $schluessel)->status);
+        self::assertNotNull($this->db->fetchValue('SELECT last_used_at FROM ' . $this->db->table('api_keys')));
+        self::assertSame('application/json; charset=utf-8', $stats->headers['Content-Type']);
+
+        // Gelöschter Schlüssel funktioniert nicht mehr.
+        $this->anmelden();
+        $kid = $this->db->fetchInt('SELECT id FROM ' . $this->db->table('api_keys'));
+        $this->post('/einstellungen/konto/api-schluessel/' . $kid . '/loeschen');
+        self::assertSame(401, $this->api('/api/v1/sites', $schluessel)->status);
+    }
+
+    public function testApiBeachtetFreigabenUndGesperrteBenutzer(): void
+    {
+        $this->anmelden();
+        $this->post('/einstellungen/benutzer', ['name' => 'Gast', 'email' => 'gast@beispiel.de', 'password' => 'ein anderer langer satz', 'password_repeat' => 'ein anderer langer satz']);
+        $gastId = $this->db->fetchInt('SELECT id FROM ' . $this->db->table('users') . " WHERE name = 'Gast'");
+        $this->db->run('INSERT INTO ' . $this->db->table('api_keys') . ' (user_id, name, key_prefix, key_hash, created_at) VALUES (?, ?, ?, ?, NOW())', [$gastId, 'x', 'psk_abcd', hash('sha256', 'psk_abcdef')]);
+        $this->session->destroy();
+
+        // Betrachter ohne Freigabe sieht keine Website.
+        self::assertSame([], $this->sitesAusAntwort($this->api('/api/v1/sites', 'psk_abcdef')));
+        self::assertSame(404, $this->api('/api/v1/sites/' . $this->seitenOptionen() . '/stats', 'psk_abcdef')->status);
+
+        $this->db->run('UPDATE ' . $this->db->table('users') . ' SET disabled_at = NOW() WHERE id = ?', [$gastId]);
+        self::assertSame(401, $this->api('/api/v1/sites', 'psk_abcdef')->status);
+    }
+
+    public function testApiBegrenztAnfragen(): void
+    {
+        $this->anmelden();
+        $this->post('/einstellungen/konto/api-schluessel', ['key_name' => 'Flut']);
+        preg_match('/psk_[a-f0-9]{40}/', $this->get('/einstellungen/konto')->body, $m);
+        $this->session->destroy();
+
+        $letzte = 200;
+        for ($i = 0; $i < 125; ++$i) {
+            $letzte = $this->api('/api/v1/sites', $m[0] ?? '')->status;
+        }
+
+        self::assertSame(429, $letzte);
+    }
 }

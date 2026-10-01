@@ -7,6 +7,8 @@ defined('PEGELSTAND_ROOT') || exit;
 /** @var Pegelstand\Core\View $this */
 /** @var Pegelstand\Auth\AuthUser $benutzer */
 /** @var array<string, string> $fehler */
+/** @var list<array{id: int, name: string, key_prefix: string, created_at: string, last_used_at: string}> $apiSchluessel */
+/** @var string|null $neuerSchluessel */
 /** @var bool $zweiFaktor */
 /** @var string|null $setupSchluessel */
 /** @var string $setupLink */
@@ -72,5 +74,53 @@ defined('PEGELSTAND_ROOT') || exit;
       <div class="se-aktionen"><button type="submit" class="ps-btn ps-btn--primary"><?= $this->t('einst.zwei_fa.einrichten') ?></button></div>
     </form>
     <?php endif; ?>
+  </div>
+</section>
+
+<section class="ps-card es-karte" id="api" aria-labelledby="api-titel">
+  <div class="ps-card__body">
+    <h2 id="api-titel"><?= $this->t('einst.api.titel') ?></h2>
+    <p class="se-einleitung"><?= $this->t('einst.api.text') ?></p>
+    <?php if ($neuerSchluessel !== null) : ?>
+    <div class="ps-alert ps-alert--success" role="status">
+      <?= $this->icon('circle-check') ?>
+      <div class="ps-alert__inhalt">
+        <p class="ps-alert__titel"><?= $this->t('einst.api.neu_titel') ?></p>
+        <p><?= $this->t('einst.api.neu_text') ?></p>
+        <pre class="es-code" tabindex="0"><code><?= $this->e($neuerSchluessel) ?></code></pre>
+      </div>
+    </div>
+    <?php endif; ?>
+    <?php if ($apiSchluessel !== []) : ?>
+    <div class="ps-table-wrap">
+      <table class="ps-table">
+        <caption class="ps-visually-hidden"><?= $this->t('einst.api.titel') ?></caption>
+        <thead><tr><th scope="col"><?= $this->t('einst.api.name') ?></th><th scope="col"><?= $this->t('einst.api.beginn') ?></th><th scope="col"><?= $this->t('einst.api.zuletzt') ?></th><th scope="col"><span class="ps-visually-hidden"><?= $this->t('einst.aktion') ?></span></th></tr></thead>
+        <tbody>
+        <?php foreach ($apiSchluessel as $k) : ?>
+          <tr>
+            <td><?= $this->e($k['name']) ?></td>
+            <td><code><?= $this->e($k['key_prefix']) ?>…</code></td>
+            <td><?= $k['last_used_at'] === '' ? $this->t('einst.api.nie') : $this->e($k['last_used_at']) . ' UTC' ?></td>
+            <td class="num">
+              <form method="post" action="<?= $this->e($this->url('/einstellungen/konto/api-schluessel/' . $k['id'] . '/loeschen')) ?>" class="es-inline">
+                <input type="hidden" name="_csrf" value="<?= $this->e($csrf) ?>">
+                <button type="submit" class="ps-btn ps-btn--ghost ps-btn--s"><?= $this->t('einst.entfernen') ?><span class="ps-visually-hidden"> <?= $this->e($k['name']) ?></span></button>
+              </form>
+            </td>
+          </tr>
+        <?php endforeach; ?>
+        </tbody>
+      </table>
+    </div>
+    <?php endif; ?>
+    <?php if (isset($fehler['key_name'])) : ?>
+    <?= $this->render('partials/fehlerliste', ['fehler' => ['key_name' => $fehler['key_name']], 'allgemein' => ''], null) ?>
+    <?php endif; ?>
+    <form method="post" action="<?= $this->e($this->url('/einstellungen/konto/api-schluessel')) ?>" novalidate class="se-formular">
+      <input type="hidden" name="_csrf" value="<?= $this->e($csrf) ?>">
+      <?= $this->render('partials/feld', ['feld' => 'key_name', 'label' => $this->translate('einst.api.name'), 'wert' => '', 'fehler' => $fehler['key_name'] ?? '', 'hinweis' => $this->translate('einst.api.name_hinweis')], null) ?>
+      <div class="se-aktionen"><button type="submit" class="ps-btn ps-btn--secondary"><?= $this->t('einst.api.anlegen') ?></button></div>
+    </form>
   </div>
 </section>

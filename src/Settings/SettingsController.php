@@ -36,6 +36,7 @@ final class SettingsController
         private readonly SiteRepository $sites,
         private readonly UserRepository $users,
         private readonly GoalRepository $goals,
+        private readonly ApiKeyRepository $apiKeys,
         private readonly string $scriptPath,
         private readonly string $endpointPath,
     ) {}
@@ -59,6 +60,8 @@ final class SettingsController
         $r->add('POST', '/einstellungen/benutzer/{id}/loeschen', fn(Request $q, array $p): Response => $this->benutzerLoeschen($q, $p['id']));
         $r->add('GET', '/einstellungen/konto', fn(Request $q): Response => $this->konto($q, []));
         $r->add('POST', '/einstellungen/konto', fn(Request $q): Response => $this->passwortAendern($q));
+        $r->add('POST', '/einstellungen/konto/api-schluessel', fn(Request $q): Response => $this->schluesselAnlegen($q));
+        $r->add('POST', '/einstellungen/konto/api-schluessel/{kid}/loeschen', fn(Request $q, array $p): Response => $this->schluesselLoeschen($q, $p['kid']));
         $r->add('POST', '/einstellungen/konto/2fa/start', fn(Request $q): Response => $this->zweiFaktor($q, 'start'));
         $r->add('POST', '/einstellungen/konto/2fa/bestaetigen', fn(Request $q): Response => $this->zweiFaktor($q, 'bestaetigen'));
         $r->add('POST', '/einstellungen/konto/2fa/abbrechen', fn(Request $q): Response => $this->zweiFaktor($q, 'abbrechen'));
@@ -513,14 +516,46 @@ final class SettingsController
         }
 
         $setup = $this->auth->pendingTotpSecret();
+        $neu = $this->session->get('neuer_schluessel');
+        $this->session->remove('neuer_schluessel');
+        $neu = is_string($neu) ? $neu : null;
 
         return $this->seite($q, $u, 'konto', $this->t->get('einst.konto.titel'), [
             'benutzer' => $u,
             'fehler' => $fehler,
             'zweiFaktor' => $this->auth->totpActive($u->id),
+            'apiSchluessel' => $this->apiKeys->forUser($u->id),
+            'neuerSchluessel' => $neu,
             'setupSchluessel' => $setup,
             'setupLink' => $setup === null ? '' : Totp::uri($setup, $u->email, 'Pegelstand'),
         ], $status);
+    }
+
+    private function schluesselAnlegen(Request $q): Response
+    {
+        $u = $this->guard($q, false, true);
+        if ($u instanceof Response) {
+            return $u;
+        }
+        $name = trim($q->input('key_name'));
+        if ($name === '' || mb_strlen($name) > 120) {
+            return $this->konto($q, ['key_name' => $this->t->get('einst.api.fehler_name')], 422);
+        }
+        $this->session->set('neuer_schluessel', $this->apiKeys->create($u->id, $name));
+
+        return Response::redirect($q->url('/einstellungen/konto#api'));
+    }
+
+    private function schluesselLoeschen(Request $q, string $kid): Response
+    {
+        $u = $this->guard($q, false, true);
+        if ($u instanceof Response) {
+            return $u;
+        }
+        $this->apiKeys->delete($u->id, (int) $kid);
+        $this->merke('success', $this->t->get('einst.api.geloescht'));
+
+        return Response::redirect($q->url('/einstellungen/konto#api'));
     }
 
     private function zweiFaktor(Request $q, string $aktion): Response
