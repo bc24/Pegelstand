@@ -91,3 +91,59 @@ button.ps-kpi[aria-pressed='true'] {
   border-color: var(--ps-primary);
   box-shadow: inset 0 -3px 0 var(--ps-signal), var(--ps-shadow-1);
 }
+
+/* Auswählbare Kennzahl mit zusätzlichem Info-Knopf: Der Auswahl-Knopf spannt über die ganze Karte. */
+.ps-kpi--waehlbar {
+  position: relative;
+  transition:
+    border-color var(--ps-duration-fast) var(--ps-ease),
+    box-shadow var(--ps-duration-fast) var(--ps-ease);
+}
+
+.ps-kpi--waehlbar:hover {
+  border-color: var(--ps-border-strong);
+}
+
+.ps-kpi--waehlbar:has([aria-pressed='true']) {
+  border-color: var(--ps-primary);
+  box-shadow: inset 0 -3px 0 var(--ps-signal), var(--ps-shadow-1);
+}
+
+.ps-kpi--waehlbar:has(.ps-kpi__auswahl:focus-visible) {
+  outline: 2px solid var(--ps-focus);
+  outline-offset: 2px;
+}
+
+.ps-kpi__auswahl {
+  display: inline-flex;
+  align-items: center;
+  min-height: 1.5rem;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  font-weight: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.ps-kpi__auswahl::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: var(--ps-radius-l);
+}
+
+.ps-kpi__auswahl:focus-visible {
+  outline: none;
+}
+
+.ps-kpi--waehlbar .ps-info-btn {
+  position: relative;
+  z-index: 1;
+}
+
+.ps-kpi__meta {
+  min-height: 1.5rem;
+}

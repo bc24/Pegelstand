@@ -1,0 +1,54 @@
+/* Filter-Chip: zeigt einen aktiven Filter und lässt sich entfernen. */
+.ps-chip {
+  display: inline-flex;
+  align-items: center;
+  max-width: 100%;
+  min-height: 2rem;
+  border: 1px solid var(--ps-border-strong);
+  border-radius: var(--ps-radius-full);
+  background: var(--ps-surface);
+  font-size: var(--ps-text-sm);
+}
+
+.ps-chip__text {
+  min-width: 0;
+  padding: 0 var(--ps-space-1) 0 var(--ps-space-3);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ps-chip__art {
+  color: var(--ps-text-muted);
+}
+
+.ps-chip__x {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border: 0;
+  border-radius: var(--ps-radius-full);
+  background: none;
+  color: var(--ps-text-muted);
+  cursor: pointer;
+  transition: background-color var(--ps-duration-fast) var(--ps-ease);
+}
+
+.ps-chip__x:hover {
+  background: var(--ps-surface-sunken);
+  color: var(--ps-text);
+}
+
+@media (pointer: coarse) {
+  .ps-chip {
+    min-height: 2.75rem;
+  }
+
+  .ps-chip__x {
+    width: 2.75rem;
+    height: 2.75rem;
+  }
+}

@@ -157,3 +157,34 @@ kbd {
     scroll-behavior: auto !important;
   }
 }
+
+/* Wortmarke und Sprunglink */
+.ps-wordmark {
+  color: var(--ps-text);
+  font-size: var(--ps-text-lg);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  text-decoration: none;
+}
+
+.ps-wordmark:hover {
+  color: var(--ps-text);
+}
+
+.ps-skip {
+  position: absolute;
+  left: var(--ps-space-4);
+  top: -4rem;
+  z-index: 100;
+  padding: var(--ps-space-2) var(--ps-space-4);
+  border-radius: var(--ps-radius-m);
+  background: var(--ps-primary);
+  color: var(--ps-on-primary);
+  font-weight: 600;
+  transition: top var(--ps-duration-fast) var(--ps-ease);
+}
+
+.ps-skip:focus {
+  top: var(--ps-space-2);
+  color: var(--ps-on-primary);
+}
