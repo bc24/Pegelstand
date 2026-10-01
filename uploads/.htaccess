@@ -1,9 +1,0 @@
-# Uploads dürfen niemals ausgeführt werden
-Options -Indexes -ExecCGI
-<FilesMatch "\.(php|phtml|php[0-9]|phar|pl|py|cgi|sh|htaccess)$">
-  Require all denied
-</FilesMatch>
-<IfModule mod_headers.c>
-Header set X-Content-Type-Options "nosniff"
-Header set Content-Security-Policy "default-src 'none'; img-src 'self'; style-src 'unsafe-inline'; sandbox"
-</IfModule>
