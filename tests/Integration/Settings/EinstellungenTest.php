@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Pegelstand\Tests\Integration\Settings;
 
+use Pegelstand\Auth\Totp;
 use Pegelstand\Core\Csrf;
 use Pegelstand\Core\Request;
 use Pegelstand\Core\Response;
@@ -211,5 +212,66 @@ final class EinstellungenTest extends InstalliertTestCase
 
         self::assertStringNotContainsString('<script>alert(1)', $seite);
         self::assertStringContainsString('&lt;script&gt;', $seite);
+    }
+
+    public function testZweiFaktorEinrichtenAnmeldenUndZuruecksetzen(): void
+    {
+        $this->anmelden();
+        $this->post('/einstellungen/konto/2fa/start');
+        $seite = $this->get('/einstellungen/konto')->body;
+        preg_match('/<code>([A-Z2-7 ]+)<\/code>/', $seite, $m);
+        $secret = str_replace(' ', '', $m[1] ?? '');
+        self::assertSame(32, strlen($secret), 'Der Schlüssel wird angezeigt.');
+
+        $falsch = $this->post('/einstellungen/konto/2fa/bestaetigen', ['code' => '000000']);
+        self::assertSame(422, $falsch->status);
+        self::assertNull($this->db->fetchValue('SELECT totp_enabled_at FROM ' . $this->db->table('users')));
+
+        $code = Totp::code($secret, time());
+        self::assertSame(303, $this->post('/einstellungen/konto/2fa/bestaetigen', ['code' => $code])->status);
+        self::assertNotNull($this->db->fetchValue('SELECT totp_enabled_at FROM ' . $this->db->table('users')));
+        $gespeichert = $this->db->fetchValue('SELECT totp_secret FROM ' . $this->db->table('users'));
+        self::assertIsString($gespeichert);
+        self::assertStringNotContainsString($secret, $gespeichert, 'Das Geheimnis liegt verschlüsselt in der Datenbank.');
+
+        // Neue Anmeldung: Passwort allein genügt nicht.
+        $this->session->destroy();
+        $antwort = $this->post('/login', ['email' => 'frank@beispiel.de', 'password' => 'ein sehr langer satz']);
+        self::assertSame('/login/2fa', $antwort->headers['Location']);
+        self::assertSame('/login', $this->get('/')->headers['Location'], 'Ohne Code kein Zugang.');
+
+        self::assertSame(422, $this->post('/login/2fa', ['code' => '123456'])->status);
+        self::assertSame('/login', $this->get('/')->headers['Location']);
+        // Derselbe Code, der bei der Einrichtung benutzt wurde, gilt nicht noch einmal.
+        self::assertSame(422, $this->post('/login/2fa', ['code' => $code])->status);
+        $naechster = Totp::code($secret, time() + 30);
+        self::assertSame(303, $this->post('/login/2fa', ['code' => $naechster])->status);
+        self::assertSame('/einstellungen/websites', $this->get('/einstellungen')->headers['Location']);
+
+        // Ausschalten braucht das Passwort.
+        self::assertSame(422, $this->post('/einstellungen/konto/2fa/aus', ['current_aus' => 'falsch'])->status);
+        $this->post('/einstellungen/konto/2fa/aus', ['current_aus' => 'ein sehr langer satz']);
+        self::assertNull($this->db->fetchValue('SELECT totp_enabled_at FROM ' . $this->db->table('users')));
+    }
+
+    public function testAdministratorSetztZweiFaktorEinesBenutzersZurueck(): void
+    {
+        $this->anmelden();
+        $this->post('/einstellungen/benutzer', ['name' => 'Gast', 'email' => 'gast@beispiel.de', 'password' => 'ein anderer langer satz', 'password_repeat' => 'ein anderer langer satz']);
+        $id = $this->db->fetchInt('SELECT id FROM ' . $this->db->table('users') . " WHERE name = 'Gast'");
+        $this->db->run('UPDATE ' . $this->db->table('users') . " SET totp_secret = 'x', totp_enabled_at = NOW() WHERE id = ?", [$id]);
+
+        self::assertStringContainsString('Zwei-Faktor-Anmeldung zurücksetzen', $this->get('/einstellungen/benutzer/' . $id)->body);
+        $this->post('/einstellungen/benutzer/' . $id . '/2fa-zuruecksetzen');
+
+        self::assertNull($this->db->fetchValue('SELECT totp_enabled_at FROM ' . $this->db->table('users') . ' WHERE id = ' . $id));
+    }
+
+    public function testAbgelaufenerCodeSchritt(): void
+    {
+        $antwort = $this->post('/login/2fa', ['code' => '123456']);
+
+        self::assertSame('/login', $antwort->headers['Location'], 'Ohne vorherige Passworteingabe gibt es keinen Code-Schritt.');
+        self::assertSame('/login', $this->get('/login/2fa')->headers['Location']);
     }
 }

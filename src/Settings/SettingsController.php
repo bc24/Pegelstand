@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace Pegelstand\Settings;
 
+use DateTimeImmutable;
 use DateTimeZone;
 use Pegelstand\Auth\AuthService;
 use Pegelstand\Auth\AuthUser;
+use Pegelstand\Auth\Totp;
 use Pegelstand\Core\Csrf;
 use Pegelstand\Core\Request;
 use Pegelstand\Core\Response;
@@ -54,6 +56,11 @@ final class SettingsController
         $r->add('POST', '/einstellungen/benutzer/{id}/loeschen', fn(Request $q, array $p): Response => $this->benutzerLoeschen($q, $p['id']));
         $r->add('GET', '/einstellungen/konto', fn(Request $q): Response => $this->konto($q, []));
         $r->add('POST', '/einstellungen/konto', fn(Request $q): Response => $this->passwortAendern($q));
+        $r->add('POST', '/einstellungen/konto/2fa/start', fn(Request $q): Response => $this->zweiFaktor($q, 'start'));
+        $r->add('POST', '/einstellungen/konto/2fa/bestaetigen', fn(Request $q): Response => $this->zweiFaktor($q, 'bestaetigen'));
+        $r->add('POST', '/einstellungen/konto/2fa/abbrechen', fn(Request $q): Response => $this->zweiFaktor($q, 'abbrechen'));
+        $r->add('POST', '/einstellungen/konto/2fa/aus', fn(Request $q): Response => $this->zweiFaktor($q, 'aus'));
+        $r->add('POST', '/einstellungen/benutzer/{id}/2fa-zuruecksetzen', fn(Request $q, array $p): Response => $this->zweiFaktorZuruecksetzen($q, $p['id']));
     }
 
     /* ---------- Rahmen ---------- */
@@ -392,6 +399,7 @@ final class SettingsController
             'sites' => $this->sites->all(),
             'fehler' => $fehler,
             'selbst' => $ziel['id'] === $u->id,
+            'zweiFaktor' => $this->auth->totpActive($ziel['id']),
         ], $status);
     }
 
@@ -461,7 +469,65 @@ final class SettingsController
             return $u;
         }
 
-        return $this->seite($q, $u, 'konto', $this->t->get('einst.konto.titel'), ['benutzer' => $u, 'fehler' => $fehler], $status);
+        $setup = $this->auth->pendingTotpSecret();
+
+        return $this->seite($q, $u, 'konto', $this->t->get('einst.konto.titel'), [
+            'benutzer' => $u,
+            'fehler' => $fehler,
+            'zweiFaktor' => $this->auth->totpActive($u->id),
+            'setupSchluessel' => $setup,
+            'setupLink' => $setup === null ? '' : Totp::uri($setup, $u->email, 'Pegelstand'),
+        ], $status);
+    }
+
+    private function zweiFaktor(Request $q, string $aktion): Response
+    {
+        $u = $this->guard($q, false, true);
+        if ($u instanceof Response) {
+            return $u;
+        }
+        $jetzt = new DateTimeImmutable('now', new DateTimeZone('UTC'));
+        switch ($aktion) {
+            case 'start':
+                if (!$this->auth->totpActive($u->id)) {
+                    $this->auth->beginTotpSetup();
+                }
+                break;
+            case 'abbrechen':
+                $this->auth->cancelTotpSetup();
+                break;
+            case 'bestaetigen':
+                if (!$this->auth->confirmTotpSetup($u->id, $q->input('code'), $jetzt)) {
+                    return $this->konto($q, ['code' => $this->t->get('einst.zwei_fa.fehler_code')], 422);
+                }
+                $this->merke('success', $this->t->get('einst.zwei_fa.eingeschaltet'));
+                break;
+            case 'aus':
+                if (!password_verify($q->input('current_aus'), $this->users->passwordHash($u->id))) {
+                    return $this->konto($q, ['current_aus' => $this->t->get('einst.fehler.passwort_aktuell')], 422);
+                }
+                $this->auth->disableTotp($u->id);
+                $this->merke('success', $this->t->get('einst.zwei_fa.ausgeschaltet'));
+                break;
+        }
+
+        return Response::redirect($q->url('/einstellungen/konto#zwei-fa'));
+    }
+
+    private function zweiFaktorZuruecksetzen(Request $q, string $id): Response
+    {
+        $u = $this->guard($q, true, true);
+        if ($u instanceof Response) {
+            return $u;
+        }
+        $ziel = $this->users->find((int) $id);
+        if ($ziel === null) {
+            return new Response('', 404);
+        }
+        $this->auth->disableTotp($ziel['id']);
+        $this->merke('success', $this->t->get('einst.zwei_fa.zurueckgesetzt'));
+
+        return Response::redirect($q->url('/einstellungen/benutzer/' . $id));
     }
 
     private function passwortAendern(Request $q): Response

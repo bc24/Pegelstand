@@ -7,6 +7,7 @@ namespace Pegelstand\Core;
 use DateTimeZone;
 use PDOException;
 use Pegelstand\Auth\AuthService;
+use Pegelstand\Auth\Crypto;
 use Pegelstand\Auth\LoginController;
 use Pegelstand\Database\Database;
 use Pegelstand\Database\MigrationException;
@@ -212,7 +213,7 @@ final class Application
         $translator = $this->translator();
         $session = $this->session($request);
         $csrf = new Csrf($session);
-        $auth = new AuthService($db, $session);
+        $auth = new AuthService($db, $session, new Crypto($config->string('app_key')));
         (new LoginController($view, $translator, $csrf, $auth, new RateLimiter($db), $salts, $clientIp, $config->int('login.rate_limit', 10)))->register($router);
         (new SettingsController($view, $translator, $csrf, $session, $auth, new SiteRepository($db), new UserRepository($db), $skript, $endpunkt))->register($router);
         (new DashboardController(

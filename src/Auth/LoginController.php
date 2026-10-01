@@ -37,6 +37,8 @@ final class LoginController
     {
         $router->add('GET', '/login', fn(Request $r): Response => $this->formular($r));
         $router->add('POST', '/login', fn(Request $r): Response => $this->anmelden($r));
+        $router->add('GET', '/login/2fa', fn(Request $r): Response => $this->codeFormular($r));
+        $router->add('POST', '/login/2fa', fn(Request $r): Response => $this->codePruefen($r));
         $router->add('POST', '/logout', fn(Request $r): Response => $this->abmelden($r));
     }
 
@@ -64,11 +66,48 @@ final class LoginController
             return $this->seite($email, $this->translator->get('login.fehler_zuviele'), 429);
         }
 
-        if ($email === '' || $request->input('password') === '' || $this->auth->attempt($email, $request->input('password'), $jetzt) === null) {
+        $ergebnis = $email === '' || $request->input('password') === '' ? 'fail' : $this->auth->attempt($email, $request->input('password'), $jetzt);
+        if ($ergebnis === 'fail') {
             return $this->seite($email, $this->translator->get('login.fehler_zugang'), 422);
         }
 
+        return Response::redirect($request->url($ergebnis === 'totp' ? '/login/2fa' : '/'));
+    }
+
+    private function codeFormular(Request $request): Response
+    {
+        if (!$this->auth->hatAusstehendenCode(new DateTimeImmutable('now', new DateTimeZone('UTC')))) {
+            return Response::redirect($request->url('/login'));
+        }
+
+        return $this->codeSeite('');
+    }
+
+    private function codePruefen(Request $request): Response
+    {
+        $jetzt = new DateTimeImmutable('now', new DateTimeZone('UTC'));
+        if (!$this->csrf->verify($request->input('_csrf')) || !$this->auth->hatAusstehendenCode($jetzt)) {
+            return Response::redirect($request->url('/login'));
+        }
+        $salt = $this->salts->forTime($jetzt);
+        $ip = IpAddress::normalize($this->clientIp->resolve($request)) ?? 'unbekannt';
+        if ($this->limiter->exceeded('login', VisitorHasher::rateKey($salt, 'ip:' . $ip), $this->limit, $jetzt, self::WINDOW)) {
+            return $this->codeSeite($this->translator->get('login.fehler_zuviele'), 429);
+        }
+        if (!$this->auth->completeTotp($request->input('code'), $jetzt)) {
+            return $this->codeSeite($this->translator->get('login.fehler_code'), 422);
+        }
+
         return Response::redirect($request->url('/'));
+    }
+
+    private function codeSeite(string $fehler, int $status = 200): Response
+    {
+        return Response::html($this->view->render('auth/code', [
+            'titel' => $this->translator->get('login.code_titel'),
+            'fehler' => $fehler,
+            'csrf' => $this->csrf->token(),
+        ]), $status);
     }
 
     private function abmelden(Request $request): Response

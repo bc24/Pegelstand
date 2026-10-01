@@ -9,6 +9,7 @@ defined('PEGELSTAND_ROOT') || exit;
 /** @var list<array<string, mixed>> $sites */
 /** @var array<string, string> $fehler */
 /** @var bool $selbst */
+/** @var bool $zweiFaktor */
 /** @var bool $admin */
 /** @var string $csrf */
 /** @var array{typ: string, text: string}|null $flash */
@@ -33,6 +34,18 @@ $basis = $this->url('/einstellungen/benutzer/' . $ziel['id']);
     </form>
   </div>
 </section>
+<?php if ($zweiFaktor && !$selbst) : ?>
+<section class="ps-card es-karte" aria-labelledby="fa-titel">
+  <div class="ps-card__body">
+    <h2 id="fa-titel"><?= $this->t('einst.zwei_fa.zuruecksetzen') ?></h2>
+    <p class="se-einleitung"><?= $this->t('einst.zwei_fa.zuruecksetzen_text') ?></p>
+    <form method="post" action="<?= $this->e($basis . '/2fa-zuruecksetzen') ?>">
+      <input type="hidden" name="_csrf" value="<?= $this->e($csrf) ?>">
+      <div class="se-aktionen"><button type="submit" class="ps-btn ps-btn--secondary"><?= $this->t('einst.zwei_fa.zuruecksetzen') ?></button></div>
+    </form>
+  </div>
+</section>
+<?php endif; ?>
 <?php if (!$selbst) : ?>
 <section class="ps-card es-karte es-gefahr" aria-labelledby="del-titel">
   <div class="ps-card__body">

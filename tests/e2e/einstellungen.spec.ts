@@ -90,3 +90,18 @@ test('Benutzer und Konto', async ({ page }, info) => {
   await pruefe(page);
   await bild(page, info, 'konto');
 });
+
+test('Zwei-Faktor: Einrichtung zeigt Schlüssel, falscher Code wird abgelehnt, Abbrechen möglich', async ({ page }, info) => {
+  await anmelden(page);
+  await page.goto(`${LIVE}/einstellungen/konto`);
+  await page.getByRole('button', { name: 'Einrichten' }).click();
+  await expect(page.getByText('Geheimer Schlüssel')).toBeVisible();
+  await expect(page.locator('#zwei-fa .es-code')).toContainText(/[A-Z2-7]{4} [A-Z2-7]{4}/);
+  await pruefe(page);
+  await bild(page, info, 'zwei-faktor');
+  await page.getByLabel('Sechsstelliger Code').fill('000000');
+  await page.getByRole('button', { name: 'Einschalten' }).click();
+  await expect(page.getByRole('alert')).toContainText('Bitte prüfe deine Angaben');
+  await page.getByRole('button', { name: 'Abbrechen' }).click();
+  await expect(page.getByRole('button', { name: 'Einrichten' })).toBeVisible();
+});
