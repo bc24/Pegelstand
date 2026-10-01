@@ -6,3 +6,6 @@ parameters:
         - index.php
         - database
         - bin/e2e-prepare.php
+        - bin/cron.php
+        - bin/demo-data.php
+        - bin/benchmark.php

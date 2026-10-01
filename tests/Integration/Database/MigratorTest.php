@@ -48,10 +48,7 @@ final class MigratorTest extends DatenbankTestCase
      */
     private static function versionen(): array
     {
-        return array_map(
-            static fn(string $datei): string => substr(basename($datei), 0, 4),
-            glob(PEGELSTAND_ROOT . '/database/migrations/[0-9][0-9][0-9][0-9]_*.php') ?: [],
-        );
+        return \Pegelstand\Tests\Support\Migrationen::versionen();
     }
 
     public function testLegtAlleTabellenAnUndMerktSichDieVersion(): void

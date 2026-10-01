@@ -7,7 +7,7 @@ use PhpCsFixer\Finder;
 
 $finder = Finder::create()
     ->in([__DIR__ . '/src', __DIR__ . '/tests', __DIR__ . '/database'])
-    ->append([__FILE__, __DIR__ . '/index.php', __DIR__ . '/bin/e2e-prepare.php', __DIR__ . '/config/config.example.php']);
+    ->append([__FILE__, __DIR__ . '/index.php', __DIR__ . '/bin/e2e-prepare.php', __DIR__ . '/bin/cron.php', __DIR__ . '/bin/demo-data.php', __DIR__ . '/bin/benchmark.php', __DIR__ . '/config/config.example.php']);
 
 return (new Config())
     ->setRiskyAllowed(true)

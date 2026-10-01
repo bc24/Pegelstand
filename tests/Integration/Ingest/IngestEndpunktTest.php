@@ -4,63 +4,16 @@ declare(strict_types=1);
 
 namespace Pegelstand\Tests\Integration\Ingest;
 
-use Pegelstand\Core\Application;
-use Pegelstand\Core\ArraySession;
-use Pegelstand\Core\Paths;
 use Pegelstand\Core\Request;
 use Pegelstand\Core\Response;
-use Pegelstand\Database\Database;
-use Pegelstand\Install\AdminInput;
-use Pegelstand\Install\DatabaseInput;
-use Pegelstand\Install\Installer;
-use Pegelstand\Tests\Integration\DatenbankTestCase;
+use Pegelstand\Tests\Integration\InstalliertTestCase;
 
 /**
  * Prüft Endpunkt und Script-Auslieferung durch die ganze Anwendung (Router, Konfiguration, Datenbank).
  */
-final class IngestEndpunktTest extends DatenbankTestCase
+final class IngestEndpunktTest extends InstalliertTestCase
 {
     private const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36';
-
-    private string $temp = '';
-    private Database $db;
-
-    protected function setUp(): void
-    {
-        $this->temp = sys_get_temp_dir() . '/ps-ingest-' . bin2hex(random_bytes(4));
-        mkdir($this->temp . '/config', 0777, true);
-        mkdir($this->temp . '/storage', 0777, true);
-        $z = $this->zugang();
-        $praefix = $this->neuerPraefix();
-        (new Installer(new Paths(PEGELSTAND_ROOT, $this->temp . '/config', $this->temp . '/storage')))->install(
-            new DatabaseInput($z['host'], $z['port'], $z['name'], $z['user'], $z['password'], $praefix),
-            new AdminInput('Frank', 'frank@beispiel.de', 'ein sehr langer satz', 'ein sehr langer satz'),
-        );
-        $this->db = Database::connect([...$z, 'prefix' => $praefix]);
-        $this->db->run(
-            'INSERT INTO ' . $this->db->table('sites') . ' (public_id, name, domain, created_at) VALUES (?, ?, ?, ?)',
-            ['abcd1234abcd1234', 'Test', 'beispiel.de', '2026-10-01 00:00:00'],
-        );
-    }
-
-    protected function tearDown(): void
-    {
-        parent::tearDown();
-        $this->loesche($this->temp);
-    }
-
-    private function loesche(string $pfad): void
-    {
-        foreach (glob($pfad . '/{,.}[!.]*', GLOB_BRACE) ?: [] as $eintrag) {
-            is_dir($eintrag) ? $this->loesche($eintrag) : @unlink($eintrag);
-        }
-        @rmdir($pfad);
-    }
-
-    private function app(): Application
-    {
-        return new Application(new Paths(PEGELSTAND_ROOT, $this->temp . '/config', $this->temp . '/storage'), new ArraySession());
-    }
 
     private function senden(string $body): Response
     {
@@ -120,9 +73,7 @@ final class IngestEndpunktTest extends DatenbankTestCase
 
     public function testAnderePfadeAusKonfiguration(): void
     {
-        $datei = $this->temp . '/config/config.php';
-        $inhalt = (string) file_get_contents($datei);
-        file_put_contents($datei, str_replace('return array (', "return array (\n    'tracker' => ['script_path' => '/stats.js', 'endpoint_path' => '/stats/senden'],", $inhalt));
+        $this->konfiguration("    'tracker' => ['script_path' => '/stats.js', 'endpoint_path' => '/stats/senden'],\n");
 
         $anfrage = new Request('POST', '/stats/senden', headers: ['user-agent' => self::UA], ip: '203.0.113.5', body: '{"s":"abcd1234abcd1234","u":"https://beispiel.de/"}');
         self::assertSame(202, $this->app()->handle($anfrage)->status);

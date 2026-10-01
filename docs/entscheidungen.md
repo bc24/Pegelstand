@@ -25,3 +25,16 @@ Frank hat die Entscheidungen ab Phase 3 an den Entwickler delegiert ("löse alle
 
 - Länderkarte im Dashboard (Phase 5, ohne externe Kartendaten nur mit eigener Geometrie).
 - "Jahr" im Zeitraum-Menü bedeutet "Dieses Jahr" (bis heute).
+
+## Phase 4: Aggregation und Hintergrundjobs
+
+| # | Entscheidung | Begründung |
+|---|---|---|
+| 15 | Aggregate werden pro Site und Tag komplett neu berechnet und ersetzen die alten Zeilen (wiederholbar, fängt Nachzügler ab). | Einfacher und robuster als inkrementelle Zähler. |
+| 16 | Sitzungswerte (Besucher, Sitzungen, Absprünge, Dauer, Herkunft, Gerät, Land, Einstiegs- und Ausstiegsseite) zählen an dem Tag, an dem die Sitzung begann. Seitenaufrufe und Ereignisse zählen an dem Tag, an dem sie geschahen. | Eine Sitzung hat genau einen Beginn. Die Abweichung betrifft nur Sitzungen über Mitternacht. |
+| 17 | Stundenwerte werden in UTC-Stundengrenzen gerechnet und in die Ortszeit der Site umgerechnet. Bei Zeitzonen mit halbstündigem Versatz (z. B. Indien) beginnen die Stunden daher um :30. Dadurch braucht Pegelstand keine Zeitzonen-Tabellen in MySQL (`CONVERT_TZ`), die auf Shared Hosting oft fehlen. | Läuft überall. |
+| 18 | Der Aggregationsjob merkt sich je Site, ab welchem Tag alles endgültig ist (`agg_cursor_<id>` in `settings`). Ab dem Vortag wird bei jedem Lauf neu gerechnet, höchstens 31 Tage pro Lauf (Nachholen älterer Daten). | Begrenzt die Laufzeit pro Lauf. |
+| 19 | Aufräumen löscht Rohdaten nur, wenn sie älter als die Aufbewahrungsfrist **und** schon aggregiert sind. Aggregate und Wörterbücher bleiben. | Sonst gingen Zahlen verloren. Wörterbuch-Einträge werden von Aggregaten referenziert und bleiben deshalb bestehen. |
+| 20 | Pseudo-Cron: Nach der Antwort an den Besucher prüft Pegelstand höchstens einmal pro Minute (Marker-Datei `storage/cache/cron-last`), ob Jobs fällig sind. Mit `cron.mode = external` in der Konfiguration schaltest du das ab und nutzt `php bin/cron.php`. | Läuft auf jedem Hoster ohne Cron. Ohne `fastcgi_finish_request` (reines mod_php) wartet der Besucher auf den Job, der pro Lauf begrenzt ist. |
+| 21 | Jobs sperren sich über die Tabelle `job_runs` (abgelaufene Sperren abgestürzter Läufe werden übernommen), nicht über Dateisperren. | Funktioniert auf Hostern mit Netzwerk-Dateisystem. |
+| 22 | `bin/cron.php` bleibt im Release-Zip, die übrigen Skripte in `bin/` nicht. `bin/demo-data.php` und `bin/benchmark.php` sind Entwicklungswerkzeuge. | Endnutzer brauchen nur den Cron-Aufruf. |

@@ -22,6 +22,11 @@ use Pegelstand\Ingest\UserAgentParser;
 use Pegelstand\Install\ConfigWriter;
 use Pegelstand\Install\InstallController;
 use Pegelstand\Install\Installer;
+use Pegelstand\Jobs\AggregationJob;
+use Pegelstand\Jobs\CleanupJob;
+use Pegelstand\Jobs\JobRunner;
+use Pegelstand\Jobs\Scheduler;
+use Pegelstand\Stats\Aggregator;
 use Pegelstand\Version;
 use Throwable;
 
@@ -89,9 +94,20 @@ final class Application
         return $this->fehlerseite($request, '404', 404);
     }
 
-    private function betrieb(Request $request, Config $config, View $view): Response
+    /**
+     * Datenbankverbindung der installierten Anwendung, null solange nichts installiert ist.
+     * Für Kommandozeilen-Werkzeuge (bin/cron.php, bin/demo-data.php).
+     */
+    public function database(): ?Database
     {
-        $db = Database::connect([
+        $config = Config::load($this->paths->configFile());
+
+        return $config === null ? null : $this->connect($config);
+    }
+
+    private function connect(Config $config): Database
+    {
+        return Database::connect([
             'host' => $config->string('db.host', 'localhost'),
             'port' => $config->int('db.port', 3306),
             'name' => $config->string('db.name'),
@@ -99,6 +115,58 @@ final class Application
             'password' => $config->string('db.password'),
             'prefix' => $config->string('db.prefix', 'ps_'),
         ]);
+    }
+
+    /** Stellt sicher, dass das Schema aktuell ist (für Kommandozeilen-Werkzeuge). */
+    public function migrate(Database $db): void
+    {
+        (new Migrator($db, $this->paths->migrationsDir()))->migrate();
+    }
+
+    public function scheduler(Database $db): Scheduler
+    {
+        return new Scheduler(
+            new JobRunner($db),
+            [new AggregationJob($db, new Aggregator($db)), new CleanupJob($db)],
+            new ErrorLog($this->paths->storageDir() . '/logs/error.log'),
+        );
+    }
+
+    /**
+     * Pseudo-Cron: Nach der Antwort an den Besucher laufen fällige Hintergrundjobs. So funktioniert Pegelstand auch
+     * ohne Cronjob. Eine Marker-Datei verhindert, dass jede Anfrage die Datenbank fragt. Wer einen echten Cronjob
+     * (`php bin/cron.php`) einrichtet, setzt `cron.mode` auf `external`.
+     */
+    public function afterResponse(): void
+    {
+        try {
+            $config = Config::load($this->paths->configFile());
+            if ($config === null || $config->string('cron.mode', 'pseudo') !== 'pseudo') {
+                return;
+            }
+            $marker = $this->paths->storageDir() . '/cache/cron-last';
+            if (is_file($marker) && time() - (int) filemtime($marker) < 60) {
+                return;
+            }
+            if (!is_dir(dirname($marker))) {
+                @mkdir(dirname($marker), 0750, true);
+            }
+            @touch($marker);
+            @set_time_limit(60);
+            ignore_user_abort(true);
+            $db = $this->connect($config);
+            if (!$db->tableExists('job_runs')) {
+                return;
+            }
+            $this->scheduler($db)->runDue();
+        } catch (Throwable $fehler) {
+            (new ErrorLog($this->paths->storageDir() . '/logs/error.log'))->write($fehler);
+        }
+    }
+
+    private function betrieb(Request $request, Config $config, View $view): Response
+    {
+        $db = $this->connect($config);
 
         $wartung = $this->sichereSchema($db, $request);
         if ($wartung !== null) {

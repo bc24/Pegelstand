@@ -18,7 +18,7 @@ for pfad in index.php .htaccess LICENSE README.md CHANGELOG.md THIRD-PARTY.md li
 done
 
 # Nur-Entwicklungs-Dateien gehören nicht ins Release
-find "$STAGING/bin" -type f ! -name .htaccess -delete
+find "$STAGING/bin" -type f ! -name .htaccess ! -name cron.php -delete
 rm -f "$STAGING"/assets/css/komponentenseite.css "$STAGING"/assets/js/komponentenseite.js \
   "$STAGING"/resources/css/komponentenseite.css "$STAGING"/resources/js/komponentenseite.js "$STAGING"/bin/build-assets.mjs
 
