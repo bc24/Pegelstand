@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="de" data-ps-assets="/assets">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Komponenten – Pegelstand</title>
+  <script src="/assets/js/theme-init.js"></script>
+  <link rel="preload" href="/assets/fonts/inter-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/assets/css/pegelstand.css">
+  <link rel="stylesheet" href="/assets/css/komponentenseite.css">
+</head>
+<body>
+  <a class="kp-skip" href="#inhalt">Zum Inhalt springen</a>
+
+  <header class="kp-header">
+    <a class="ps-wordmark" href="komponenten.html">Pegelstand</a>
+    <span class="ps-badge ps-badge--signal kp-nur-gross">Designsystem</span>
+    <span class="kp-header__spacer"></span>
+    <div class="ps-menu-wrap" data-ps-menu>
+      <button type="button" class="ps-btn ps-btn--secondary" aria-haspopup="menu" aria-expanded="false" aria-controls="menue-darstellung">
+        <svg class="ps-icon" aria-hidden="true" focusable="false"><use href="/assets/icons.svg#ps-icon-sun"/></svg><span class="kp-nur-gross">Darstellung</span><span class="ps-visually-hidden kp-nur-klein">Darstellung</span> <svg class="ps-icon ps-icon--s" aria-hidden="true" focusable="false"><use href="/assets/icons.svg#ps-icon-chevron-down"/></svg>
+      </button>
+      <div class="ps-menu ps-menu--end" id="menue-darstellung" role="menu" aria-label="Darstellung" hidden>
+        <button type="button" class="ps-menu__item" role="menuitemradio" aria-checked="false" data-ps-theme="light" data-ps-gruppe="theme"><svg class="ps-icon ps-icon--s" aria-hidden="true" focusable="false"><use href="/assets/icons.svg#ps-icon-sun"/></svg> Hell <span class="ps-menu__check"><svg class="ps-icon ps-icon--s" aria-hidden="true" focusable="false"><use href="/assets/icons.svg#ps-icon-check"/></svg></span></button>
+        <button type="button" class="ps-menu__item" role="menuitemradio" aria-checked="false" data-ps-theme="dark" data-ps-gruppe="theme"><svg class="ps-icon ps-icon--s" aria-hidden="true" focusable="false"><use href="/assets/icons.svg#ps-icon-moon"/></svg> Dunkel <span class="ps-menu__check"><svg class="ps-icon ps-icon--s" aria-hidden="true" focusable="false"><use href="/assets/icons.svg#ps-icon-check"/></svg></span></button>
+        <button type="button" class="ps-menu__item" role="menuitemradio" aria-checked="true" data-ps-theme="system" data-ps-gruppe="theme"><svg class="ps-icon ps-icon--s" aria-hidden="true" focusable="false"><use href="/assets/icons.svg#ps-icon-monitor"/></svg> System <span class="ps-menu__check"><svg class="ps-icon ps-icon--s" aria-hidden="true" focusable="false"><use href="/assets/icons.svg#ps-icon-check"/></svg></span></button>
+      </div>
+    </div>
+  </header>
+
+  <div class="kp-layout">
+    <nav class="kp-nav" aria-label="Abschnitte">
+      <a href="#farben">Farben</a>
+      <a href="#typografie">Typografie</a>
+      <a href="#raster">Abstände und Formen</a>
+      <a href="#bewegung">Bewegung</a>
+      <a href="#icons">Icons</a>
+      <a href="#buttons">Buttons</a>
+      <a href="#formulare">Formulare</a>
+      <a href="#tabellen">Tabellen</a>
+      <a href="#karten">Karten und Kennzahlen</a>
+      <a href="#tabs">Tabs</a>
+      <a href="#dropdown">Dropdown</a>
+      <a href="#modal">Modal</a>
+      <a href="#toast">Toasts</a>
+      <a href="#tooltip">Tooltips</a>
+      <a href="#skeleton">Skeletons</a>
+      <a href="#leer">Leerzustände</a>
+      <a href="#badges">Badges</a>
+    </nav>
+
+    <main class="kp-main" id="inhalt">
+      <div class="kp-intro">
+        <h1>Komponenten</h1>
+        <p>Interne Seite, die das Designsystem in allen Zuständen zeigt. Sie ist nur für die Entwicklung gedacht. Hover, Aktiv und Fokus siehst du, wenn du die Elemente anfasst oder mit der Tab-Taste durchgehst. Stelle oben rechts die Darstellung auf Hell, Dunkel oder System.</p>
+      </div>
+
+      <section class="kp-section" id="farben" aria-labelledby="h-farben">
+        <h2 id="h-farben">Farben</h2>
+        <p>Alle Farben sind Tokens in CSS-Variablen und gelten für hell und dunkel. Die Werte unten sind die im aktuellen Modus berechneten. Petrol ist die Grundfarbe, das Bojen-Orange hebt Wichtiges hervor. Textpaare erreichen mindestens 4,5:1, Rahmen und Grafikelemente mindestens 3:1.</p>
+        <div class="kp-demo"><h3>Flächen und Rahmen</h3><div class="kp-swatches" data-farben="flaechen"></div></div>
+        <div class="kp-demo"><h3>Text</h3><div class="kp-swatches" data-farben="text"></div></div>
+        <div class="kp-demo"><h3>Primärfarbe Petrol</h3><div class="kp-swatches" data-farben="primaer"></div></div>
+        <div class="kp-demo"><h3>Signalfarbe Bojen-Orange</h3><div class="kp-swatches" data-farben="signal"></div></div>
+        <div class="kp-demo"><h3>Zustände und Fokus</h3><div class="kp-swatches" data-farben="zustaende"></div></div>
+      </section>
+
+      <section class="kp-section" id="typografie" aria-labelledby="h-typo">
+        <h2 id="h-typo">Typografie</h2>
+        <p>Eine Schrift: Inter, selbst gehostet. Alle Zahlen laufen mit tabellarischen Ziffern, damit Spalten sauber untereinander stehen.</p>
+        <div class="kp-demo">
+          <div class="kp-typ"><code>3xl · 36 px · 700</code><span style="font-size:var(--ps-text-3xl);font-weight:700;letter-spacing:-0.03em">12.438 Besucher</span></div>
+          <div class="kp-typ"><code>2xl · 28 px · 700 (h1)</code><span style="font-size:var(--ps-text-2xl);font-weight:700;letter-spacing:-0.02em">Übersicht der Woche</span></div>
+          <div class="kp-typ"><code>xl · 22 px · 650 (h2)</code><span style="font-size:var(--ps-text-xl);font-weight:650">Top-Seiten und Quellen</span></div>
+          <div class="kp-typ"><code>lg · 18 px · 600 (h3)</code><span style="font-size:var(--ps-text-lg);font-weight:600">Woher kommen deine Besucher?</span></div>
+          <div class="kp-typ"><code>base · 16 px · 400</code><span>Pegelstand zählt Besuche, ohne Cookies zu setzen und ohne einzelne Personen zu verfolgen.</span></div>
+          <div class="kp-typ"><code>sm · 14 px · 400</code><span style="font-size:var(--ps-text-sm)">Tabellen, Formularfelder und Beschriftungen nutzen diese Größe.</span></div>
+          <div class="kp-typ"><code>xs · 12 px · 600</code><span style="font-size:var(--ps-text-xs);font-weight:600">Spaltenköpfe, Badges und Hinweise</span></div>
+          <div class="kp-typ"><code>Tabellarische Ziffern</code><span class="ps-num">1.111,1 · 8.888,8 · 1.234,5 (gleiche Breite je Ziffer)</span></div>
+        </div>
+      </section>
+
+      <section class="kp-section" id="raster" aria-labelledby="h-raster">
+        <h2 id="h-raster">Abstände, Radien und Schatten</h2>
+        <p>Abstände folgen einem 4/8-Pixel-Raster. Es gibt drei Radien und drei Schattenstufen, mehr nicht.</p>
+        <div class="kp-demo">
+          <h3>Abstände</h3>
+          <div class="kp-abstand"><code>space-1 · 4 px</code><i style="width:var(--ps-space-1)"></i></div>
+          <div class="kp-abstand"><code>space-2 · 8 px</code><i style="width:var(--ps-space-2)"></i></div>
+          <div class="kp-abstand"><code>space-3 · 12 px</code><i style="width:var(--ps-space-3)"></i></div>
+          <div class="kp-abstand"><code>space-4 · 16 px</code><i style="width:var(--ps-space-4)"></i></div>
+          <div class="kp-abstand"><code>space-5 · 24 px</code><i style="width:var(--ps-space-5)"></i></div>
+          <div class="kp-abstand"><code>space-6 · 32 px</code><i style="width:var(--ps-space-6)"></i></div>
+          <div class="kp-abstand"><code>space-7 · 48 px</code><i style="width:var(--ps-space-7)"></i></div>
+          <div class="kp-abstand"><code>space-8 · 64 px</code><i style="width:var(--ps-space-8)"></i></div>
+        </div>
+        <div class="kp-demo">
+          <h3>Radien</h3>
+          <div class="kp-row">
+            <div class="kp-box" style="border-radius:var(--ps-radius-s)">radius-s<br>6 px</div>
+            <div class="kp-box" style="border-radius:var(--ps-radius-m)">radius-m<br>10 px</div>
+            <div class="kp-box" style="border-radius:var(--ps-radius-l)">radius-l<br>14 px</div>
+            <div class="kp-box" style="border-radius:var(--ps-radius-full)">full</div>
+          </div>
+        </div>
+        <div class="kp-demo">
+          <h3>Schatten</h3>
+          <div class="kp-row">
+            <div class="kp-box" style="border-radius:var(--ps-radius-m);box-shadow:var(--ps-shadow-1)">shadow-1<br>Karten</div>
+            <div class="kp-box" style="border-radius:var(--ps-radius-m);box-shadow:var(--ps-shadow-2)">shadow-2<br>Tooltips</div>
+            <div class="kp-box" style="border-radius:var(--ps-radius-m);box-shadow:var(--ps-shadow-3)">shadow-3<br>Menüs, Modals</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="kp-section" id="bewegung" aria-labelledby="h-bewegung">
+        <h2 id="h-bewegung">Bewegung</h2>
+        <p>Übergänge dauern 150 bis 250 ms und haben eine einheitliche Kurve. Wer in den Systemeinstellungen reduzierte Bewegung wählt, sieht sie ohne Animation.</p>
+        <div class="kp-demo">
+          <div class="kp-row"><button type="button" class="ps-btn ps-btn--secondary" data-demo-bewegung>Bewegung auslösen</button></div>
+          <div class="kp-bewegung" aria-hidden="true"></div>
+          <p class="kp-note">fast 150 ms (Hover, Fokus) · normal 200 ms (Menüs, Schalter) · slow 250 ms (Modals, Toasts)</p>
+        </div>
+      </section>
+
+      <section class="kp-section" id="icons" aria-labelledby="h-icons">
+        <h2 id="h-icons">Icons</h2>
+        <p>Lucide als lokales SVG-Sprite (Lizenz ISC). Nur die tatsächlich genutzten Icons landen im Sprite. Größen: 16, 20 und 24 px, Linienstärke 2.</p>
+        <div class="kp-demo"><div class="kp-icons" data-icons></div></div>
+      </section>
+
+      <section class="kp-section" id="buttons" aria-labelledby="h-buttons">
+        <h2 id="h-buttons">Buttons</h2>
+        <div class="kp-demo">
+          <h3>Varianten</h3>
+          <div class="kp-row">
+            <button type="button" class="ps-btn ps-btn--primary">Speichern</button>
+            <button type="button" class="ps-btn ps-btn--secondary">Abbrechen</button>
+            <button type="button" class="ps-btn ps-btn--ghost">Mehr erfahren</button>
+            <button type="button" class="ps-btn ps-btn--danger">Site löschen</button>
+          </div>
+        </div>
+        <div class="kp-demo">
+          <h3>Mit Icon, nur Icon, klein</h3>
+          <div class="kp-row">
+            <button type="button" class="ps-btn ps-btn--primary"><svg class="ps-icon ps-icon--s" aria-hidden="true" focusable="false"><use href="/assets/icons.svg#ps-icon-plus"/></svg> Site hinzufügen</button>
+            <button type="button" class="ps-btn ps-btn--secondary"><svg class="ps-icon ps-icon--s" aria-hidden="true" focusable="false"><use href="/assets/icons.svg#ps-icon-download"/></svg> CSV exportieren</button>
+            <button type="button" class="ps-btn ps-btn--secondary ps-btn--icon" aria-label="Einstellungen"><svg class="ps-icon" aria-hidden="true" focusable="false"><use href="/assets/icons.svg#ps-icon-settings"/></svg></button>
+            <button type="button" class="ps-btn ps-btn--ghost ps-btn--icon" aria-label="Kopieren" data-ps-tooltip="Tracking-Code kopieren"><svg class="ps-icon" aria-hidden="true" focusable="false"><use href="/assets/icons.svg#ps-icon-copy"/></svg></button>
+            <button type="button" class="ps-btn ps-btn--primary ps-btn--s">Klein</button>
+            <button type="button" class="ps-btn ps-btn--secondary ps-btn--s ps-btn--icon" aria-label="Aktualisieren"><svg class="ps-icon ps-icon--s" aria-hidden="true" focusable="false"><use href="/assets/icons.svg#ps-icon-refresh-cw"/></svg></button>
+          </div>
+        </div>
+        <div class="kp-demo">
+          <h3>Gesperrt und Wartezustand</h3>
+          <div class="kp-row">
+            <button type="button" class="ps-btn ps-btn--primary" disabled>Gesperrt</button>
+            <button type="button" class="ps-btn ps-btn--secondary" disabled>Gesperrt</button>
+            <button type="button" class="ps-btn ps-btn--primary" aria-busy="true">Verbindung wird geprüft</button>
+            <button type="button" class="ps-btn ps-btn--secondary" data-demo-busy>Klicken zum Testen</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="kp-section" id="formulare" aria-labelledby="h-formulare">
+        <h2 id="h-formulare">Formularelemente</h2>
+        <div class="kp-demo">
+          <h3>Textfelder</h3>
+          <div class="kp-form">
+            <div class="ps-field">
+              <label class="ps-label" for="f-name">Name der Site</label>
+              <input class="ps-input" id="f-name" type="text" placeholder="z. B. Mein Blog">
+            </div>
+            <div class="ps-field">
+              <label class="ps-label" for="f-domain">Domain</label>
+              <input class="ps-input" id="f-domain" type="text" value="beispiel.de" aria-describedby="f-domain-hint">
+              <span class="ps-hint" id="f-domain-hint">Ohne https:// und ohne Pfad.</span>
+            </div>
+            <div class="ps-field">
+              <label class="ps-label" for="f-fehler">E-Mail-Adresse</label>
+              <input class="ps-input" id="f-fehler" type="email" value="frank@beispiel" aria-invalid="true" aria-describedby="f-fehler-text">
+              <span class="ps-error" id="f-fehler-text"><svg class="ps-icon ps-icon--s" aria-hidden="true" focusable="false"><use href="/assets/icons.svg#ps-icon-circle-alert"/></svg> <span>Die Adresse ist unvollständig. Prüfe, ob nach dem @ eine Domain mit Endung steht.</span></span>
+            </div>
+            <div class="ps-field">
+              <label class="ps-label" for="f-gesperrt">Site-ID</label>
+              <input class="ps-input" id="f-gesperrt" type="text" value="a1b2c3d4" disabled>
+            </div>
+            <div class="ps-field">
+              <label class="ps-label" for="f-suche">Suche</label>
+              <div class="ps-input-wrap"><svg class="ps-icon" aria-hidden="true" focusable="false"><use href="/assets/icons.svg#ps-icon-search"/></svg><input class="ps-input" id="f-suche" type="search" placeholder="Seiten durchsuchen"></div>
+            </div>
+            <div class="ps-field">
+              <label class="ps-label" for="f-zone">Zeitzone</label>
+              <div class="ps-select">
+                <select id="f-zone">
+                  <option>Europe/Berlin</option>
+                  <option>Europe/Wien</option>
+                  <option>Europe/Zurich</option>
+                </select>
+                <svg class="ps-icon" aria-hidden="true" focusable="false"><use href="/assets/icons.svg#ps-icon-chevron-down"/></svg>
+              </div>
+            </div>
+            <div class="ps-field" style="grid-column: 1 / -1">
+              <label class="ps-label" for="f-text">Notiz</label>
+              <textarea class="ps-textarea" id="f-text" placeholder="Interne Notiz zur Site"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="kp-demo">
+          <h3>Auswahl</h3>
+          <div class="kp-form">
+            <fieldset style="border:0;padding:0;margin:0;display:flex;flex-direction:column;gap:var(--ps-space-3)">
+              <legend class="ps-label" style="padding:0;margin-bottom:var(--ps-space-2)">Erfassen</legend>
+              <label class="ps-check"><input type="checkbox" checked><span>Ausgehende Links</span></label>
+              <label class="ps-check"><input type="checkbox"><span>Datei-Downloads</span></label>
+              <label class="ps-check"><input type="checkbox" id="f-gemischt"><span>Alle Optionen (teilweise gewählt)</span></label>
+              <label class="ps-check"><input type="checkbox" disabled><span>404-Seiten (nicht verfügbar)</span></label>
+            </fieldset>
+            <fieldset style="border:0;padding:0;margin:0;display:flex;flex-direction:column;gap:var(--ps-space-3)">
+              <legend class="ps-label" style="padding:0;margin-bottom:var(--ps-space-2)">Bericht</legend>
+              <label class="ps-check"><input type="radio" name="bericht" checked><span>Wöchentlich</span></label>
+              <label class="ps-check"><input type="radio" name="bericht"><span>Monatlich</span></label>
+              <label class="ps-check"><input type="radio" name="bericht"><span>Nie</span></label>
+              <label class="ps-check"><input type="radio" name="bericht" disabled><span>Täglich (nicht verfügbar)</span></label>
+            </fieldset>
+            <div style="display:flex;flex-direction:column;gap:var(--ps-space-3)">
+              <label class="ps-switch"><input type="checkbox" role="switch" checked><span>Do Not Track respektieren</span></label>
+              <label class="ps-switch"><input type="checkbox" role="switch"><span>Öffentlicher Dashboard-Link</span></label>
+              <label class="ps-switch"><input type="checkbox" role="switch" disabled><span>Nicht verfügbar</span></label>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="kp-section" id="tabellen" aria-labelledby="h-tabellen">
+        <h2 id="h-tabellen">Tabellen</h2>
+        <p>Zahlen stehen rechtsbündig mit tabellarischen Ziffern, große Werte sind abgekürzt, der exakte Wert erscheint im Tooltip. Der Balken hinter der ersten Spalte zeigt den Anteil. Ein Klick auf die Zeile filtert später das ganze Dashboard.</p>
+        <div class="ps-table-wrap" role="region" aria-label="Beispieltabelle Top-Seiten" tabindex="0">
+          <table class="ps-table ps-table--rows ps-table--bars">
+            <caption class="ps-visually-hidden">Top-Seiten der letzten 30 Tage</caption>
+            <thead>
+              <tr><th scope="col">Seite</th><th scope="col" class="num">Besucher</th><th scope="col" class="num">Seitenaufrufe</th><th scope="col" class="num">Absprungrate</th></tr>
+            </thead>
+            <tbody>
+              <tr style="--anteil:100%"><td><button type="button" class="ps-table__link" data-ps-toast='{"typ":"info","titel":"Filter gesetzt","text":"Seite ist /"}'>/</button></td><td class="num"><span data-ps-tooltip="12.438 Besucher">12,4 Tsd.</span></td><td class="num"><span data-ps-tooltip="18.902 Seitenaufrufe">18,9 Tsd.</span></td><td class="num">41,2 %</td></tr>
+              <tr style="--anteil:62%"><td><button type="button" class="ps-table__link" data-ps-toast='{"typ":"info","titel":"Filter gesetzt","text":"Seite ist /preise"}'>/preise</button></td><td class="num"><span data-ps-tooltip="7.711 Besucher">7,7 Tsd.</span></td><td class="num"><span data-ps-tooltip="9.034 Seitenaufrufe">9,0 Tsd.</span></td><td class="num">35,8 %</td></tr>
+              <tr style="--anteil:28%"><td><button type="button" class="ps-table__link" data-ps-toast='{"typ":"info","titel":"Filter gesetzt","text":"Seite ist /blog/datenschutz"}'>/blog/datenschutz</button></td><td class="num"><span data-ps-tooltip="3.490 Besucher">3.490</span></td><td class="num">3.912</td><td class="num">68,4 %</td></tr>
+              <tr style="--anteil:9%"><td><button type="button" class="ps-table__link" data-ps-toast='{"typ":"info","titel":"Filter gesetzt","text":"Seite ist /kontakt"}'>/kontakt</button></td><td class="num">1.126</td><td class="num">1.201</td><td class="num">52,0 %</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="kp-section" id="karten" aria-labelledby="h-karten">
+        <h2 id="h-karten">Karten und Kennzahlen</h2>
+        <div class="kp-demo">
+          <h3>Karte</h3>
+          <div class="kp-grid kp-grid--breit">
+            <article class="ps-card">
+              <div class="ps-card__header">
+                <h3 class="ps-card__title">Quellen</h3>
+                <button type="button" class="ps-btn ps-btn--ghost ps-btn--s ps-btn--icon" aria-label="Weitere Aktionen"><svg class="ps-icon ps-icon--s" aria-hidden="true" focusable="false"><use href="/assets/icons.svg#ps-icon-ellipsis"/></svg></button>
+              </div>
+              <div class="ps-card__body">Karten fassen zusammengehörige Inhalte. Titel und Aktionen stehen im Kopf, Inhalt im Körper.</div>
+              <div class="ps-card__footer"><button type="button" class="ps-btn ps-btn--secondary ps-btn--s">Alle anzeigen</button></div>
+            </article>
+          </div>
+        </div>
+        <div class="kp-demo">
+          <h3>Kennzahlen: gut, schlecht, neutral, ausgewählt</h3>
+          <div class="kp-grid">
+            <div class="ps-kpi">
+              <span class="ps-kpi__label">Besucher <button type="button" class="ps-info-btn" aria-label="Erklärung zu Besucher" data-ps-tooltip="Anzahl unterschiedlicher Besucher pro Tag. Über mehrere Tage ist es die Summe der Tageswerte."><svg class="ps-icon ps-icon--s" aria-hidden="true" focusable="false"><use href="/assets/icons.svg#ps-icon-info"/></svg></button></span>
+              <span class="ps-kpi__value" data-ps-tooltip="12.438 Besucher" tabindex="0">12,4 Tsd.</span>
+              <span class="ps-kpi__meta"><span class="ps-delta ps-delta--gut"><svg class="ps-icon ps-icon--s" aria-hidden="true" focusable="false"><use href="/assets/icons.svg#ps-icon-arrow-up"/></svg> 8,2 %</span> zur Vorperiode</span>
+            </div>
+            <div class="ps-kpi">
+              <span class="ps-kpi__label">Absprungrate <button type="button" class="ps-info-btn" aria-label="Erklärung zu Absprungrate" data-ps-tooltip="Anteil der Besuche, die nach nur einer Seite endeten."><svg class="ps-icon ps-icon--s" aria-hidden="true" focusable="false"><use href="/assets/icons.svg#ps-icon-info"/></svg></button></span>
+              <span class="ps-kpi__value">41,2 %</span>
+              <span class="ps-kpi__meta"><span class="ps-delta ps-delta--gut"><svg class="ps-icon ps-icon--s" aria-hidden="true" focusable="false"><use href="/assets/icons.svg#ps-icon-arrow-down"/></svg> 3,1 %</span> zur Vorperiode</span>
+            </div>
+            <div class="ps-kpi">
+              <span class="ps-kpi__label">Besuchsdauer</span>
+              <span class="ps-kpi__value">2:48</span>
+              <span class="ps-kpi__meta"><span class="ps-delta ps-delta--schlecht"><svg class="ps-icon ps-icon--s" aria-hidden="true" focusable="false"><use href="/assets/icons.svg#ps-icon-arrow-down"/></svg> 5,6 %</span> zur Vorperiode</span>
+            </div>
+            <div class="ps-kpi">
+              <span class="ps-kpi__label">Seiten pro Besuch</span>
+              <span class="ps-kpi__value">1,8</span>
+              <span class="ps-kpi__meta"><span class="ps-delta"><svg class="ps-icon ps-icon--s" aria-hidden="true" focusable="false"><use href="/assets/icons.svg#ps-icon-minus"/></svg> 0,0 %</span> zur Vorperiode</span>
+            </div>
+            <button type="button" class="ps-kpi" aria-pressed="true">
+              <span class="ps-kpi__label">Seitenaufrufe (ausgewählt)</span>
+              <span class="ps-kpi__value">18,9 Tsd.</span>
+              <span class="ps-kpi__meta"><span class="ps-delta ps-delta--gut"><svg class="ps-icon ps-icon--s" aria-hidden="true" focusable="false"><use href="/assets/icons.svg#ps-icon-arrow-up"/></svg> 6,4 %</span> zur Vorperiode</span>
+            </button>
+            <button type="button" class="ps-kpi" aria-pressed="false">
+              <span class="ps-kpi__label">Ereignisse (wählbar)</span>
+              <span class="ps-kpi__value">642</span>
+              <span class="ps-kpi__meta"><span class="ps-delta ps-delta--gut"><svg class="ps-icon ps-icon--s" aria-hidden="true" focusable="false"><use href="/assets/icons.svg#ps-icon-arrow-up"/></svg> 12,0 %</span> zur Vorperiode</span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <section class="kp-section" id="tabs" aria-labelledby="h-tabs">
+        <h2 id="h-tabs">Tabs</h2>
+        <p>Pfeiltasten wechseln den Tab, Pos1 und Ende springen zum ersten und letzten.</p>
+        <div class="kp-demo">
+          <div class="ps-tabs" role="tablist" aria-label="Quellen">
+            <button type="button" class="ps-tab" role="tab" id="tab-1" aria-selected="true" aria-controls="panel-1">Referrer</button>
+            <button type="button" class="ps-tab" role="tab" id="tab-2" aria-selected="false" aria-controls="panel-2" tabindex="-1">Suchmaschinen</button>
+            <button type="button" class="ps-tab" role="tab" id="tab-3" aria-selected="false" aria-controls="panel-3" tabindex="-1">Soziale Netzwerke</button>
+            <button type="button" class="ps-tab" role="tab" id="tab-4" aria-selected="false" aria-controls="panel-4" tabindex="-1">Kampagnen</button>
+          </div>
+          <div class="ps-tabpanel" role="tabpanel" id="panel-1" aria-labelledby="tab-1" tabindex="0">Direkt und über andere Websites eingehende Besuche.</div>
+          <div class="ps-tabpanel" role="tabpanel" id="panel-2" aria-labelledby="tab-2" tabindex="0" hidden>Besuche aus Google, Bing, DuckDuckGo und weiteren Suchmaschinen.</div>
+          <div class="ps-tabpanel" role="tabpanel" id="panel-3" aria-labelledby="tab-3" tabindex="0" hidden>Besuche aus sozialen Netzwerken.</div>
+          <div class="ps-tabpanel" role="tabpanel" id="panel-4" aria-labelledby="tab-4" tabindex="0" hidden>Besuche mit UTM-Parametern.</div>
+        </div>
+      </section>
+
+      <section class="kp-section" id="dropdown" aria-labelledby="h-dropdown">
+        <h2 id="h-dropdown">Dropdown</h2>
+        <p>Pfeiltasten bewegen durch die Einträge, Esc schließt und gibt den Fokus zurück. Auswahl-Einträge zeigen den gewählten Wert mit Haken.</p>
+        <div class="kp-demo">
+          <div class="kp-row">
+            <div class="ps-menu-wrap" data-ps-menu>
+              <button type="button" class="ps-btn ps-btn--secondary" aria-haspopup="menu" aria-expanded="false" aria-controls="menue-zeitraum"><svg class="ps-icon ps-icon--s" aria-hidden="true" focusable="false"><use href="/assets/icons.svg#ps-icon-calendar"/></svg> Letzte 30 Tage <svg class="ps-icon ps-icon--s" aria-hidden="true" focusable="false"><use href="/assets/icons.svg#ps-icon-chevron-down"/></svg></button>
+              <div class="ps-menu" id="menue-zeitraum" role="menu" aria-label="Zeitraum" hidden>
+                <button type="button" class="ps-menu__item" role="menuitemradio" aria-checked="false" data-ps-gruppe="zeitraum">Heute <span class="ps-menu__check"><svg class="ps-icon ps-icon--s" aria-hidden="true" focusable="false"><use href="/assets/icons.svg#ps-icon-check"/></svg></span></button>
+                <button type="button" class="ps-menu__item" role="menuitemradio" aria-checked="false" data-ps-gruppe="zeitraum">Gestern <span class="ps-menu__check"><svg class="ps-icon ps-icon--s" aria-hidden="true" focusable="false"><use href="/assets/icons.svg#ps-icon-check"/></svg></span></button>
+                <button type="button" class="ps-menu__item" role="menuitemradio" aria-checked="false" data-ps-gruppe="zeitraum">7 Tage <span class="ps-menu__check"><svg class="ps-icon ps-icon--s" aria-hidden="true" focusable="false"><use href="/assets/icons.svg#ps-icon-check"/></svg></span></button>
+                <button type="button" class="ps-menu__item" role="menuitemradio" aria-checked="true" data-ps-gruppe="zeitraum">30 Tage <span class="ps-menu__check"><svg class="ps-icon ps-icon--s" aria-hidden="true" focusable="false"><use href="/assets/icons.svg#ps-icon-check"/></svg></span></button>
+                <div class="ps-menu__separator" role="separator"></div>
+                <button type="button" class="ps-menu__item" role="menuitemradio" aria-checked="false" data-ps-gruppe="zeitraum">Benutzerdefiniert … <span class="ps-menu__check"><svg class="ps-icon ps-icon--s" aria-hidden="true" focusable="false"><use href="/assets/icons.svg#ps-icon-check"/></svg></span></button>
+              </div>
+            </div>
+            <div class="ps-menu-wrap" data-ps-menu>
+              <button type="button" class="ps-btn ps-btn--ghost ps-btn--icon" aria-haspopup="menu" aria-expanded="false" aria-controls="menue-aktionen" aria-label="Aktionen"><svg class="ps-icon" aria-hidden="true" focusable="false"><use href="/assets/icons.svg#ps-icon-ellipsis"/></svg></button>
+              <div class="ps-menu" id="menue-aktionen" role="menu" aria-label="Aktionen" hidden>
+                <p class="ps-menu__heading" role="presentation">Site</p>
+                <button type="button" class="ps-menu__item" role="menuitem"><svg class="ps-icon ps-icon--s" aria-hidden="true" focusable="false"><use href="/assets/icons.svg#ps-icon-pencil"/></svg> Bearbeiten</button>
+                <button type="button" class="ps-menu__item" role="menuitem"><svg class="ps-icon ps-icon--s" aria-hidden="true" focusable="false"><use href="/assets/icons.svg#ps-icon-copy"/></svg> Tracking-Code kopieren</button>
+                <button type="button" class="ps-menu__item" role="menuitem" aria-disabled="true"><svg class="ps-icon ps-icon--s" aria-hidden="true" focusable="false"><use href="/assets/icons.svg#ps-icon-download"/></svg> Export (bald verfügbar)</button>
+                <div class="ps-menu__separator" role="separator"></div>
+                <button type="button" class="ps-menu__item" role="menuitem"><svg class="ps-icon ps-icon--s" aria-hidden="true" focusable="false"><use href="/assets/icons.svg#ps-icon-command"/></svg> Befehlspalette <kbd>Strg K</kbd></button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="kp-section" id="modal" aria-labelledby="h-modal">
+        <h2 id="h-modal">Modal</h2>
+        <p>Das Fenster nutzt das native dialog-Element: Fokus bleibt im Fenster, Esc schließt, der Fokus kehrt zum Auslöser zurück. Auf dem Smartphone wächst es als Sheet vom unteren Rand.</p>
+        <div class="kp-demo">
+          <div class="kp-row">
+            <button type="button" class="ps-btn ps-btn--secondary" data-ps-modal-open="modal-info">Hinweis öffnen</button>
+            <button type="button" class="ps-btn ps-btn--danger" data-ps-modal-open="modal-loeschen">Site löschen …</button>
+          </div>
+        </div>
+
+        <dialog class="ps-modal" id="modal-info" aria-labelledby="modal-info-titel">
+          <div class="ps-modal__header">
+            <h2 id="modal-info-titel">Tastaturkürzel</h2>
+            <button type="button" class="ps-btn ps-btn--ghost ps-btn--s ps-btn--icon" data-ps-modal-close aria-label="Schließen"><svg class="ps-icon ps-icon--s" aria-hidden="true" focusable="false"><use href="/assets/icons.svg#ps-icon-x"/></svg></button>
+          </div>
+          <div class="ps-modal__body">
+            <p><kbd>Strg</kbd> <kbd>K</kbd> öffnet die Befehlspalette. <kbd>?</kbd> zeigt alle Kürzel.</p>
+          </div>
+          <div class="ps-modal__footer"><button type="button" class="ps-btn ps-btn--primary" data-ps-modal-close>Verstanden</button></div>
+        </dialog>
+
+        <dialog class="ps-modal" id="modal-loeschen" aria-labelledby="modal-loeschen-titel" aria-describedby="modal-loeschen-text">
+          <div class="ps-modal__header">
+            <h2 id="modal-loeschen-titel">Site „beispiel.de“ löschen?</h2>
+            <button type="button" class="ps-btn ps-btn--ghost ps-btn--s ps-btn--icon" data-ps-modal-close aria-label="Schließen"><svg class="ps-icon ps-icon--s" aria-hidden="true" focusable="false"><use href="/assets/icons.svg#ps-icon-x"/></svg></button>
+          </div>
+          <div class="ps-modal__body"><p id="modal-loeschen-text">Alle Daten dieser Site werden dauerhaft entfernt. Das lässt sich nicht rückgängig machen. Exportiere vorher die Daten als CSV, wenn du sie behalten willst.</p></div>
+          <div class="ps-modal__footer">
+            <button type="button" class="ps-btn ps-btn--secondary" data-ps-modal-close>Abbrechen</button>
+            <button type="button" class="ps-btn ps-btn--danger" data-ps-modal-close data-ps-toast='{"typ":"success","titel":"Site gelöscht","text":"beispiel.de wurde entfernt."}'>Endgültig löschen</button>
+          </div>
+        </dialog>
+      </section>
+
+      <section class="kp-section" id="toast" aria-labelledby="h-toast">
+        <h2 id="h-toast">Toasts</h2>
+        <p>Sie verschwinden nach sechs Sekunden und bleiben stehen, solange du sie mit Maus oder Tastatur berührst. Fehler werden Screenreadern sofort angesagt.</p>
+        <div class="kp-demo">
+          <div class="kp-row">
+            <button type="button" class="ps-btn ps-btn--secondary" data-ps-toast='{"typ":"info","titel":"Hinweis","text":"Neue Daten werden alle paar Minuten aktualisiert."}'>Info</button>
+            <button type="button" class="ps-btn ps-btn--secondary" data-ps-toast='{"typ":"success","titel":"Tracking-Code kopiert","text":"Füge ihn vor dem schließenden head-Tag deiner Seite ein."}'>Erfolg</button>
+            <button type="button" class="ps-btn ps-btn--secondary" data-ps-toast='{"typ":"warning","titel":"Noch keine Daten","text":"Es wurde noch kein Seitenaufruf empfangen."}'>Warnung</button>
+            <button type="button" class="ps-btn ps-btn--secondary" data-ps-toast='{"typ":"danger","titel":"Speichern fehlgeschlagen","text":"Die Verbindung zur Datenbank ist unterbrochen. Versuche es in einer Minute erneut."}'>Fehler</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="kp-section" id="tooltip" aria-labelledby="h-tooltip">
+        <h2 id="h-tooltip">Tooltips</h2>
+        <p>Tooltips erscheinen bei Hover und bei Fokus, Esc blendet sie aus. Jede Kennzahl hat einen Erklärungstext, abgekürzte Zahlen zeigen den exakten Wert. Zahlen in Tabellen sind nicht fokussierbar, ihr exakter Wert steht deshalb zusätzlich für Screenreader im Text.</p>
+        <div class="kp-demo">
+          <div class="kp-row">
+            <button type="button" class="ps-btn ps-btn--secondary" data-ps-tooltip="Kopiert den Tracking-Code in die Zwischenablage">Mit Tooltip</button>
+            <span class="ps-num" tabindex="0" data-ps-tooltip="12.438 Besucher">12,4 Tsd. Besucher</span>
+            <button type="button" class="ps-info-btn" aria-label="Erklärung" data-ps-tooltip="Eine Sitzung endet nach 30 Minuten ohne Aktivität."><svg class="ps-icon ps-icon--s" aria-hidden="true" focusable="false"><use href="/assets/icons.svg#ps-icon-info"/></svg></button>
+          </div>
+        </div>
+      </section>
+
+      <section class="kp-section" id="skeleton" aria-labelledby="h-skeleton">
+        <h2 id="h-skeleton">Skeletons</h2>
+        <p>Beim Laden zeigen Skeletons die spätere Form mit fester Höhe, damit nichts springt. Ein Spinner kommt in Ansichten nicht vor.</p>
+        <div class="kp-demo">
+          <div class="kp-grid" role="status" aria-busy="true">
+            <span class="ps-visually-hidden">Kennzahlen werden geladen</span>
+            <div class="ps-kpi" aria-hidden="true"><span class="ps-skeleton" style="width:50%"></span><span class="ps-skeleton" style="height:2.25rem;width:70%"></span><span class="ps-skeleton" style="width:60%;height:1.25rem"></span></div>
+            <div class="ps-kpi" aria-hidden="true"><span class="ps-skeleton" style="width:40%"></span><span class="ps-skeleton" style="height:2.25rem;width:55%"></span><span class="ps-skeleton" style="width:60%;height:1.25rem"></span></div>
+          </div>
+          <div class="ps-card" role="status" aria-busy="true">
+            <span class="ps-visually-hidden">Diagramm wird geladen</span>
+            <div class="ps-card__body" aria-hidden="true"><div class="ps-skeleton ps-skeleton--block kp-chart-skel"></div></div>
+          </div>
+          <div class="ps-card" role="status" aria-busy="true">
+            <span class="ps-visually-hidden">Tabelle wird geladen</span>
+            <div class="ps-card__body kp-skel-liste" aria-hidden="true">
+              <div class="kp-skel-zeile"><span class="ps-skeleton" style="width:45%"></span><span class="ps-skeleton" style="width:15%"></span></div>
+              <div class="kp-skel-zeile"><span class="ps-skeleton" style="width:35%"></span><span class="ps-skeleton" style="width:12%"></span></div>
+              <div class="kp-skel-zeile"><span class="ps-skeleton" style="width:55%"></span><span class="ps-skeleton" style="width:10%"></span></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="kp-section" id="leer" aria-labelledby="h-leer">
+        <h2 id="h-leer">Leerzustände</h2>
+        <p>Jeder leere Zustand nennt den Grund und bietet den nächsten sinnvollen Schritt an.</p>
+        <div class="kp-grid kp-grid--breit">
+          <div class="ps-card"><div class="ps-empty">
+            <span class="ps-empty__icon"><svg class="ps-icon" aria-hidden="true" focusable="false"><use href="/assets/icons.svg#ps-icon-chart-line"/></svg></span>
+            <h3 class="ps-empty__title">Noch keine Besucher</h3>
+            <p class="ps-empty__text">Sobald dein Tracking-Code auf der Seite eingebunden ist und der erste Aufruf eintrifft, erscheinen hier deine Zahlen.</p>
+            <div class="ps-empty__actions"><button type="button" class="ps-btn ps-btn--primary">Tracking-Code anzeigen</button></div>
+          </div></div>
+          <div class="ps-card"><div class="ps-empty">
+            <span class="ps-empty__icon"><svg class="ps-icon" aria-hidden="true" focusable="false"><use href="/assets/icons.svg#ps-icon-calendar"/></svg></span>
+            <h3 class="ps-empty__title">Keine Daten in diesem Zeitraum</h3>
+            <p class="ps-empty__text">Für den gewählten Zeitraum liegen keine Aufrufe vor. Wähle einen längeren Zeitraum oder entferne Filter.</p>
+            <div class="ps-empty__actions"><button type="button" class="ps-btn ps-btn--secondary">Letzte 30 Tage wählen</button></div>
+          </div></div>
+          <div class="ps-card"><div class="ps-empty ps-empty--danger">
+            <span class="ps-empty__icon"><svg class="ps-icon" aria-hidden="true" focusable="false"><use href="/assets/icons.svg#ps-icon-circle-alert"/></svg></span>
+            <h3 class="ps-empty__title">Daten konnten nicht geladen werden</h3>
+            <p class="ps-empty__text">Die Verbindung zur Datenbank ist fehlgeschlagen. Prüfe die Zugangsdaten in der Konfiguration oder versuche es gleich noch einmal.</p>
+            <div class="ps-empty__actions"><button type="button" class="ps-btn ps-btn--primary"><svg class="ps-icon ps-icon--s" aria-hidden="true" focusable="false"><use href="/assets/icons.svg#ps-icon-refresh-cw"/></svg> Erneut versuchen</button><button type="button" class="ps-btn ps-btn--ghost">Hilfe öffnen</button></div>
+          </div></div>
+        </div>
+      </section>
+
+      <section class="kp-section" id="badges" aria-labelledby="h-badges">
+        <h2 id="h-badges">Badges</h2>
+        <div class="kp-demo">
+          <h3>Status</h3>
+          <div class="kp-row">
+            <span class="ps-badge">Neutral</span>
+            <span class="ps-badge ps-badge--primary">Admin</span>
+            <span class="ps-badge ps-badge--signal">Neu</span>
+            <span class="ps-badge ps-badge--success"><span class="ps-badge__dot"></span> Verbunden</span>
+            <span class="ps-badge ps-badge--warning"><span class="ps-badge__dot"></span> Wartet auf Daten</span>
+            <span class="ps-badge ps-badge--danger"><span class="ps-badge__dot"></span> Fehler</span>
+          </div>
+        </div>
+        <div class="kp-demo">
+          <h3>Veränderung zur Vorperiode</h3>
+          <p class="kp-note">Der Pfeil zeigt die Richtung, die Farbe zeigt, ob das für die Kennzahl gut oder schlecht ist. Eine sinkende Absprungrate ist grün.</p>
+          <div class="kp-row">
+            <span class="ps-delta ps-delta--gut"><svg class="ps-icon ps-icon--s" aria-hidden="true" focusable="false"><use href="/assets/icons.svg#ps-icon-arrow-up"/></svg> 8,2 %</span>
+            <span class="ps-delta ps-delta--gut"><svg class="ps-icon ps-icon--s" aria-hidden="true" focusable="false"><use href="/assets/icons.svg#ps-icon-arrow-down"/></svg> 3,1 %</span>
+            <span class="ps-delta ps-delta--schlecht"><svg class="ps-icon ps-icon--s" aria-hidden="true" focusable="false"><use href="/assets/icons.svg#ps-icon-arrow-down"/></svg> 5,6 %</span>
+            <span class="ps-delta ps-delta--schlecht"><svg class="ps-icon ps-icon--s" aria-hidden="true" focusable="false"><use href="/assets/icons.svg#ps-icon-arrow-up"/></svg> 4,0 %</span>
+            <span class="ps-delta"><svg class="ps-icon ps-icon--s" aria-hidden="true" focusable="false"><use href="/assets/icons.svg#ps-icon-minus"/></svg> 0,0 %</span>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <footer class="kp-footer">© 2026 <a href="https://frank-panzer.de">Frank Panzer</a> · Entwickelt von <a href="https://panzerit.de">Panzer IT</a></footer>
+
+  <script type="module" src="/assets/js/pegelstand.js"></script>
+  <script type="module" src="/assets/js/komponentenseite.js"></script>
+</body>
+</html>
