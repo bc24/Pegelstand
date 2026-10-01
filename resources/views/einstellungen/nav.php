@@ -9,7 +9,7 @@ defined('PEGELSTAND_ROOT') || exit;
 /** @var bool $admin */
 /** @var string $csrf */
 /** @var array{typ: string, text: string}|null $flash */
-$punkte = $admin ? ['websites' => 'einst.nav.websites', 'benutzer' => 'einst.nav.benutzer', 'konto' => 'einst.nav.konto'] : ['konto' => 'einst.nav.konto'];
+$punkte = $admin ? ['websites' => 'einst.nav.websites', 'benutzer' => 'einst.nav.benutzer', 'email' => 'einst.nav.email', 'konto' => 'einst.nav.konto'] : ['konto' => 'einst.nav.konto'];
 ?>
 <nav class="es-nav" aria-label="<?= $this->t('einst.nav.label') ?>">
   <a class="ps-btn ps-btn--ghost" href="<?= $this->e($this->url('/')) ?>"><?= $this->icon('arrow-left', 's') ?> <?= $this->t('einst.nav.dashboard') ?></a>

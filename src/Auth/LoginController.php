@@ -48,7 +48,7 @@ final class LoginController
             return Response::redirect($request->url('/'));
         }
 
-        return $this->seite('', '');
+        return $this->seite('', '', 200, $request->query['zurueckgesetzt'] ?? null);
     }
 
     private function anmelden(Request $request): Response
@@ -119,13 +119,14 @@ final class LoginController
         return Response::redirect($request->url('/login'));
     }
 
-    private function seite(string $email, string $fehler, int $status = 200): Response
+    private function seite(string $email, string $fehler, int $status = 200, mixed $erfolg = null): Response
     {
         return Response::html($this->view->render('auth/login', [
             'titel' => $this->translator->get('login.titel'),
             'email' => $email,
             'fehler' => $fehler,
             'csrf' => $this->csrf->token(),
+            'erfolg' => $erfolg === '1',
         ]), $status);
     }
 }

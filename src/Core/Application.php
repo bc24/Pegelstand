@@ -9,6 +9,7 @@ use PDOException;
 use Pegelstand\Auth\AuthService;
 use Pegelstand\Auth\Crypto;
 use Pegelstand\Auth\LoginController;
+use Pegelstand\Auth\PasswordResetController;
 use Pegelstand\Database\Database;
 use Pegelstand\Database\MigrationException;
 use Pegelstand\Database\Migrator;
@@ -29,8 +30,11 @@ use Pegelstand\Jobs\AggregationJob;
 use Pegelstand\Jobs\CleanupJob;
 use Pegelstand\Jobs\JobRunner;
 use Pegelstand\Jobs\Scheduler;
+use Pegelstand\Mail\Mailer;
 use Pegelstand\Settings\GoalRepository;
+use Pegelstand\Settings\MailController;
 use Pegelstand\Settings\SettingsController;
+use Pegelstand\Settings\SettingsStore;
 use Pegelstand\Settings\SiteRepository;
 use Pegelstand\Settings\UserRepository;
 use Pegelstand\Stats\Aggregator;
@@ -217,6 +221,10 @@ final class Application
         $auth = new AuthService($db, $session, new Crypto($config->string('app_key')));
         (new LoginController($view, $translator, $csrf, $auth, new RateLimiter($db), $salts, $clientIp, $config->int('login.rate_limit', 10)))->register($router);
         (new SettingsController($view, $translator, $csrf, $session, $auth, new SiteRepository($db), new UserRepository($db), new GoalRepository($db), $skript, $endpunkt))->register($router);
+        $einstellungen = new SettingsStore($db, new Crypto($config->string('app_key')));
+        $mailer = new Mailer($einstellungen);
+        (new MailController($view, $translator, $csrf, $session, $auth, $einstellungen, $mailer))->register($router);
+        (new PasswordResetController($view, $translator, $csrf, $db, $mailer, $einstellungen, new RateLimiter($db), $salts, $clientIp))->register($router);
         (new DashboardController(
             $view,
             $translator,
