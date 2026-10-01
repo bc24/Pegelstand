@@ -1,0 +1,105 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+# TODO(prüfen): Aktualität der Action-Versionen (checkout, setup-php, setup-node, upload-artifact).
+jobs:
+  stil-und-analyse:
+    name: Code-Style und statische Analyse
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          tools: composer
+      - run: composer install --no-interaction --prefer-dist
+      - run: composer cs
+      - run: composer analyse
+
+  tests:
+    name: PHPUnit (PHP ${{ matrix.php }}, ${{ matrix.db.name }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # TODO(prüfen): Unterstützte Versionen gegen php.net, mysql.com und mariadb.org abgleichen.
+        # Stand der Recherche aus Drittquellen (01.10.2026): MySQL 8.0 und MariaDB 10.6 sind End of Life,
+        # bleiben aber als Untergrenze der Anforderungen (MySQL 8.0+, MariaDB 10.6+) in der Matrix.
+        php: ['8.2', '8.3', '8.4', '8.5']
+        db:
+          - { name: 'MySQL 8.0', image: 'mysql:8.0', health: 'mysqladmin ping -h 127.0.0.1 -uroot -proot' }
+          - { name: 'MySQL 8.4', image: 'mysql:8.4', health: 'mysqladmin ping -h 127.0.0.1 -uroot -proot' }
+          - { name: 'MariaDB 10.6', image: 'mariadb:10.6', health: 'healthcheck.sh --connect --innodb_initialized' }
+          - { name: 'MariaDB 11.4', image: 'mariadb:11.4', health: 'healthcheck.sh --connect --innodb_initialized' }
+    services:
+      db:
+        image: ${{ matrix.db.image }}
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: pegelstand_test
+          MARIADB_ROOT_PASSWORD: root
+          MARIADB_DATABASE: pegelstand_test
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd "${{ matrix.db.health }}"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 30
+    env:
+      PEGELSTAND_TEST_DB_DSN: 'mysql:host=127.0.0.1;port=3306;dbname=pegelstand_test;charset=utf8mb4'
+      PEGELSTAND_TEST_DB_USER: root
+      PEGELSTAND_TEST_DB_PASSWORD: root
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: pdo_mysql, mbstring, openssl, json
+          tools: composer
+      - run: composer install --no-interaction --prefer-dist
+      - run: vendor/bin/phpunit
+
+  tracking-script-groesse:
+    name: Größe des Tracking-Scripts
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: bin/check-script-size.sh
+
+  e2e:
+    name: End-to-End-Tests (Playwright)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          tools: composer
+      - run: composer install --no-interaction --prefer-dist --no-dev
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:e2e
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-ergebnisse
+          path: |
+            test-results/
+            playwright-report/
+          if-no-files-found: ignore

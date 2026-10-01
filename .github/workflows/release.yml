@@ -1,0 +1,32 @@
+name: Release
+
+# Baut bei Versions-Tags das Release-Zip. Gerüst, wird in Phase 8 ausgebaut.
+on:
+  push:
+    tags: ['v*.*.*']
+
+permissions:
+  contents: write
+
+jobs:
+  zip:
+    name: Release-Zip bauen
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          tools: composer
+      - run: composer install --no-interaction --prefer-dist --no-dev --optimize-autoloader
+      # TODO: Assets bauen (ab Phase 1), sobald es einen Build-Schritt gibt.
+      - name: Zip erstellen
+        run: bin/build-release.sh "${GITHUB_REF_NAME#v}"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: pegelstand-zip
+          path: dist/*.zip
+      - name: GitHub-Release anlegen
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "$GITHUB_REF_NAME" dist/*.zip --generate-notes --verify-tag
