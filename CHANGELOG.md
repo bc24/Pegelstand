@@ -9,5 +9,6 @@ die Versionierung folgt [Semantic Versioning](https://semver.org/lang/de/).
 
 ### Hinzugefügt
 
+- Dashboard-Prototyp mit Demo-Daten (Phase 1, Schritt 2): Kennzahlen, Diagramm, Filter, Zeiträume, Befehlspalette, Tastaturkürzel und alle Zustände.
 - Designsystem (Phase 1, Schritt 1): Tokens für hell und dunkel, Typografie mit Inter, Lucide-Icons, Komponenten und interne Komponentenseite.
 - Projektgerüst: Verzeichnisstruktur, Composer, PHPUnit, PHPStan, PHP-CS-Fixer, Playwright, CI, MIT-Lizenz.

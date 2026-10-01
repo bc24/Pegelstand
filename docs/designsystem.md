@@ -83,3 +83,44 @@ Lucide (ISC) als lokales SVG-Sprite `assets/icons.svg`. Neue Icons in `bin/build
 `npm run build` erzeugt `assets/` (nicht im Repository): `css/pegelstand.css`, `js/pegelstand.js`, `js/theme-init.js`, `fonts/`, `icons.svg`. Die Dateien `komponentenseite.*` sind nur für die interne Komponentenseite und gehören nicht ins Release-Zip.
 
 `theme-init.js` ist ein eigenes kleines Script im `<head>` und setzt den gespeicherten Modus vor dem ersten Zeichnen. Die Anwendung kommt ohne Inline-Skripte aus, damit später eine strenge Content-Security-Policy möglich ist.
+
+## Dashboard-Prototyp (Phase 1, Schritt 2)
+
+Aufruf lokal: `npm run build`, `php -S 127.0.0.1:8080 -t .`, dann `/prototype/index.html` öffnen. Alle Daten sind erfundene, deterministische Demo-Daten aus `resources/js/dashboard/demo-daten.js`. Diese Datei bildet die spätere API-Schnittstelle nach (`ladeAnsicht({ site, zeitraum, filter })`), in Phase 5 wird nur sie ersetzt.
+
+### Aufbau
+
+Kopfzeile (Wortmarke, Site-Wechsel, Befehlspalette, Darstellung, Kürzel), Werkzeugleiste (Titel, aktive Besucher, Zeitraum, Vergleich), Filterchips, fünf Kennzahlen (wählen das Diagramm), Zeitreihen-Diagramm mit Vorperiode, Karten für Seiten, Quellen, Länder, Geräte sowie Ziele und Ereignisse.
+
+### Zustand in der Adresse
+
+| Parameter | Bedeutung |
+|---|---|
+| `site` | Site-ID, z. B. `meine-firma-de` |
+| `zeitraum` | `heute`, `gestern`, `7t`, `30t` (Standard), `monat`, `letzter-monat`, `jahr`, `benutzerdefiniert` mit `von` und `bis` |
+| `f` | Filter, mehrfach möglich, Form `art:wert`, z. B. `f=land:DE&f=geraet:smartphone` |
+| `vergleich` | `0` schaltet die Vorperiode aus |
+| `metrik` | Kennzahl im Diagramm (`besucher`, `aufrufe`, `seitenProBesuch`, `absprungrate`, `dauer`) |
+| `zustand` | erzwingt `laden`, `leer`, `fehler` oder `keine-daten` (zum Prüfen der Zustände) |
+| `verzoegerung` | künstliche Ladezeit in ms (Standard 500, in Tests 0) |
+
+Das „Jetzt“ der Demo ist fest auf den 29.09.2026, 14:30 Uhr gesetzt, damit Prototyp, Tests und Screenshots reproduzierbar sind.
+
+### Entscheidungen
+
+- **Zeitraum „Jahr“** heißt in der Oberfläche „Dieses Jahr“ und reicht vom 1. Januar bis heute. Die Vorperiode ist immer der gleich lange Zeitraum direkt davor. Bitte bestätigen oder ändern.
+- **Stündliche Ansicht** bis zwei Tage, sonst täglich. Der laufende Tag ist unvollständig. Im echten Dashboard sollte er kenntlich gemacht werden. `TODO(prüfen)`
+- **Filter im Prototyp** skalieren die Demo-Zahlen plausibel (Anteile, Absprungrate, Dauer) und verteilen sie mit gleichbleibender Summe auf die Tabellen. Die echte Filterung über Rohdaten folgt in Phase 5.
+- **Tabellen** zeigen die acht größten Zeilen. Eine Ansicht für alle Zeilen ist im Lastenheft nicht genannt und fehlt deshalb.
+- **Länderkarte** ist zurückgestellt (Kartendaten brauchen eine geprüfte Lizenz).
+- **Diagramm** nutzt uPlot (MIT). Es ist per Pfeiltasten bedienbar und lässt sich als Tabelle anzeigen. Farben kommen aus den Tokens und das Diagramm zeichnet bei Moduswechsel neu.
+- **Neuladen** lässt den Inhalt stehen und zeigt oben einen schmalen Fortschrittsbalken. Abdunkeln würde den Kontrast verletzen.
+- **Größenbudget:** Dashboard-JavaScript unter 100 KB gzip, geprüft von `npm run check:groesse` (aktuell rund 40 KB).
+
+### Tastaturkürzel
+
+`Strg K` Befehlspalette, `?` Übersicht, `1` bis `7` Zeitraum, `V` Vergleich, `F` Filter entfernen, Pfeiltasten im Diagramm, `Esc` schließt.
+
+### Bewusst nicht enthalten
+
+Öffentlicher Link, Einbettung, CSV-Export (Phase 7), Einrichtungsassistent mit Live-Verbindungsprüfung (Phase 6), Einstellungen (Phase 6). Der Befehl „Einstellungen“ zeigt im Prototyp nur einen Hinweis.

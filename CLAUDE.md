@@ -27,6 +27,7 @@ Deutsch: Oberfläche, Texte, README, Doku, Code-Kommentare, Commit-Beschreibunge
 - Frontend: Vanilla JS oder Alpine.js (Entscheidung in Phase 1), lokale Diagramm-Bibliothek, keine CDNs, keine externen Schriften, keine Requests an Dritte. Eigene CSS-Design-Tokens statt Tailwind. Build-Werkzeuge (esbuild) nur für Entwickler.
 - Datenschutz: keine Cookies, kein Fingerprinting, IP-Adressen nie speichern oder loggen, Besucher-Hash mit täglich rotierendem Salt. Keine Rechtsgarantien in Texten (siehe Lastenheft).
 - Frontend-Quellen in `resources/css` (Tokens, Basis, Komponenten) und `resources/js` (Vanilla-ES-Module, Event-Delegation, Texte nur per `textContent`). `npm run build` (esbuild, `bin/build-assets.mjs`) erzeugt `assets/` (nicht im Repository). Keine Inline-Skripte und keine Inline-Event-Handler (spätere CSP). Farben nur über `--ps-*`-Tokens (`light-dark()`), keine Sonderfarben. Neue Icons in `ICONS` im Build-Skript eintragen. Details in `docs/designsystem.md`, Begriffe in `docs/glossar.md`.
+- Dashboard-Prototyp: `prototype/index.html`, Logik in `resources/js/dashboard/` (Demo-Daten in `demo-daten.js` als Platzhalter der API). Zustand steckt in der Adresszeile (siehe `docs/designsystem.md`). Größenbudget Dashboard-JS < 100 KB gzip (`npm run check:groesse`).
 - Interne Komponentenseite: `prototype/komponenten.html` (nur Entwicklung, per `.htaccess` gesperrt, nicht im Zip). Prototypen liegen in `prototype/`.
 - Tracking-Script unter 2 KB gzip, geprüft von `bin/check-script-size.sh` (CI).
 
