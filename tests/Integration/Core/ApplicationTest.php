@@ -149,8 +149,9 @@ final class ApplicationTest extends DatenbankTestCase
         self::assertSame(404, $this->anfrage('GET', '/install')->status);
         self::assertSame(404, $this->anfrage('POST', '/install/administrator')->status);
         $start = $this->anfrage('GET', '/');
-        self::assertSame(200, $start->status);
-        self::assertStringContainsString('Pegelstand ist installiert', $start->body);
+        self::assertSame(303, $start->status);
+        self::assertSame('/login', $start->headers['Location']);
+        self::assertStringContainsString('Anmelden', $this->anfrage('GET', '/login')->body);
     }
 
     public function testAdministratorSchrittZeigtFeldfehler(): void
@@ -183,7 +184,7 @@ final class ApplicationTest extends DatenbankTestCase
         $db->run('DELETE FROM ' . $db->table('migrations'));
         @unlink($this->temp . '/storage/cache/schema-version');
 
-        self::assertSame(200, $this->anfrage('GET', '/')->status);
+        self::assertSame(303, $this->anfrage('GET', '/')->status);
         self::assertTrue($db->tableExists('site_users'), 'Die Migration hat die Tabelle wieder angelegt.');
         self::assertSame(\Pegelstand\Tests\Support\Migrationen::letzte(), file_get_contents($this->temp . '/storage/cache/schema-version'));
     }

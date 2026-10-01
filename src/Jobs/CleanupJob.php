@@ -52,7 +52,7 @@ final class CleanupJob implements Job
             $grenze = min($aufbewahrung, $aggregiertBis);
             $geloescht += $this->bereinige($id, $grenze);
         }
-        $this->db->run('DELETE FROM ' . $this->db->table('rate_limits') . ' WHERE window_start < ?', [gmdate('Y-m-d H:i:s', $now->getTimestamp() - 600)]);
+        $this->db->run('DELETE FROM ' . $this->db->table('rate_limits') . ' WHERE window_start < ?', [gmdate('Y-m-d H:i:s', $now->getTimestamp() - 7200)]);
 
         return $geloescht . ' Rohdaten-Zeilen gelöscht';
     }

@@ -741,3 +741,12 @@ html[data-laedt] .db-fortschritt {
     padding-inline: var(--ps-space-6);
   }
 }
+
+/* Abmelden im Konto-Menü (ein Formular, damit die Abmeldung per POST mit CSRF-Token läuft) */
+.db-menue-form {
+  margin: 0;
+}
+
+.db-menue-form .ps-menu__item {
+  width: 100%;
+}

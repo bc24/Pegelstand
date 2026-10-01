@@ -190,7 +190,7 @@ final class JobsTest extends SiteTestCase
 
     public function testCleanupLoeschtAbgelaufeneRatenbegrenzungen(): void
     {
-        $this->db->run('INSERT INTO ' . $this->db->table('rate_limits') . " VALUES ('ingest', ?, '2026-10-01 09:00:00', 5), ('ingest', ?, '2026-10-01 09:59:00', 5)", [str_repeat('a', 16), str_repeat('b', 16)]);
+        $this->db->run('INSERT INTO ' . $this->db->table('rate_limits') . " VALUES ('ingest', ?, '2026-10-01 07:00:00', 5), ('ingest', ?, '2026-10-01 09:59:00', 5)", [str_repeat('a', 16), str_repeat('b', 16)]);
 
         (new CleanupJob($this->db))->run($this->zeit('2026-10-01 10:00:00'));
 

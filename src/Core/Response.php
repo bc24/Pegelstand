@@ -36,6 +36,17 @@ final class Response
         ]);
     }
 
+    /**
+     * @param array<mixed> $daten
+     */
+    public static function json(array $daten, int $status = 200): self
+    {
+        return new self(json_encode($daten, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES), $status, [
+            'Content-Type' => 'application/json; charset=utf-8',
+            'Cache-Control' => 'no-store',
+        ]);
+    }
+
     public static function redirect(string $url, int $status = 303): self
     {
         return new self('', $status, ['Location' => $url, 'Cache-Control' => 'no-store']);

@@ -186,8 +186,8 @@ test.describe('mit Datenbank', () => {
     await bild(page, info, '4-fertig');
 
     await page.getByRole('link', { name: /Zu Pegelstand/ }).click();
-    await expect(page.getByRole('heading', { level: 1, name: 'Pegelstand ist installiert' })).toBeVisible();
-    await expect(page.getByText('Version 0.0.0-dev')).toBeVisible();
+    await expect(page).toHaveURL(/\/login$/);
+    await expect(page.getByRole('heading', { level: 1, name: 'Anmelden' })).toBeVisible();
     expect(await axeVerstoesse(page)).toEqual([]);
 
     const gesperrt = await page.goto('/install');

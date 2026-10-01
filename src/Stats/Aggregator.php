@@ -126,7 +126,7 @@ final class Aggregator
         $sitzungsDimensionen = [
             Dimension::ENTRY_PAGE => 'entry_path_id',
             Dimension::EXIT_PAGE => 'exit_path_id',
-            Dimension::REFERRER => 'referrer_id',
+            Dimension::REFERRER => 'IF(referrer_id IS NOT NULL, referrer_id, IF(utm_source_id IS NULL, 0, NULL))',
             Dimension::UTM_SOURCE => 'utm_source_id',
             Dimension::UTM_MEDIUM => 'utm_medium_id',
             Dimension::UTM_CAMPAIGN => 'utm_campaign_id',

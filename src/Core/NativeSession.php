@@ -11,6 +11,8 @@ use RuntimeException;
  */
 final class NativeSession implements Session
 {
+    private const NAME = 'pegelstand_session';
+
     private bool $started = false;
 
     public function __construct(
@@ -20,6 +22,10 @@ final class NativeSession implements Session
 
     public function get(string $key, mixed $default = null): mixed
     {
+        // Ohne Sitzungs-Cookie gibt es nichts zu lesen. So legt ein anonymer Aufruf keine Sitzungsdatei an.
+        if (!$this->started && !isset($_COOKIE[self::NAME])) {
+            return $default;
+        }
         $this->start();
 
         return $_SESSION[$key] ?? $default;
@@ -60,7 +66,7 @@ final class NativeSession implements Session
             throw new RuntimeException('Der Sitzungsordner storage/sessions kann nicht angelegt werden.');
         }
         session_save_path($this->savePath);
-        session_name('pegelstand_session');
+        session_name(self::NAME);
         session_set_cookie_params([
             'lifetime' => 0,
             'path' => '/',

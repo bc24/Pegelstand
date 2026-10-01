@@ -1,9 +1,9 @@
-// Dashboard-Prototyp (Phase 1): Steuerung. Daten kommen aus demo-daten.js, später aus der API.
+// Dashboard: Steuerung der Oberfläche. Die Daten liefert quelle.js (Server-Schnittstelle oder Demo-Daten des Prototyps).
 import '../main.js';
 import { setzeModus } from '../theme.js';
 import { toast } from '../toast.js';
 import { icon } from '../util.js';
-import { alleSites, aktiveBesucher, filterName, FILTERARTEN, ladeAnsicht } from './demo-daten.js';
+import { alleSites, aktiveBesucher, filterName, FILTERARTEN, IST_DEMO, ladeAnsicht, waehleSite } from './quelle.js';
 import { Diagramm, langerText } from './diagramm.js';
 import { h } from './dom.js';
 import { formatDatum } from './format.js';
@@ -22,7 +22,7 @@ import {
   zeitinfo,
 } from './ansicht.js';
 import { lese, schreibe } from './zustand.js';
-import { JETZT, loese, MIN_DATUM, ZEITRAEUME } from './zeitraum.js';
+import { JETZT, loese, ZEITRAEUME } from './zeitraum.js';
 
 const $ = (id) => document.getElementById(id);
 
@@ -40,6 +40,7 @@ function siteName() {
 }
 
 function zeichneKopf() {
+  waehleSite(z.site);
   const zr = loese(z.zeitraum, z.von, z.bis);
   $('site-name').textContent = siteName();
   $('titel').textContent = siteName();
@@ -92,6 +93,7 @@ function ansage(textInhalt) {
 
 async function lade() {
   const nr = ++anfrage;
+  waehleSite(z.site);
   $('ansicht-normal').setAttribute('aria-busy', 'true');
   if (daten) document.documentElement.dataset.laedt = '';
   const zr = loese(z.zeitraum, z.von, z.bis);
@@ -127,7 +129,7 @@ function zeichne() {
   }
   if (daten.keineDaten) {
     zeigeSonder(() => zeichneKeineDaten($('ansicht-sonder'), z));
-    aktualisiereLive();
+    aktualisiereLive(daten.aktive);
     ansage('Keine Daten in diesem Zeitraum.');
     return;
   }
@@ -139,7 +141,7 @@ function zeichne() {
   for (const behaelter of document.querySelectorAll('[data-bereich]')) {
     zeichneTabelle(behaelter, behaelter.dataset.bereich, daten, z);
   }
-  aktualisiereLive();
+  aktualisiereLive(daten.aktive);
   ansage(`Daten für ${siteName()} aktualisiert: ${$('zeitinfo').textContent}.`);
 }
 
@@ -174,8 +176,7 @@ function zeigeTabellenAnsicht() {
   $('tabellen-knopf-text').textContent = tabellenAnsicht ? 'Als Diagramm' : 'Als Tabelle';
 }
 
-function aktualisiereLive() {
-  const n = aktiveBesucher(z.site);
+function aktualisiereLive(n) {
   $('live-text').textContent = n === 1 ? '1 aktiver Besucher' : `${n} aktive Besucher`;
 }
 
@@ -214,6 +215,8 @@ function oeffneBereichsdialog() {
   $('bereich-von').value = zr.von;
   $('bereich-bis').value = zr.bis;
   $('bereich-fehler').hidden = true;
+  $('bereich-von').min = $('bereich-bis').min = JETZT.min;
+  $('bereich-von').max = $('bereich-bis').max = JETZT.datum;
   $('bereich-dialog').showModal();
   document.documentElement.dataset.psModal = '';
 }
@@ -225,7 +228,7 @@ function wendeBereichAn(e) {
   let fehler = '';
   if (!von || !bis) fehler = 'Gib ein Start- und ein Enddatum an.';
   else if (von > bis) fehler = 'Das Startdatum liegt nach dem Enddatum. Tausche die beiden Daten.';
-  else if (von < MIN_DATUM) fehler = `Die Demo-Daten beginnen am ${formatDatum(MIN_DATUM)}. Wähle ein späteres Startdatum.`;
+  else if (von < JETZT.min) fehler = `${IST_DEMO ? 'Die Demo-Daten beginnen' : 'Die Daten beginnen'} am ${formatDatum(JETZT.min)}. Wähle ein späteres Startdatum.`;
   else if (bis > JETZT.datum) fehler = `Das Enddatum darf nicht nach dem ${formatDatum(JETZT.datum)} liegen.`;
   if (fehler) {
     $('bereich-fehler-text').textContent = fehler;
@@ -357,7 +360,14 @@ initKuerzel({
 
 new MutationObserver(() => diagramm.neuZeichnen()).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
 matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => diagramm.neuZeichnen());
-setInterval(() => daten && !daten.leer && !daten.keineDaten && aktualisiereLive(), 30000);
+setInterval(async () => {
+  if (!daten || daten.leer) return;
+  try {
+    aktualisiereLive(await aktiveBesucher(z.site));
+  } catch {
+    // Die Anzeige bleibt beim letzten Wert.
+  }
+}, 30000);
 
 baueMenues();
 zeichneKopf();

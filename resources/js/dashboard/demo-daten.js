@@ -1,7 +1,12 @@
 // Deterministische Demo-Daten für den Dashboard-Prototyp (Phase 1).
 // Schnittstelle: ladeAnsicht(abfrage) liefert, was später die API liefert (Phase 5).
 // Alle Namen und Zahlen sind frei erfunden und nur zur Veranschaulichung.
-import { addTage, JETZT, MIN_DATUM, tageZwischen, wochentag } from './zeitraum.js';
+import { FILTERARTEN } from './filterarten.js';
+import { addTage, JETZT, tageZwischen, wochentag } from './zeitraum.js';
+
+const MIN_DATUM = '2025-01-01';
+
+export { FILTERARTEN };
 
 function hash(text) {
   let h = 2166136261;
@@ -149,21 +154,6 @@ const EREIGNISSE = [
   { id: 'anmeldung', name: 'Anmeldung', w: 0.018, eig: { tarif: [['Basis', 50], ['Pro', 35], ['Team', 15]] } },
   { id: '404', name: '404-Seite', w: 0.009, eig: { pfad: [['/alt/preise', 44], ['/blog/alt', 34], ['/wp-login.php', 22]] } },
 ];
-
-/** Namen für Filterarten, auch von der Oberfläche genutzt. */
-export const FILTERARTEN = {
-  seite: 'Seite',
-  einstieg: 'Einstiegsseite',
-  ausstieg: 'Ausstiegsseite',
-  quelle: 'Quelle',
-  kampagne: 'Kampagne',
-  land: 'Land',
-  geraet: 'Gerät',
-  browser: 'Browser',
-  os: 'Betriebssystem',
-  ziel: 'Ziel',
-  ereignis: 'Ereignis',
-};
 
 /* ---------- Tageswerte ---------- */
 

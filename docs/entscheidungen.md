@@ -38,3 +38,15 @@ Frank hat die Entscheidungen ab Phase 3 an den Entwickler delegiert ("löse alle
 | 20 | Pseudo-Cron: Nach der Antwort an den Besucher prüft Pegelstand höchstens einmal pro Minute (Marker-Datei `storage/cache/cron-last`), ob Jobs fällig sind. Mit `cron.mode = external` in der Konfiguration schaltest du das ab und nutzt `php bin/cron.php`. | Läuft auf jedem Hoster ohne Cron. Ohne `fastcgi_finish_request` (reines mod_php) wartet der Besucher auf den Job, der pro Lauf begrenzt ist. |
 | 21 | Jobs sperren sich über die Tabelle `job_runs` (abgelaufene Sperren abgestürzter Läufe werden übernommen), nicht über Dateisperren. | Funktioniert auf Hostern mit Netzwerk-Dateisystem. |
 | 22 | `bin/cron.php` bleibt im Release-Zip, die übrigen Skripte in `bin/` nicht. `bin/demo-data.php` und `bin/benchmark.php` sind Entwicklungswerkzeuge. | Endnutzer brauchen nur den Cron-Aufruf. |
+
+## Phase 5: Dashboard mit echten Daten
+
+| # | Entscheidung | Begründung |
+|---|---|---|
+| 23 | Das Dashboard liest ohne Filter und bei mehr als 2 Tagen aus den Aggregaten, sonst (Heute, Gestern, jeder Filter) aus den Rohdaten. | Aggregate sind in Millisekunden da, Rohdaten stimmen in Echtzeit und erlauben Filter (siehe `docs/performance.md`). Filter auf großen Zeiträumen sind langsamer. |
+| 24 | Ein Test erzwingt, dass Aggregate und Rohdaten dieselben Zahlen liefern. | Beide Pfade dürfen nie auseinanderlaufen. |
+| 25 | "Aktive Besucher" = Sitzungen mit Aufruf in den letzten 5 Minuten. | Üblicher Wert, im Tooltip genannt. |
+| 26 | Die Oberfläche nutzt dieselben JS-Module wie der Prototyp, nur die Datenquelle wechselt (`quelle.js`). | Eine Codebasis, der Prototyp bleibt testbar. |
+| 27 | Ziele (Phase 7) fehlen noch: Tabelle "Ziele" ist leer, Filter `ziel` wird ignoriert. | Gehört zu Phase 7. |
+| 28 | Anmeldung ist minimal (E-Mail, Passwort, Sperre nach 10 Fehlversuchen je 15 Minuten, Abmelden per POST). 2FA, Passwort-Reset, Benutzerverwaltung folgen in Phase 6. | Phasenplan. |
+| 29 | Startseite `/` ist das Dashboard (erste Site des Benutzers); ohne Site eine Hinweisseite. Sites anlegen per Oberfläche folgt in Phase 6. | Phasenplan. |

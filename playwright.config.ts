@@ -33,7 +33,7 @@ export default defineConfig({
     name,
     use: { viewport, colorScheme, baseURL: `http://127.0.0.1:${port}` },
   })),
-  webServer: varianten.map(({ name, port }) => ({
+  webServer: [...varianten.map(({ name, port }) => ({
     command: `php -S 127.0.0.1:${port} -t .`,
     url: `http://127.0.0.1:${port}/assets/icons.svg`,
     reuseExistingServer: false,
@@ -43,5 +43,16 @@ export default defineConfig({
       PEGELSTAND_CONFIG_DIR: join(arbeitsverzeichnis, name, 'config'),
       PEGELSTAND_STORAGE_DIR: join(arbeitsverzeichnis, name, 'storage'),
     },
-  })),
+  })), {
+    // Fertig installierte Instanz mit Beispieldaten für die Dashboard-Tests (live.spec.ts), siehe bin/e2e-prepare.php.
+    command: 'php -S 127.0.0.1:8095 -t .',
+    url: 'http://127.0.0.1:8095/assets/icons.svg',
+    reuseExistingServer: false,
+    stdout: 'ignore' as const,
+    stderr: 'ignore' as const,
+    env: {
+      PEGELSTAND_CONFIG_DIR: join(arbeitsverzeichnis, 'live', 'config'),
+      PEGELSTAND_STORAGE_DIR: join(arbeitsverzeichnis, 'live', 'storage'),
+    },
+  }],
 });

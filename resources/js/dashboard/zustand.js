@@ -1,5 +1,5 @@
 // Zustand der Ansicht ↔ Adresszeile. So lassen sich Ansichten teilen und der Zurück-Knopf funktioniert.
-import { alleSites, FILTERARTEN } from './demo-daten.js';
+import { alleSites, FILTERARTEN } from './quelle.js';
 import { KENNZAHLEN } from './kennzahlen.js';
 import { ZEITRAEUME } from './zeitraum.js';
 

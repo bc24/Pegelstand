@@ -6,6 +6,8 @@ namespace Pegelstand\Core;
 
 use DateTimeZone;
 use PDOException;
+use Pegelstand\Auth\AuthService;
+use Pegelstand\Auth\LoginController;
 use Pegelstand\Database\Database;
 use Pegelstand\Database\MigrationException;
 use Pegelstand\Database\Migrator;
@@ -27,6 +29,9 @@ use Pegelstand\Jobs\CleanupJob;
 use Pegelstand\Jobs\JobRunner;
 use Pegelstand\Jobs\Scheduler;
 use Pegelstand\Stats\Aggregator;
+use Pegelstand\Stats\DashboardController;
+use Pegelstand\Stats\DashboardService;
+use Pegelstand\Stats\ReferrerClassifier;
 use Pegelstand\Version;
 use Throwable;
 
@@ -174,34 +179,71 @@ final class Application
         }
 
         $router = new Router();
-        $router->add('GET', '/', static fn(Request $r): Response => Response::html($view->render('start', [
-            'titel' => $view->translate('start.titel'),
-            'version' => Version::CURRENT,
-        ])));
-
         $proxy = $config->get('proxy.trusted', []);
+        $salts = new SaltService($db, new DateTimeZone($config->string('rotation_timezone', 'Europe/Berlin')));
+        $clientIp = new ClientIp(
+            $config->string('proxy.header'),
+            is_array($proxy) ? array_values(array_filter($proxy, 'is_string')) : [],
+        );
+        $skript = $config->string('tracker.script_path', '/p.js');
+        $endpunkt = $config->string('tracker.endpoint_path', '/api/event');
         (new IngestController(
             new Collector(
                 $db,
-                new SaltService($db, new DateTimeZone($config->string('rotation_timezone', 'Europe/Berlin'))),
+                $salts,
                 new Dictionary($db),
                 new UrlParser(),
                 new UserAgentParser(),
                 BotFilter::fromFile($this->paths->resourcesDir() . '/data/bots.php'),
                 new MmdbCountryLookup($this->paths->geoIpFile()),
                 new RateLimiter($db),
-                new ClientIp(
-                    $config->string('proxy.header'),
-                    is_array($proxy) ? array_values(array_filter($proxy, 'is_string')) : [],
-                ),
+                $clientIp,
                 $config->int('ingest.rate_limit', 300),
             ),
             $this->paths->assetsDir() . '/p.js',
-            $config->string('tracker.script_path', '/p.js'),
-            $config->string('tracker.endpoint_path', '/api/event'),
+            $skript,
+            $endpunkt,
+        ))->register($router);
+
+        // Die Bedienoberfläche. Die Sitzung startet erst, wenn jemand sie wirklich braucht, nie für Messpunkte.
+        $translator = $this->translator();
+        $session = $this->session($request);
+        $csrf = new Csrf($session);
+        $auth = new AuthService($db, $session);
+        (new LoginController($view, $translator, $csrf, $auth, new RateLimiter($db), $salts, $clientIp, $config->int('login.rate_limit', 10)))->register($router);
+        (new DashboardController(
+            $view,
+            $translator,
+            $csrf,
+            $auth,
+            new DashboardService(
+                $db,
+                ReferrerClassifier::fromFile($this->paths->resourcesDir() . '/data/quellen.php'),
+                self::laender($this->paths->resourcesDir() . '/data/laender.php'),
+            ),
+            Version::CURRENT,
+            $skript,
+            $endpunkt,
         ))->register($router);
 
         return $router->dispatch($request) ?? $this->fehlerseite($request, '404', 404);
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    private static function laender(string $datei): array
+    {
+        $liste = is_file($datei) ? (static fn(): mixed => require $datei)() : [];
+
+        $ergebnis = [];
+        foreach (is_array($liste) ? $liste : [] as $code => $name) {
+            if (is_string($name)) {
+                $ergebnis[(string) $code] = $name;
+            }
+        }
+
+        return $ergebnis;
     }
 
     /**

@@ -2,8 +2,8 @@
 const TAG = 86400000;
 
 /** Festes „Jetzt“ der Demo, damit Prototyp, Tests und Screenshots reproduzierbar sind. */
-export const JETZT = { datum: '2026-09-29', stunde: 14 };
-export const MIN_DATUM = '2025-01-01';
+// Im Prototyp ist es fest, im echten Dashboard setzt die Datenquelle die Werte je Site (Zeitzone der Site).
+export const JETZT = { datum: '2026-09-29', stunde: 14, zeit: '14:30', min: '2025-01-01' };
 
 const parse = (iso) => {
   const [j, m, t] = iso.split('-').map(Number);
@@ -29,7 +29,7 @@ export const ZEITRAEUME = [
 ];
 
 export function begrenze(von, bis) {
-  let v = von && von >= MIN_DATUM ? von : MIN_DATUM;
+  let v = von && von >= JETZT.min ? von : JETZT.min;
   let b = bis && bis <= JETZT.datum ? bis : JETZT.datum;
   if (v > b) [v, b] = [b, v];
   return [v, b];

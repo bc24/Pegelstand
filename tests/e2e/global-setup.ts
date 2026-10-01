@@ -3,7 +3,7 @@ import { mkdirSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
-const VARIANTEN = ['desktop-hell', 'desktop-dunkel', 'smartphone-hell', 'smartphone-dunkel'];
+const VARIANTEN = ['desktop-hell', 'desktop-dunkel', 'smartphone-hell', 'smartphone-dunkel', 'live'];
 
 // Frischer Zustand für jeden Lauf: leere Konfigurationsordner und keine Tabellen früherer Läufe.
 export default function globalSetup() {
@@ -13,5 +13,5 @@ export default function globalSetup() {
     mkdirSync(join(wurzel, name, 'config'), { recursive: true });
     mkdirSync(join(wurzel, name, 'storage'), { recursive: true });
   }
-  execFileSync('php', ['bin/e2e-prepare.php'], { stdio: 'inherit' });
+  execFileSync('php', ['bin/e2e-prepare.php', join(wurzel, 'live')], { stdio: 'inherit' });
 }

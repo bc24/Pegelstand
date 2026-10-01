@@ -1,7 +1,7 @@
 // Darstellung der Dashboard-Daten. Alles entsteht über h() und textContent, nie über HTML-Text.
 import { icon } from '../util.js';
 import { h, versteckt } from './dom.js';
-import { filterName, FILTERARTEN } from './demo-daten.js';
+import { filterName, FILTERARTEN } from './quelle.js';
 import {
   formatDatum,
   formatDauer,
@@ -216,7 +216,7 @@ export function zeichneFilter(behaelter, zustand) {
 const CODE = '<script defer data-site="SITE_ID" src="https://example.de/p.js"></script>';
 
 export function zeichneLeer(behaelter, site) {
-  const code = CODE.replace('SITE_ID', site.id);
+  const code = site.code ?? CODE.replace('SITE_ID', site.id);
   const schritt = (nr, titel, ...inhalt) =>
     h('li', { class: 'db-schritt' }, h('span', { class: 'db-schritt__nr', 'aria-hidden': 'true' }, String(nr)), h('div', {}, h('h3', {}, titel), ...inhalt));
   behaelter.replaceChildren(
@@ -294,7 +294,7 @@ export function zeichneKeineDaten(behaelter, zustand) {
 
 export function zeitinfo(zr, vergleich) {
   const spanne = (von, bis) => (von === bis ? formatDatum(von) : `${formatDatum(von)} – ${formatDatum(bis)}`);
-  const stand = zr.bis === JETZT.datum ? ` (Stand ${JETZT.stunde}:30 Uhr)` : '';
+  const stand = zr.bis === JETZT.datum ? ` (Stand ${JETZT.zeit} Uhr)` : '';
   const haupt = `${spanne(zr.von, zr.bis)}${stand}`;
   return vergleich ? `${haupt} · Vergleich mit ${spanne(zr.vorVon, zr.vorBis)}` : haupt;
 }

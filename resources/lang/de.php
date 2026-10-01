@@ -167,9 +167,26 @@ return [
         ],
     ],
 
-    'start' => [
-        'titel' => 'Pegelstand ist installiert',
-        'text' => 'Version {version}. Die Anmeldung ist in dieser Entwicklungsversion noch nicht verfügbar.',
+    'login' => [
+        'titel' => 'Anmelden',
+        'einleitung' => 'Melde dich mit deiner E-Mail-Adresse und deinem Passwort an.',
+        'email' => 'E-Mail-Adresse',
+        'passwort' => 'Passwort',
+        'anmelden' => 'Anmelden',
+        'abmelden' => 'Abmelden',
+        'konto' => 'Konto und Darstellung ({name})',
+        'fehler_zugang' => 'E-Mail-Adresse oder Passwort stimmt nicht. Prüfe deine Eingabe und versuche es noch einmal.',
+        'fehler_zuviele' => 'Zu viele Anmeldeversuche. Warte etwa 15 Minuten und versuche es dann noch einmal.',
+        'fehler_sitzung' => 'Die Seite war zu lange offen. Versuche die Anmeldung noch einmal.',
+    ],
+
+    'dashboard' => ['titel' => 'Dashboard'],
+
+    'keine_site' => [
+        'titel' => 'Noch keine Website',
+        'text_admin' => 'Du hast noch keine Website angelegt. Das Anlegen von Websites in der Oberfläche folgt in einer späteren Version. Bis dahin kannst du eine Website mit dem Skript bin/demo-data.php anlegen.',
+        'text_viewer' => 'Dir ist noch keine Website zugeordnet. Bitte einen Administrator, dir eine Website freizugeben.',
+        'abmelden' => 'Abmelden',
     ],
 
     'fehlerseite' => [
