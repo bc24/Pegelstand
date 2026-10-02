@@ -1,3 +1,4 @@
+<!-- Automatisch aus docs/hintergrundjobs.md erzeugt (php bin/build-wiki.php). Änderungen bitte dort vornehmen. -->
 # Hintergrundjobs und Aggregation
 
 Pegelstand speichert jeden Besuch als Rohdatensatz. Das Dashboard liest dagegen fertig verdichtete **Aggregate** (Tages- und Stundenwerte, Aufschlüsselungen). Zwei Jobs halten sie aktuell.
@@ -41,4 +42,4 @@ php bin/demo-data.php --create-site --days=90 --sessions=300   # erfundene Daten
 php bin/benchmark.php --sessions=150000 --days=30               # Messung, legt eine Wegwerf-Site an
 ```
 
-Messwerte stehen in [Leistung](performance.md).
+Messwerte stehen in [Leistung](Leistung).

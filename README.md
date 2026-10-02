@@ -245,6 +245,8 @@ Erst nach Version 1.0 geplant: WordPress-Plugin, englische Oberfläche, Importe,
 
 ## Dokumentation
 
+Die Seiten liegen auch als GitHub-Wiki-Vorlage in [wiki/](wiki/) (Einspielen: Wiki-Repository klonen, Dateien aus `wiki/` hineinkopieren, pushen). Die aus `docs/` abgeleiteten Seiten erzeugt `php bin/build-wiki.php`.
+
 | Datei | Inhalt |
 |---|---|
 | [docs/installation.md](docs/installation.md) | Installation Schritt für Schritt |

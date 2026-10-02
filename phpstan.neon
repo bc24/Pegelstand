@@ -9,3 +9,4 @@ parameters:
         - bin/cron.php
         - bin/demo-data.php
         - bin/benchmark.php
+        - bin/build-wiki.php
