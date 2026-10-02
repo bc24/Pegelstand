@@ -80,6 +80,8 @@ final class Application
                 return $this->installer($request, $view, $session, $log);
             }
 
+            $view->setDemo($config->bool('demo.enabled'));
+
             return $this->betrieb($request, $config, $view);
         } catch (Throwable $fehler) {
             $log->write($fehler);
@@ -205,6 +207,12 @@ final class Application
             return $wartung;
         }
 
+        // Demo-Modus: Alles, was etwas verändert oder E-Mails verschickt, ist abgeschaltet. Anmelden und Ansehen bleiben möglich.
+        if ($config->bool('demo.enabled') && $request->method === 'POST'
+            && (str_starts_with($request->path, '/einstellungen') || $request->path === '/passwort-vergessen')) {
+            return $this->fehlerseite($request, 'demo', 403);
+        }
+
         $router = new Router();
         $proxy = $config->get('proxy.trusted', []);
         $salts = new SaltService($db, new DateTimeZone($config->string('rotation_timezone', 'Europe/Berlin')));
@@ -237,7 +245,9 @@ final class Application
         $session = $this->session($request);
         $csrf = new Csrf($session);
         $auth = new AuthService($db, $session, new Crypto($config->string('app_key')));
-        (new LoginController($view, $translator, $csrf, $auth, new RateLimiter($db), $salts, $clientIp, $config->int('login.rate_limit', 10)))->register($router);
+        (new LoginController($view, $translator, $csrf, $auth, new RateLimiter($db), $salts, $clientIp, $config->int('login.rate_limit', 10), $config->bool('demo.enabled') && $config->string('demo.user') !== ''
+            ? $translator->get('login.demo_zugang', ['email' => $config->string('demo.user'), 'passwort' => $config->string('demo.password')])
+            : ''))->register($router);
         $einstellungen = new SettingsStore($db, new Crypto($config->string('app_key')));
         $mailer = new Mailer($einstellungen);
         (new SettingsController($view, $translator, $csrf, $session, $auth, new SiteRepository($db), new UserRepository($db), new GoalRepository($db), new ApiKeyRepository($db), new ReportSubscriptions($db), $mailer, $skript, $endpunkt))->register($router);

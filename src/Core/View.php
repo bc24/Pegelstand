@@ -18,6 +18,19 @@ final class View
         private readonly string $basePath = '',
     ) {}
 
+    private bool $demo = false;
+
+    /** Demo-Modus: Seiten zeigen einen Hinweis, dass die Daten erfunden sind. */
+    public function setDemo(bool $demo): void
+    {
+        $this->demo = $demo;
+    }
+
+    public function isDemo(): bool
+    {
+        return $this->demo;
+    }
+
     public function e(mixed $wert): string
     {
         return htmlspecialchars(is_scalar($wert) || $wert === null ? (string) $wert : '', ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');

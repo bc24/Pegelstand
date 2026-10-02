@@ -39,6 +39,9 @@ defined('PEGELSTAND_ROOT') || exit;
     </div>
   </header>
 
+  <?php if ($this->isDemo()) : ?>
+  <p class="se-demo" role="note"><?= $this->t('layout.demo') ?></p>
+  <?php endif; ?>
   <main class="se-haupt<?= !empty($breit) ? ' se-haupt--breit' : '' ?>" id="inhalt" tabindex="-1">
 <?= $inhalt ?>
   </main>

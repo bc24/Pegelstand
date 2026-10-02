@@ -31,6 +31,7 @@ final class LoginController
         private readonly SaltService $salts,
         private readonly ClientIp $clientIp,
         private readonly int $limit = 10,
+        private readonly string $demoHinweis = '',
     ) {}
 
     public function register(Router $router): void
@@ -127,6 +128,7 @@ final class LoginController
             'fehler' => $fehler,
             'csrf' => $this->csrf->token(),
             'erfolg' => $erfolg === '1',
+            'demoZugang' => $this->demoHinweis,
         ]), $status);
     }
 }

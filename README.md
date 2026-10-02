@@ -6,7 +6,7 @@ Pegelstand zeigt dir, wie viele Menschen deine Websites besuchen, welche Seiten 
 
 ![Das Dashboard in hellem Design](docs/bilder/dashboard-hell.png)
 
-> **Status: in Entwicklung, noch nicht für den Produktivbetrieb gedacht.** Erfassung, Aggregation, Dashboard, Verwaltung, Zwei-Faktor-Anmeldung, Ziele, E-Mail-Berichte, CSV-Export, REST-API und öffentliche Dashboards laufen. Docker, die ausführliche Dokumentation und das fertige Release-Zip fehlen noch (siehe [Fahrplan](#fahrplan)). Einen Download für Endnutzer gibt es erst mit Version 1.0.
+> **Status: in Entwicklung, noch nicht für den Produktivbetrieb gedacht.** Erfassung, Aggregation, Dashboard, Verwaltung, Zwei-Faktor-Anmeldung, Ziele, E-Mail-Berichte, CSV-Export, REST-API und öffentliche Dashboards laufen. Release-Zip, Docker-Setup, nginx-Beispiel und Demo-Modus sind gebaut, Docker und nginx aber noch nie in der Praxis gelaufen (siehe [Fahrplan](#fahrplan)). Einen Download für Endnutzer gibt es erst mit Version 1.0.
 
 ## Inhalt
 
@@ -74,14 +74,14 @@ Auf Wunsch beachtet Pegelstand `Do Not Track` und `Sec-GPC` (pro Website einstel
 
 - **PHP 8.2 oder neuer** mit den Erweiterungen `pdo_mysql`, `json`, `mbstring`, `openssl`, `session`
 - **MySQL 8.0+** oder **MariaDB 10.6+**
-- Apache mit `mod_rewrite` und `.htaccess`-Unterstützung (die mitgelieferte `.htaccess` sperrt interne Ordner). Eine Beispielkonfiguration für nginx folgt mit Version 1.0.
+- Apache mit `mod_rewrite` und `.htaccess`-Unterstützung (die mitgelieferte `.htaccess` sperrt interne Ordner). Für nginx liegt eine ungetestete Beispielkonfiguration bei ([docs/nginx.md](docs/nginx.md)), für Docker ein Setup in `docker/` ([docs/docker.md](docs/docker.md)).
 - Das Projektverzeichnis ist das Document Root, es gibt keinen `public/`-Ordner. Pegelstand läuft auch in einem Unterverzeichnis.
 
 Getestet wurde bisher mit PHP 8.3 und MariaDB 10.11. Die übrigen Versionen prüft die CI-Matrix (PHP 8.2 bis 8.5, MySQL 8.0 und 8.4, MariaDB 10.6 und 11.4), die noch nie gelaufen ist. Behandle die Angaben deshalb als Ziel, nicht als Zusage.
 
 ## Installation
 
-Das fertige Release-Zip (mit allen Abhängigkeiten und gebauten Dateien) erscheint mit Version 1.0. Bis dahin installierst du aus dem Quellcode, siehe [Entwicklung](#entwicklung). Der Ablauf für Endnutzer wird so aussehen:
+Das Release-Zip (mit allen Abhängigkeiten und gebauten Dateien) baut `bin/build-release.sh`, ein veröffentlichter Download erscheint mit Version 1.0. Der Ablauf (ausführlich in [docs/installation.md](docs/installation.md)):
 
 1. Zip entpacken und den Inhalt auf deinen Webspace hochladen.
 2. Eine leere Datenbank anlegen (in der Verwaltung deines Hosters).
@@ -232,7 +232,7 @@ Aufbau: kein Framework, sondern ein kleiner Kern (Front Controller, Router, Cont
 | 5 | Dashboard mit echten Daten | fertig |
 | 6 | Verwaltung, Benutzer, Rollen, Zwei-Faktor | fertig |
 | 7 | Ziele, E-Mail-Versand und Berichte, Passwort-Reset, CSV-Export, REST-API, öffentliche Dashboards | fertig |
-| 8 | Docker, Dokumentation, Demo-Modus, nginx-Beispiel, Release-Zip | offen |
+| 8 | Release-Zip, Docker, nginx-Beispiel, Demo-Modus, Dokumentation | fertig bis auf Praxistests von Docker und nginx |
 | 9 | Projekt-Website | offen |
 
 Erst nach Version 1.0 geplant: WordPress-Plugin, englische Oberfläche, Importe, Webhooks.
@@ -243,6 +243,13 @@ Erst nach Version 1.0 geplant: WordPress-Plugin, englische Oberfläche, Importe,
 
 | Datei | Inhalt |
 |---|---|
+| [docs/installation.md](docs/installation.md) | Installation Schritt für Schritt |
+| [docs/aktualisieren.md](docs/aktualisieren.md) | Updates und Rückkehr zur alten Version |
+| [docs/datensicherung.md](docs/datensicherung.md) | Was gesichert werden muss, Wiederherstellen |
+| [docs/fehlerbehebung.md](docs/fehlerbehebung.md) | Häufige Probleme |
+| [docs/nginx.md](docs/nginx.md) | Betrieb mit nginx (Beispielkonfiguration) |
+| [docs/docker.md](docs/docker.md) | Container-Setup |
+| [docs/demo.md](docs/demo.md) | Demo-Modus für öffentliche Vorführungen |
 | [docs/tracking.md](docs/tracking.md) | Einbindung, Ereignisse, Opt-out, Proxy, GeoIP, Datenschutz-Details |
 | [docs/api.md](docs/api.md) | REST-Schnittstelle mit Schlüsseln |
 | [docs/hintergrundjobs.md](docs/hintergrundjobs.md) | Aggregation, Cron, wie Zahlen entstehen |

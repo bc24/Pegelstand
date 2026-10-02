@@ -8,6 +8,7 @@ defined('PEGELSTAND_ROOT') || exit;
 /** @var string $email */
 /** @var string $fehler */
 /** @var string $csrf */
+/** @var string $demoZugang Zugangsdaten-Hinweis im Demo-Modus, sonst leer */
 /** @var bool $erfolg */
 ?>
 <section class="ps-card se-karte" aria-labelledby="titel">
@@ -15,6 +16,9 @@ defined('PEGELSTAND_ROOT') || exit;
     <h1 id="titel"><?= $this->t('login.titel') ?></h1>
     <p class="se-einleitung"><?= $this->t('login.einleitung') ?></p>
 
+    <?php if (!empty($demoZugang)) : ?>
+    <div class="ps-alert ps-alert--success" role="note"><?= $this->icon('info') ?><div class="ps-alert__inhalt"><p><?= $this->e($demoZugang) ?></p></div></div>
+    <?php endif; ?>
     <?php if (!empty($erfolg)) : ?>
     <div class="ps-alert ps-alert--success" role="status"><?= $this->icon('circle-check') ?><div class="ps-alert__inhalt"><p><?= $this->t('reset.erfolg') ?></p></div></div>
     <?php endif; ?>

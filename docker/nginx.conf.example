@@ -1,0 +1,37 @@
+# Beispiel für nginx mit PHP-FPM. Ersetze Servername, Pfad und den Socket von PHP-FPM.
+# Ungetestet: In der Entwicklungsumgebung stand kein nginx zur Verfügung (TODO(prüfen)).
+server {
+    listen 80;
+    server_name stats.beispiel.de;
+    root /var/www/pegelstand;
+    index index.php;
+
+    # Interne Ordner und Projektdateien sind nie öffentlich (antworten wie die .htaccess mit 404).
+    location ~ ^/(config|src|storage|vendor|bin|tests|docs|database|resources|prototype|licenses|node_modules|dist|\.git|\.github)(/|$) { return 404; }
+    location ~ ^/(composer\.(json|lock)|package(-lock)?\.json|CHANGELOG\.md|README\.md|LICENSE|THIRD-PARTY\.md)$ { return 404; }
+    location ~ /\. { return 404; }
+
+    # Statische Dateien (gebaute Oberfläche)
+    location /assets/ {
+        try_files $uri =404;
+        expires 1h;
+        add_header X-Content-Type-Options nosniff always;
+    }
+
+    # Alles andere geht an den Front Controller (Seiten, Tracking-Script /p.js, Endpunkt /api/event)
+    location / {
+        try_files /nicht-vorhanden /index.php$is_args$args;
+    }
+
+    location = /index.php {
+        include fastcgi_params;
+        fastcgi_param SCRIPT_FILENAME $document_root/index.php;
+        fastcgi_param SCRIPT_NAME /index.php;
+        fastcgi_pass unix:/run/php/php8.3-fpm.sock;
+        # Der Tracking-Endpunkt nimmt höchstens 8 KB an, Anfragen bleiben klein.
+        client_max_body_size 64k;
+    }
+
+    # Keine andere PHP-Datei ausführen
+    location ~ \.php$ { return 404; }
+}

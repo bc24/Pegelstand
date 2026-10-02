@@ -189,4 +189,29 @@ final class EmailUndResetTest extends InstalliertTestCase
 
         self::assertSame([200, 200, 200, 429], $status);
     }
+
+    public function testDemoModusSperrtAenderungenAberNichtDasAnsehen(): void
+    {
+        $this->konfiguration("    'demo' => ['enabled' => true, 'user' => 'demo@beispiel.de', 'password' => 'demo-passwort-123'],\n");
+
+        $login = $this->get('/login');
+        self::assertStringContainsString('demo@beispiel.de', $login->body);
+        self::assertStringContainsString('demo-passwort-123', $login->body);
+        self::assertStringContainsString('Demo-Version mit erfundenen Daten', $login->body);
+
+        $this->anmelden();
+        self::assertSame(200, $this->get('/einstellungen/websites')->status, 'Ansehen ist erlaubt.');
+        foreach (['/einstellungen/websites', '/einstellungen/benutzer', '/einstellungen/konto', '/einstellungen/email', '/passwort-vergessen'] as $pfad) {
+            $antwort = $this->post($pfad, ['name' => 'x']);
+            self::assertSame(403, $antwort->status, $pfad);
+            self::assertStringContainsString('In der Demo nicht möglich', $antwort->body);
+        }
+        self::assertSame(0, $this->db->fetchInt('SELECT COUNT(*) FROM ' . $this->db->table('report_subscriptions')));
+        self::assertSame(303, $this->post('/logout')->status, 'Abmelden bleibt möglich.');
+    }
+
+    public function testOhneDemoModusKeinHinweis(): void
+    {
+        self::assertStringNotContainsString('Demo-Version', $this->get('/login')->body);
+    }
 }

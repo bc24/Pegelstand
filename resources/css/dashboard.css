@@ -750,3 +750,13 @@ html[data-laedt] .db-fortschritt {
 .db-menue-form .ps-menu__item {
   width: 100%;
 }
+
+/* Hinweisband im Demo-Modus */
+.se-demo {
+  margin: 0;
+  padding: var(--ps-space-2) var(--ps-space-4);
+  background: var(--ps-warning-subtle);
+  color: var(--ps-text);
+  font-size: var(--ps-text-sm);
+  text-align: center;
+}

@@ -2,8 +2,9 @@ name: CI
 
 on:
   push:
-    branches: [main]
+    branches: [main, 'claude/**']
   pull_request:
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -123,3 +124,31 @@ jobs:
             test-results/
             playwright-report/
           if-no-files-found: ignore
+
+  release-zip:
+    name: Release-Zip bauen und prüfen
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          tools: composer
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - run: bin/build-release.sh 0.0.0-ci
+      - name: Inhalt prüfen
+        run: |
+          unzip -q dist/pegelstand-0.0.0-ci.zip -d dist/entpackt
+          cd dist/entpackt/pegelstand
+          for pflicht in index.php .htaccess vendor/autoload.php vendor/.htaccess assets/p.js assets/js/dashboard.js config/config.example.php config/.htaccess src/.htaccess; do
+            test -f "$pflicht" || { echo "Fehlt im Zip: $pflicht"; exit 1; }
+          done
+          for verboten in config/config.php config/installed.lock tests node_modules screenshots prototype playwright.config.ts phpstan.neon; do
+            test ! -e "$verboten" || { echo "Darf nicht im Zip sein: $verboten"; exit 1; }
+          done
+          find . -name '*.php' -not -path './vendor/*' -print0 | xargs -0 -n1 php -l > /dev/null

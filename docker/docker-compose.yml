@@ -1,0 +1,39 @@
+# Pegelstand mit MariaDB. Start: docker compose -f docker/docker-compose.yml up -d --build
+# Danach http://localhost:8080 öffnen und den Installer durchlaufen:
+#   Datenbankserver: db, Datenbankname: pegelstand, Benutzer: pegelstand, Passwort: wie unten (DB_PASSWORT).
+# Ungetestet: In der Entwicklungsumgebung stand kein Docker zur Verfügung (TODO(prüfen)).
+services:
+  app:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    ports:
+      - "8080:80"
+    volumes:
+      - pegelstand_config:/var/www/html/config
+      - pegelstand_storage:/var/www/html/storage
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  db:
+    image: mariadb:11.4
+    environment:
+      MARIADB_DATABASE: pegelstand
+      MARIADB_USER: pegelstand
+      MARIADB_PASSWORD: ${DB_PASSWORT:?Setze DB_PASSWORT in der Umgebung oder in einer .env-Datei}
+      MARIADB_RANDOM_ROOT_PASSWORD: "1"
+    volumes:
+      - pegelstand_db:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+    restart: unless-stopped
+
+volumes:
+  pegelstand_config:
+  pegelstand_storage:
+  pegelstand_db:

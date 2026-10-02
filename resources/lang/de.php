@@ -15,6 +15,7 @@ return [
         'dunkel' => 'Dunkel',
         'system' => 'System',
         'entwickelt_von' => 'Entwickelt von',
+        'demo' => 'Demo-Version mit erfundenen Daten. Änderungen sind abgeschaltet.',
     ],
 
     'install' => [
@@ -205,6 +206,7 @@ return [
 
     'login' => [
         'titel' => 'Anmelden',
+        'demo_zugang' => 'Zum Ausprobieren: E-Mail-Adresse {email}, Passwort {passwort}',
         'vergessen' => 'Passwort vergessen?',
         'einleitung' => 'Melde dich mit deiner E-Mail-Adresse und deinem Passwort an.',
         'email' => 'E-Mail-Adresse',
@@ -454,6 +456,10 @@ return [
         '500' => [
             'titel' => 'Hier ist etwas schiefgelaufen',
             'text' => 'Der Fehler wurde in storage/logs/error.log festgehalten. Versuche es gleich noch einmal. Bleibt es dabei, schau in diese Datei oder frage den Support deines Hosters.',
+        ],
+        'demo' => [
+            'titel' => 'In der Demo nicht möglich',
+            'text' => 'Das ist eine Demo mit erfundenen Daten. Einstellungen, Benutzer und E-Mail-Versand sind abgeschaltet, damit sich niemand gegenseitig die Ansicht verstellt. Sieh dich gern im Dashboard um.',
         ],
         'datenbank' => [
             'titel' => 'Die Datenbank ist nicht erreichbar',

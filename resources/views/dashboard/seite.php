@@ -61,6 +61,9 @@ $kontoLabel = $oeffentlich ? $this->translate('layout.darstellung') : $this->tra
     <button type="button" class="ps-btn ps-btn--ghost ps-btn--icon db-nur-gross" data-ps-modal-open="kuerzel-dialog" aria-label="Tastaturkürzel" data-ps-tooltip="Tastaturkürzel (?)"><svg class="ps-icon" aria-hidden="true" focusable="false"><use href="<?= $this->asset('icons.svg') ?>#ps-icon-keyboard"/></svg></button>
   </header>
 
+  <?php if ($this->isDemo()) : ?>
+  <p class="se-demo" role="note"><?= $this->t('layout.demo') ?></p>
+  <?php endif; ?>
   <main class="db-main" id="inhalt" data-quelle="live" data-bootstrap="<?= $this->e($bootstrap) ?>" data-basis="<?= $this->e($this->url('/')) ?>" data-api="<?= $this->e($apiBasis) ?>">
     <div class="db-toolbar">
       <div class="db-toolbar__titel">

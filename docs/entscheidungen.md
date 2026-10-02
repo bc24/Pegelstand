@@ -73,3 +73,12 @@ Frank hat die Entscheidungen ab Phase 3 an den Entwickler delegiert ("löse alle
 | 40 | CSV-Export: UTF-8 mit BOM, Semikolon, Dezimalkomma, Formel-Einschleusung entschärft. Er enthält höchstens die 50 stärksten Zeilen je Tabelle. | Für deutsches Excel gedacht. |
 | 41 | Öffentliches Dashboard: geheimer Link `/oeffentlich/{Token}` (128 Bit), ein- und ausschaltbar, jederzeit durch einen neuen Link ersetzbar. Schreibgeschützt, ohne Verwaltung und Export, mit `Referrer-Policy: no-referrer`, höchstens 60 Anfragen pro Minute und Adresse. Filter bleiben erlaubt. | Wer den Link kennt, sieht alles im Dashboard; die Einstellungsseite sagt das ausdrücklich. |
 | 42 | E-Mail-Berichte: wöchentlich (Montag ab 7 Uhr, Vorwoche) und monatlich (Erster ab 7 Uhr, Vormonat) nach Ortszeit der Website, ein Abonnement je Benutzer, Website und Rhythmus. Neue Abonnenten bekommen den ersten Bericht zum nächsten Termin. Nur Benutzer, die die Website sehen dürfen und nicht gesperrt sind. Inhalt: Kennzahlen mit Vorperiode, Top-Seiten, Quellen, Länder, als Text und HTML. Abbestellen im Konto (kein Abmelde-Link in der Mail, weil er ein weiteres Geheimnis bräuchte). | Einfach und nachvollziehbar. |
+
+## Phase 8: Veröffentlichung
+
+| # | Entscheidung | Begründung |
+|---|---|---|
+| 43 | Das Release-Zip entsteht mit `bin/build-release.sh`: Allowlist statt Ausschlussliste, `config/` und `storage/` enthalten nur `.htaccess`, Beispielkonfiguration und Platzhalter (nie lokale Zugangsdaten), `vendor/` wird frisch ohne Entwicklungspakete installiert, die Version wird eingetragen, dazu eine SHA-256-Prüfsumme. CI baut und prüft das Zip bei jedem Lauf. | Ein versehentlich mitgepacktes `config.php` wäre der schlimmste Fehler. |
+| 44 | Docker (Apache und PHP 8.3 plus MariaDB 11.4) und nginx werden als Beispiele geliefert und klar als ungetestet gekennzeichnet. | In der Entwicklungsumgebung gab es weder Docker noch nginx. Nichts als „getestet“ ausgeben, was nie lief. |
+| 45 | Demo-Modus per Konfiguration: Hinweisband, Zugangsdaten auf der Anmeldeseite, Änderungen unter `/einstellungen` und „Passwort vergessen“ gesperrt (403 mit Erklärung). Kein automatisches Zurücksetzen der Daten. | Einfach und ohne Sonderlogik im Rest der Anwendung. |
+| 46 | Aktualisieren bleibt Handarbeit mit Anleitung (alte Programmordner ersetzen, `config/` und `storage/` behalten), Migrationen laufen automatisch. Keine Selbstaktualisierung. | Eine Selbstaktualisierung bräuchte Schreibrechte auf Programmdateien und wäre ein Sicherheitsrisiko. |

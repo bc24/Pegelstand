@@ -1,0 +1,15 @@
+.git
+node_modules
+vendor
+assets
+dist
+screenshots
+test-results
+playwright-report
+tests
+prototype
+website
+config/config.php
+config/installed.lock
+storage/*
+!storage/.htaccess
