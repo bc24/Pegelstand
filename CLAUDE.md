@@ -34,6 +34,7 @@ Deutsch: Oberfläche, Texte, README, Doku, Code-Kommentare, Commit-Beschreibunge
 - Frontend-Quellen in `resources/css` (Tokens, Basis, Komponenten) und `resources/js` (Vanilla-ES-Module, Event-Delegation, Texte nur per `textContent`). `npm run build` (esbuild, `bin/build-assets.mjs`) erzeugt `assets/` (nicht im Repository). Keine Inline-Skripte und keine Inline-Event-Handler (spätere CSP). Farben nur über `--ps-*`-Tokens (`light-dark()`), keine Sonderfarben. Neue Icons in `ICONS` im Build-Skript eintragen. Details in `docs/designsystem.md`, Begriffe in `docs/glossar.md`.
 - Dashboard-Prototyp: `prototype/index.html`, Logik in `resources/js/dashboard/` (Demo-Daten in `demo-daten.js` als Platzhalter der API). Zustand steckt in der Adresszeile (siehe `docs/designsystem.md`). Größenbudget Dashboard-JS < 100 KB gzip (`npm run check:groesse`).
 - Interne Komponentenseite: `prototype/komponenten.html` (nur Entwicklung, per `.htaccess` gesperrt, nicht im Zip). Prototypen liegen in `prototype/`.
+- Projekt-Website: `website/*.html` (statisch, ohne JavaScript), CSS aus `resources/css/website.css`, `npm run build:website` (nach `npm run build`) erzeugt `website/assets/` (nicht im Repository). Impressum und Hoster-Angaben bleiben `TODO(prüfen)`, nie Angaben erfinden. Release-Zip: `bin/build-release.sh` (Allowlist), Demo-Modus: Konfiguration `demo`, Docker/nginx-Beispiele sind ungetestet.
 - Tracking-Script unter 2 KB gzip, geprüft von `bin/check-script-size.sh` (CI).
 
 ## Qualität und Werkzeuge

@@ -82,3 +82,10 @@ Frank hat die Entscheidungen ab Phase 3 an den Entwickler delegiert ("löse alle
 | 44 | Docker (Apache und PHP 8.3 plus MariaDB 11.4) und nginx werden als Beispiele geliefert und klar als ungetestet gekennzeichnet. | In der Entwicklungsumgebung gab es weder Docker noch nginx. Nichts als „getestet“ ausgeben, was nie lief. |
 | 45 | Demo-Modus per Konfiguration: Hinweisband, Zugangsdaten auf der Anmeldeseite, Änderungen unter `/einstellungen` und „Passwort vergessen“ gesperrt (403 mit Erklärung). Kein automatisches Zurücksetzen der Daten. | Einfach und ohne Sonderlogik im Rest der Anwendung. |
 | 46 | Aktualisieren bleibt Handarbeit mit Anleitung (alte Programmordner ersetzen, `config/` und `storage/` behalten), Migrationen laufen automatisch. Keine Selbstaktualisierung. | Eine Selbstaktualisierung bräuchte Schreibrechte auf Programmdateien und wäre ein Sicherheitsrisiko. |
+
+## Phase 9: Projekt-Website
+
+| # | Entscheidung | Begründung |
+|---|---|---|
+| 47 | Statische Website in `website/` mit den Design-Tokens der Anwendung, ohne JavaScript, Cookies und Fremdanfragen (ein Test prüft das). Bilder sind die Bildschirmfotos aus der Anwendung mit erfundenen Daten. Gebaut mit `npm run build:website`, die Assets sind nicht im Repository. | Läuft auf jedem Webspace, passt zum Datenschutzversprechen. |
+| 48 | Impressum und Hoster-Angaben der Datenschutzseite sind bewusst leer und mit `TODO(prüfen)` markiert. | Pflichtangaben dürfen nicht erfunden werden; sie kennt nur der Betreiber. |

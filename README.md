@@ -220,6 +220,10 @@ Integrationstests laufen gegen eine echte Datenbank, wenn `PEGELSTAND_TEST_DB_DS
 
 Aufbau: kein Framework, sondern ein kleiner Kern (Front Controller, Router, Container, Templates in PHP) unter `src/`, Datenbankmigrationen unter `database/migrations/`, Oberfläche unter `resources/`. Alle Entscheidungen sind in [docs/entscheidungen.md](docs/entscheidungen.md) festgehalten, das Datenmodell in [docs/schema-entwurf.md](docs/schema-entwurf.md).
 
+## Projekt-Website
+
+Im Ordner `website/` liegt eine statische Website (Startseite, Datenschutz, Impressum) im Design der Anwendung, ohne JavaScript, Cookies und Fremdanfragen. Mit `npm run build && npm run build:website` entstehen die Assets in `website/assets/`, danach lädst du den Ordner auf einen beliebigen Webspace. **Vor der Veröffentlichung** müssen die Angaben im Impressum und die Hoster-Angaben in der Datenschutzseite ausgefüllt werden (beides ist mit `TODO(prüfen)` markiert, ich habe nichts erfunden).
+
 ## Fahrplan
 
 | Phase | Inhalt | Stand |
@@ -233,7 +237,7 @@ Aufbau: kein Framework, sondern ein kleiner Kern (Front Controller, Router, Cont
 | 6 | Verwaltung, Benutzer, Rollen, Zwei-Faktor | fertig |
 | 7 | Ziele, E-Mail-Versand und Berichte, Passwort-Reset, CSV-Export, REST-API, öffentliche Dashboards | fertig |
 | 8 | Release-Zip, Docker, nginx-Beispiel, Demo-Modus, Dokumentation | fertig bis auf Praxistests von Docker und nginx |
-| 9 | Projekt-Website | offen |
+| 9 | Projekt-Website (`website/`, statisch) | fertig, Impressum und Hoster-Angaben müssen vor der Veröffentlichung ausgefüllt werden |
 
 Erst nach Version 1.0 geplant: WordPress-Plugin, englische Oberfläche, Importe, Webhooks.
 

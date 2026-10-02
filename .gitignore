@@ -23,3 +23,6 @@
 /assets/*
 !/assets/.gitkeep
 /screenshots/
+
+# Gebaute Website-Dateien
+/website/assets/

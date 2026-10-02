@@ -9,8 +9,9 @@
     "build": "node bin/build-assets.mjs",
     "screenshots": "playwright test tests/e2e/screenshots.spec.ts tests/e2e/installer.spec.ts",
     "check:groesse": "node bin/check-bundle-size.mjs",
-    "pretest:e2e": "npm run build",
-    "prescreenshots": "npm run build"
+    "pretest:e2e": "npm run build && npm run build:website",
+    "prescreenshots": "npm run build",
+    "build:website": "node bin/build-website.mjs"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.13.0",

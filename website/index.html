@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pegelstand – Webanalyse ohne Cookies für jeden PHP-Webspace</title>
+  <meta name="description" content="Datenschutzfreundliche Webanalyse in PHP und MySQL oder MariaDB. Ohne Cookies, auf eigenem Webspace, Open Source (MIT).">
+  <meta name="color-scheme" content="light dark">
+  <link rel="icon" href="data:,">
+  <link rel="preload" href="assets/fonts/inter-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="assets/css/site.css">
+</head>
+<body>
+  <a class="ps-skip" href="#inhalt">Zum Inhalt springen</a>
+  <header class="ws-kopf">
+    <div class="ws-kopf__innen">
+      <a class="ps-wordmark" href="index.html">Pegelstand</a>
+      <nav class="ws-nav" aria-label="Hauptnavigation">
+        <a href="#funktionen">Funktionen</a>
+        <a href="#datenschutz">Datenschutz</a>
+        <a href="#installation">Installation</a>
+        <a href="#stand">Stand</a>
+        <a href="https://github.com/bc24/Pegelstand">GitHub</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="inhalt">
+    <section class="ws-hero">
+      <div class="ws-block__innen">
+        <span class="ps-badge ps-badge--warning"><span class="ps-badge__dot"></span>In Entwicklung</span>
+        <h1>Webanalyse ohne Cookies, die auf jedem PHP-Webspace läuft.</h1>
+        <p class="ws-hero__text">Pegelstand zeigt dir, wie viele Menschen deine Websites besuchen, welche Seiten sie lesen und woher sie kommen. Hochladen, installieren, fertig: ohne Docker, ohne Node, ohne Kommandozeile. Deine Daten bleiben auf deinem Server.</p>
+        <div class="ws-aktionen">
+          <a class="ps-btn ps-btn--primary" href="https://github.com/bc24/Pegelstand">Auf GitHub ansehen</a>
+          <a class="ps-btn ps-btn--secondary" href="#installation">So läuft die Installation</a>
+        </div>
+        <figure class="ws-bild ws-bild--ausschnitt">
+          <picture>
+            <source srcset="assets/bilder/dashboard-dunkel.png" media="(prefers-color-scheme: dark)">
+            <img src="assets/bilder/dashboard-hell.png" width="1280" height="2339" alt="Das Pegelstand-Dashboard mit Kennzahlen, Zeitverlauf und Tabellen für Seiten, Quellen, Länder und Geräte" fetchpriority="high">
+          </picture>
+        </figure>
+        <p class="ws-hinweis">Das Bild zeigt erfundene Beispieldaten. Pegelstand ist noch nicht für den Produktivbetrieb gedacht und hat noch keine veröffentlichte Version.</p>
+      </div>
+    </section>
+
+    <section class="ws-block ws-block--sunken" id="funktionen" aria-labelledby="f-titel">
+      <div class="ws-block__innen">
+        <h2 id="f-titel">Was Pegelstand kann</h2>
+        <p class="ws-block__einleitung">Alles, was du für den Alltag brauchst, in einem übersichtlichen Dashboard.</p>
+        <div class="ws-raster">
+        <article class="ws-karte"><span class="ws-symbol"><svg class="ps-icon" aria-hidden="true" focusable="false"><use href="assets/icons.svg#ps-icon-chart-line"/></svg></span><h3>Besucher und Seitenaufrufe</h3><p>Kennzahlen mit Vorperiode, Zeitverlauf stündlich oder täglich, Absprungrate und Besuchsdauer.</p></article>
+        <article class="ws-karte"><span class="ws-symbol"><svg class="ps-icon" aria-hidden="true" focusable="false"><use href="assets/icons.svg#ps-icon-globe"/></svg></span><h3>Quellen, Länder, Geräte</h3><p>Woher kommen die Besucher, welche Seiten lesen sie, mit welchem Browser und Gerät? Länder mit einer GeoIP-Datei deiner Wahl.</p></article>
+        <article class="ws-karte"><span class="ws-symbol"><svg class="ps-icon" aria-hidden="true" focusable="false"><use href="assets/icons.svg#ps-icon-funnel"/></svg></span><h3>Filtern mit einem Klick</h3><p>Ein Klick auf eine Zeile filtert das ganze Dashboard. Der Zustand steckt in der Adresse und lässt sich teilen.</p></article>
+        <article class="ws-karte"><span class="ws-symbol"><svg class="ps-icon" aria-hidden="true" focusable="false"><use href="assets/icons.svg#ps-icon-flag"/></svg></span><h3>Ziele und Ereignisse</h3><p>Definiere Seiten oder eigene Ereignisse als Ziel und sieh die Conversion-Rate. Eigene Ereignisse mit Eigenschaften per Einzeiler.</p></article>
+        <article class="ws-karte"><span class="ws-symbol"><svg class="ps-icon" aria-hidden="true" focusable="false"><use href="assets/icons.svg#ps-icon-users"/></svg></span><h3>Mehrere Websites und Benutzer</h3><p>Rollen, Freigaben pro Website und Zwei-Faktor-Anmeldung. Öffentliche Dashboards über geheime Links, wenn du sie willst.</p></article>
+        <article class="ws-karte"><span class="ws-symbol"><svg class="ps-icon" aria-hidden="true" focusable="false"><use href="assets/icons.svg#ps-icon-download"/></svg></span><h3>Berichte, Export, Schnittstelle</h3><p>E-Mail-Berichte wöchentlich oder monatlich, CSV-Export für Excel und eine lesende REST-API mit Schlüsseln.</p></article>
+        </div>
+        <figure class="ws-bild ws-bild--ausschnitt">
+          <picture>
+            <img src="assets/bilder/dashboard-filter.png" width="1280" height="2389" loading="lazy" alt="Dashboard mit gesetzten Filtern für Land Deutschland und Gerät Smartphone" >
+          </picture>
+          <figcaption>Gesetzte Filter erscheinen als Chips und lassen sich einzeln entfernen.</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="ws-block" id="datenschutz" aria-labelledby="d-titel">
+      <div class="ws-block__innen">
+        <h2 id="d-titel">Datenschutz von Grund auf</h2>
+        <p class="ws-block__einleitung">Pegelstand speichert so wenig wie möglich. Die Besucher bleiben anonym.</p>
+        <div class="ws-zwei">
+          <div class="ws-karte">
+            <h3>Gespeichert wird</h3>
+            <ul class="ws-liste">
+              <li>Zeitpunkt, Pfad der Seite ohne Query-String und Anker</li>
+              <li>Referrer nur als Domain</li>
+              <li>Land (nur mit GeoIP-Datei), Gerätetyp, Browser und Betriebssystem ohne Versionsnummer</li>
+              <li>ein anonymer Besucher-Hash</li>
+            </ul>
+          </div>
+          <div class="ws-karte">
+            <h3>Nicht gespeichert wird</h3>
+            <ul class="ws-liste">
+              <li>keine IP-Adressen, auch nicht in Logs</li>
+              <li>keine Cookies, kein Browser-Speicher</li>
+              <li>kein vollständiger User-Agent, keine Bildschirmgröße, keine Sprache</li>
+              <li>keine Anfragen an Dritte: Schrift, Diagramme und Icons liegen auf deinem Server</li>
+            </ul>
+          </div>
+        </div>
+        <p class="ws-hinweis">Der Besucher-Hash entsteht mit einem zufälligen Tages-Salt, das um Mitternacht wechselt und danach gelöscht wird. Derselbe Mensch erscheint am nächsten Tag als neuer Besucher; „Besucher“ über mehrere Tage sind deshalb die Summe der Tageswerte. Das ist eine technische Beschreibung und keine Rechtsberatung. Ob du für deine Website eine Einwilligung oder einen Hinweis in der Datenschutzerklärung brauchst, klärst du selbst.</p>
+      </div>
+    </section>
+
+    <section class="ws-block ws-block--sunken" id="installation" aria-labelledby="i-titel">
+      <div class="ws-block__innen">
+        <h2 id="i-titel">Installation in vier Schritten</h2>
+        <p class="ws-block__einleitung">Für günstigen Shared Hosting gebaut. Du brauchst PHP 8.2 oder neuer und eine MySQL- oder MariaDB-Datenbank.</p>
+        <ol class="ws-schritte">
+          <li><strong>Datenbank anlegen</strong><span>In der Verwaltung deines Hosters eine leere Datenbank mit Benutzer erstellen.</span></li>
+          <li><strong>Hochladen</strong><span>Das Release-Zip entpacken und per FTP auf den Webspace laden.</span></li>
+          <li><strong>Installer öffnen</strong><span>Adresse im Browser aufrufen. Der Installer prüft den Server und führt dich durch.</span></li>
+          <li><strong>Code einbinden</strong><span>Website anlegen, die Zeile unten in den Kopf deiner Seiten setzen.</span></li>
+        </ol>
+        <pre class="ws-code" tabindex="0"><code>&lt;script defer data-site="DEINE-SITE-ID" src="https://stats.beispiel.de/p.js"&gt;&lt;/script&gt;</code></pre>
+        <p class="ws-hinweis">Das Tracking-Script ist kleiner als 2 KB (gzip). Ausführliche Anleitungen liegen im Quellcode unter <a href="https://github.com/bc24/Pegelstand/blob/main/docs/installation.md">docs/installation.md</a>. Ein fertiger Download erscheint mit Version 1.0.</p>
+        <figure class="ws-bild">
+          <img src="assets/bilder/installer-pruefung.png" width="1280" height="1328" loading="lazy" alt="Der Installer mit der Systemprüfung: PHP-Version, Erweiterungen und Schreibrechte werden geprüft">
+          <figcaption>Der Installer prüft deinen Webspace und erklärt jeden Hinweis.</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="ws-block" id="mobil" aria-labelledby="m-titel">
+      <div class="ws-block__innen">
+        <h2 id="m-titel">Für Smartphone und Tastatur gebaut</h2>
+        <p class="ws-block__einleitung">Helles und dunkles Design, getestet bis 360 Pixel Breite, bedienbar mit der Tastatur und mit axe-core gegen WCAG 2.2 AA geprüft.</p>
+        <figure class="ws-bild ws-bild--hoch ws-bild--ausschnitt">
+          <picture>
+            <source srcset="assets/bilder/dashboard-smartphone-dunkel.png" media="(prefers-color-scheme: dark)">
+            <img src="assets/bilder/dashboard-smartphone-hell.png" width="360" height="3695" loading="lazy" alt="Das Dashboard auf einem Smartphone mit untereinander angeordneten Karten">
+          </picture>
+        </figure>
+      </div>
+    </section>
+
+    <section class="ws-block ws-block--sunken" id="stand" aria-labelledby="s-titel">
+      <div class="ws-block__innen">
+        <h2 id="s-titel">Stand der Entwicklung</h2>
+        <p class="ws-block__einleitung">Pegelstand ist Open Source (MIT) und entsteht in Phasen. Der Quellcode ist öffentlich.</p>
+        <div class="ps-table-wrap">
+          <table class="ps-table">
+            <caption class="ps-visually-hidden">Phasen der Entwicklung</caption>
+            <thead><tr><th scope="col">Phase</th><th scope="col">Inhalt</th><th scope="col">Stand</th></tr></thead>
+            <tbody>
+              <tr><td>0 bis 2</td><td>Gerüst, Designsystem, Datenbank, Installer</td><td>fertig</td></tr>
+              <tr><td>3 bis 5</td><td>Erfassung, Aggregation, Dashboard mit echten Daten</td><td>fertig</td></tr>
+              <tr><td>6 und 7</td><td>Verwaltung, Zwei-Faktor, Ziele, E-Mail-Berichte, Export, API, öffentliche Dashboards</td><td>fertig</td></tr>
+              <tr><td>8</td><td>Release-Zip, Docker, nginx, Demo-Modus, Dokumentation</td><td>gebaut, Docker und nginx noch nicht in der Praxis erprobt</td></tr>
+              <tr><td>9</td><td>Projekt-Website</td><td>diese Seite</td></tr>
+              <tr><td>danach</td><td>Version 1.0 mit Download. Später: WordPress-Plugin, englische Oberfläche, Importe, Webhooks</td><td>geplant</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="ws-fuss">
+    <div class="ws-fuss__innen">
+      <span>© 2026 <a href="https://frank-panzer.de">Frank Panzer</a> · Entwickelt von <a href="https://panzerit.de">Panzer IT</a> · MIT-Lizenz</span>
+      <nav aria-label="Rechtliches">
+        <a href="datenschutz.html">Datenschutz</a>
+        <a href="impressum.html">Impressum</a>
+        <a href="https://github.com/bc24/Pegelstand">Quellcode</a>
+      </nav>
+    </div>
+  </footer>
+</body>
+</html>
