@@ -473,4 +473,18 @@ final class EinstellungenTest extends InstalliertTestCase
 
         self::assertSame(429, $letzte);
     }
+
+    public function testBerichteAbonnieren(): void
+    {
+        $this->anmelden();
+        $sid = $this->db->fetchInt('SELECT id FROM ' . $this->db->table('sites'));
+
+        self::assertStringContainsString('noch nicht eingerichtet', $this->get('/einstellungen/konto')->body);
+        $this->post('/einstellungen/konto/berichte', ['bericht' => [$sid . ':weekly', $sid . ':monthly', '999:weekly', 'quatsch']]);
+        self::assertSame(2, $this->db->fetchInt('SELECT COUNT(*) FROM ' . $this->db->table('report_subscriptions')));
+        self::assertStringContainsString('value="' . $sid . ':weekly" checked', $this->get('/einstellungen/konto')->body);
+
+        $this->post('/einstellungen/konto/berichte', ['bericht' => [$sid . ':monthly']]);
+        self::assertSame('monthly', $this->db->fetchValue('SELECT frequency FROM ' . $this->db->table('report_subscriptions')));
+    }
 }

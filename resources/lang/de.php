@@ -308,6 +308,16 @@ return [
             'test_ok' => 'Die Testnachricht ist an {adresse} unterwegs.',
             'test_fehler' => 'Der Versand hat nicht geklappt: {grund}',
         ],
+        'berichte' => [
+            'titel' => 'E-Mail-Berichte',
+            'text' => 'Pegelstand schickt dir eine Zusammenfassung per E-Mail: wöchentlich am Montag ab 7 Uhr für die Vorwoche, monatlich am Ersten ab 7 Uhr für den Vormonat (jeweils nach Ortszeit der Website). Du bekommst den ersten Bericht zum nächsten Termin.',
+            'woechentlich' => 'Wöchentlich',
+            'monatlich' => 'Monatlich',
+            'gespeichert' => 'Deine Berichte sind gespeichert.',
+            'keine_sites' => 'Dir ist noch keine Website zugeordnet.',
+            'kein_versand' => 'Der E-Mail-Versand ist auf diesem Server noch nicht eingerichtet. Bitte einen Administrator darum. Bis dahin kommen keine Berichte an.',
+            'kein_versand_admin' => 'Der E-Mail-Versand ist noch nicht eingerichtet. Richte ihn unter „E-Mail“ ein, sonst kommen keine Berichte an.',
+        ],
         'oeffentlich' => [
             'titel' => 'Öffentliches Dashboard',
             'text' => 'Mit einem geheimen Link kann jeder die Zahlen dieser Website ansehen, auch ohne Konto. Der Link erlaubt nur Lesen, zeigt keine Einstellungen und keine Exporte. Wer den Link kennt, sieht alles, was im Dashboard steht. Gib ihn nur weiter, wenn das für dich in Ordnung ist.',

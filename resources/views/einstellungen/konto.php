@@ -9,6 +9,9 @@ defined('PEGELSTAND_ROOT') || exit;
 /** @var array<string, string> $fehler */
 /** @var list<array{id: int, name: string, key_prefix: string, created_at: string, last_used_at: string}> $apiSchluessel */
 /** @var string|null $neuerSchluessel */
+/** @var list<array<string, mixed>> $berichtSites */
+/** @var list<string> $berichtGewaehlt */
+/** @var bool $mailAktiv */
 /** @var bool $zweiFaktor */
 /** @var string|null $setupSchluessel */
 /** @var string $setupLink */
@@ -72,6 +75,31 @@ defined('PEGELSTAND_ROOT') || exit;
     <form method="post" action="<?= $this->e($this->url('/einstellungen/konto/2fa/start')) ?>">
       <input type="hidden" name="_csrf" value="<?= $this->e($csrf) ?>">
       <div class="se-aktionen"><button type="submit" class="ps-btn ps-btn--primary"><?= $this->t('einst.zwei_fa.einrichten') ?></button></div>
+    </form>
+    <?php endif; ?>
+  </div>
+</section>
+
+<section class="ps-card es-karte" id="berichte" aria-labelledby="ber-titel">
+  <div class="ps-card__body">
+    <h2 id="ber-titel"><?= $this->t('einst.berichte.titel') ?></h2>
+    <p class="se-einleitung"><?= $this->t('einst.berichte.text') ?></p>
+    <?php if (!$mailAktiv) : ?>
+    <div class="ps-alert ps-alert--warning" role="status"><?= $this->icon('triangle-alert') ?><div class="ps-alert__inhalt"><p><?= $this->t($admin ? 'einst.berichte.kein_versand_admin' : 'einst.berichte.kein_versand') ?></p></div></div>
+    <?php endif; ?>
+    <?php if ($berichtSites === []) : ?>
+    <p><?= $this->t('einst.berichte.keine_sites') ?></p>
+    <?php else : ?>
+    <form method="post" action="<?= $this->e($this->url('/einstellungen/konto/berichte')) ?>" class="se-formular">
+      <input type="hidden" name="_csrf" value="<?= $this->e($csrf) ?>">
+      <?php foreach ($berichtSites as $s) : ?>
+      <fieldset class="es-checks es-fieldset">
+        <legend class="ps-label"><?= $this->e($s['name']) ?> (<?= $this->e($s['domain']) ?>)</legend>
+        <label class="ps-check"><input type="checkbox" name="bericht[]" value="<?= $this->e($s['id']) ?>:weekly"<?= in_array($s['id'] . ':weekly', $berichtGewaehlt, true) ? ' checked' : '' ?>><span><?= $this->t('einst.berichte.woechentlich') ?></span></label>
+        <label class="ps-check"><input type="checkbox" name="bericht[]" value="<?= $this->e($s['id']) ?>:monthly"<?= in_array($s['id'] . ':monthly', $berichtGewaehlt, true) ? ' checked' : '' ?>><span><?= $this->t('einst.berichte.monatlich') ?></span></label>
+      </fieldset>
+      <?php endforeach; ?>
+      <div class="se-aktionen"><button type="submit" class="ps-btn ps-btn--secondary"><?= $this->t('einst.speichern') ?></button></div>
     </form>
     <?php endif; ?>
   </div>

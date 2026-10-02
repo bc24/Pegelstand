@@ -6,6 +6,7 @@ Pegelstand speichert jeden Besuch als Rohdatensatz. Das Dashboard liest dagegen 
 |---|---|---|
 | `aggregate` | alle 5 Minuten | Berechnet Tages-, Stunden- und Aufschlüsselungswerte neu (Vortag und heute immer, ältere Tage nur einmal). |
 | `cleanup` | stündlich | Löscht Rohdaten nach Ablauf der Aufbewahrungsfrist (Standard 730 Tage, pro Site änderbar) und abgelaufene Ratenbegrenzungs-Zeilen. Aggregate bleiben. |
+| `reports` | stündlich | Verschickt fällige E-Mail-Berichte (Montag ab 7 Uhr für die Vorwoche, am Ersten ab 7 Uhr für den Vormonat, nach Ortszeit der Website). Schlägt ein Versand fehl, versucht der nächste Lauf es erneut. Ohne eingerichteten E-Mail-Versand passiert nichts. |
 
 ## Ohne Cronjob (Standard)
 

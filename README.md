@@ -6,7 +6,7 @@ Pegelstand zeigt dir, wie viele Menschen deine Websites besuchen, welche Seiten 
 
 ![Das Dashboard in hellem Design](docs/bilder/dashboard-hell.png)
 
-> **Status: in Entwicklung, noch nicht für den Produktivbetrieb gedacht.** Erfassung, Aggregation, Dashboard, Verwaltung und Zwei-Faktor-Anmeldung laufen. Ziele, E-Mail-Berichte, CSV-Export, REST-API, öffentliche Dashboards, Docker und das fertige Release-Zip fehlen noch (siehe [Fahrplan](#fahrplan)). Einen Download für Endnutzer gibt es erst mit Version 1.0.
+> **Status: in Entwicklung, noch nicht für den Produktivbetrieb gedacht.** Erfassung, Aggregation, Dashboard, Verwaltung, Zwei-Faktor-Anmeldung, Ziele, E-Mail-Berichte, CSV-Export, REST-API und öffentliche Dashboards laufen. Docker, die ausführliche Dokumentation und das fertige Release-Zip fehlen noch (siehe [Fahrplan](#fahrplan)). Einen Download für Endnutzer gibt es erst mit Version 1.0.
 
 ## Inhalt
 
@@ -33,6 +33,9 @@ Pegelstand zeigt dir, wie viele Menschen deine Websites besuchen, welche Seiten 
 - **Eigene Ereignisse** mit Eigenschaften (`pegelstand('Anmeldung', { props: { plan: 'pro' } })`), optional automatisch für ausgehende Links und Downloads.
 - **Filter**: Ein Klick auf eine Zeile filtert das ganze Dashboard. Der Zustand steckt in der Adresse und lässt sich teilen.
 - **Mehrere Websites** mit eigener Zeitzone und Aufbewahrungsfrist, **mehrere Benutzer** mit Rollen und Zwei-Faktor-Anmeldung.
+- **Ziele**: Eine Seite oder ein Ereignis als Erfolg definieren, Besucher und Conversion-Rate sehen, danach filtern.
+- **E-Mail-Berichte**: Wöchentlich oder monatlich eine Zusammenfassung per E-Mail (eigener SMTP-Versand, Passwort-vergessen-Link inklusive).
+- **CSV-Export** aller Tabellen für deutsches Excel, **REST-API** (lesend, mit API-Schlüsseln) und ein **öffentliches Dashboard** über einen geheimen Link.
 - **Eigene Besuche ausschließen** per IP-Adresse oder Bereich.
 - **Hell und dunkel**, bedienbar mit Tastatur und Smartphone (getestet bis 360 Pixel Breite), Prüfung mit axe-core gegen WCAG 2.2 AA.
 - **Winziges Tracking-Script**: unter 2 KB (gzip).
@@ -142,7 +145,8 @@ Unter **Einstellungen** (Konto-Menü oben rechts):
 
 - **Websites** anlegen, ändern und löschen. Löschen entfernt alle Messdaten und verlangt zur Sicherheit die Eingabe der Domain. Pro Website: Zeitzone, Aufbewahrung der Rohdaten (Standard 730 Tage, Zusammenfassungen bleiben), weitere erlaubte Domains (auch `*.beispiel.de`), Do-Not-Track- und GPC-Schalter, Liste ausgeschlossener IP-Adressen.
 - **Benutzer** mit den Rollen Administrator und Betrachter. Betrachter sehen nur Websites, die du freigibst. Der letzte aktive Administrator lässt sich nicht aussperren.
-- **Mein Konto**: Passwort ändern und Zwei-Faktor-Anmeldung einrichten.
+- **E-Mail** (Administratoren): SMTP-Zugang mit Testversand. Er wird für Berichte und „Passwort vergessen“ gebraucht.
+- **Mein Konto**: Passwort ändern, Zwei-Faktor-Anmeldung einrichten, E-Mail-Berichte abonnieren, API-Schlüssel verwalten.
 
 ![Einstellungen einer Website](docs/bilder/einstellungen-website.png)
 
@@ -177,7 +181,7 @@ Sichere die Konfigurationsdatei, sie enthält den `app_key`, ohne den sich Zwei-
 
 ## Hintergrundjobs
 
-Zwei Jobs halten die Zahlen aktuell: die **Aggregation** (alle 5 Minuten) und das **Aufräumen** nach Ablauf der Aufbewahrungsfrist (stündlich).
+Drei Jobs laufen im Hintergrund: die **Aggregation** (alle 5 Minuten), das **Aufräumen** nach Ablauf der Aufbewahrungsfrist (stündlich) und der **Versand der E-Mail-Berichte** (stündlich geprüft, Montag und Monatserster ab 7 Uhr).
 
 - **Ohne Einrichtung** prüft Pegelstand nach Antworten an Besucher, ob ein Job fällig ist (höchstens einmal pro Minute).
 - **Mit Cronjob**: `*/5 * * * * php /pfad/zu/pegelstand/bin/cron.php` und in der Konfiguration `'cron' => ['mode' => 'external']`.
@@ -226,8 +230,8 @@ Aufbau: kein Framework, sondern ein kleiner Kern (Front Controller, Router, Cont
 | 3 | Erfassung: Tracking-Script, Endpunkt, Bot-Filter, Hashing | fertig |
 | 4 | Sitzungen, Aggregation, Hintergrundjobs, Demo-Daten, Lasttest | fertig |
 | 5 | Dashboard mit echten Daten | fertig |
-| 6 | Verwaltung, Benutzer, Rollen, Zwei-Faktor | fertig, Passwort-Reset per E-Mail folgt mit Phase 7 |
-| 7 | Ziele und Ereignisse, E-Mail-Berichte, CSV-Export, REST-API, öffentliche Dashboards | offen |
+| 6 | Verwaltung, Benutzer, Rollen, Zwei-Faktor | fertig |
+| 7 | Ziele, E-Mail-Versand und Berichte, Passwort-Reset, CSV-Export, REST-API, öffentliche Dashboards | fertig |
 | 8 | Docker, Dokumentation, Demo-Modus, nginx-Beispiel, Release-Zip | offen |
 | 9 | Projekt-Website | offen |
 
@@ -240,6 +244,7 @@ Erst nach Version 1.0 geplant: WordPress-Plugin, englische Oberfläche, Importe,
 | Datei | Inhalt |
 |---|---|
 | [docs/tracking.md](docs/tracking.md) | Einbindung, Ereignisse, Opt-out, Proxy, GeoIP, Datenschutz-Details |
+| [docs/api.md](docs/api.md) | REST-Schnittstelle mit Schlüsseln |
 | [docs/hintergrundjobs.md](docs/hintergrundjobs.md) | Aggregation, Cron, wie Zahlen entstehen |
 | [docs/performance.md](docs/performance.md) | Messwerte und Grenzen |
 | [docs/designsystem.md](docs/designsystem.md) | Farben, Typografie, Komponenten |

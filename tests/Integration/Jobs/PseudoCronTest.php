@@ -27,7 +27,7 @@ final class PseudoCronTest extends InstalliertTestCase
 
         $this->app()->afterResponse();
 
-        self::assertSame(2, $this->laeufe(), 'Aggregation und Aufräumen sind gelaufen.');
+        self::assertSame(3, $this->laeufe(), 'Aggregation, Aufräumen und Berichte sind gelaufen.');
         self::assertSame(1, $this->db->fetchInt('SELECT COUNT(*) FROM ' . $this->db->table('agg_daily')));
     }
 
@@ -42,7 +42,7 @@ final class PseudoCronTest extends InstalliertTestCase
 
         touch($this->temp . '/storage/cache/cron-last', time() - 120);
         $this->app()->afterResponse();
-        self::assertSame(2, $this->laeufe());
+        self::assertSame(3, $this->laeufe());
     }
 
     public function testExternerModusSchaltetPseudoCronAus(): void
@@ -77,7 +77,7 @@ final class PseudoCronTest extends InstalliertTestCase
 
         self::assertStringContainsString('aggregate: 1 Sites, 2 Tage', (string) $ausgabe);
         self::assertStringContainsString('cleanup: ', (string) $ausgabe);
-        self::assertSame(2, $this->laeufe());
+        self::assertSame(3, $this->laeufe());
     }
 
     public function testDemoDatenSkript(): void

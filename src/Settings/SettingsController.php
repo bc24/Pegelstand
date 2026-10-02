@@ -17,6 +17,8 @@ use Pegelstand\Core\Session;
 use Pegelstand\Core\Translator;
 use Pegelstand\Core\View;
 use Pegelstand\Install\AdminInput;
+use Pegelstand\Mail\Mailer;
+use Pegelstand\Reports\ReportSubscriptions;
 
 /**
  * Einstellungen: Websites und Benutzer (nur Administratoren), Konto und Passwort (alle).
@@ -37,6 +39,8 @@ final class SettingsController
         private readonly UserRepository $users,
         private readonly GoalRepository $goals,
         private readonly ApiKeyRepository $apiKeys,
+        private readonly ReportSubscriptions $reports,
+        private readonly Mailer $mailer,
         private readonly string $scriptPath,
         private readonly string $endpointPath,
     ) {}
@@ -61,6 +65,7 @@ final class SettingsController
         $r->add('POST', '/einstellungen/benutzer/{id}/loeschen', fn(Request $q, array $p): Response => $this->benutzerLoeschen($q, $p['id']));
         $r->add('GET', '/einstellungen/konto', fn(Request $q): Response => $this->konto($q, []));
         $r->add('POST', '/einstellungen/konto', fn(Request $q): Response => $this->passwortAendern($q));
+        $r->add('POST', '/einstellungen/konto/berichte', fn(Request $q): Response => $this->berichte($q));
         $r->add('POST', '/einstellungen/konto/api-schluessel', fn(Request $q): Response => $this->schluesselAnlegen($q));
         $r->add('POST', '/einstellungen/konto/api-schluessel/{kid}/loeschen', fn(Request $q, array $p): Response => $this->schluesselLoeschen($q, $p['kid']));
         $r->add('POST', '/einstellungen/konto/2fa/start', fn(Request $q): Response => $this->zweiFaktor($q, 'start'));
@@ -559,10 +564,32 @@ final class SettingsController
             'fehler' => $fehler,
             'zweiFaktor' => $this->auth->totpActive($u->id),
             'apiSchluessel' => $this->apiKeys->forUser($u->id),
+            'berichtSites' => $this->auth->sites($u),
+            'berichtGewaehlt' => $this->reports->forUser($u->id),
+            'mailAktiv' => $this->mailer->isConfigured(),
             'neuerSchluessel' => $neu,
             'setupSchluessel' => $setup,
             'setupLink' => $setup === null ? '' : Totp::uri($setup, $u->email, 'Pegelstand'),
         ], $status);
+    }
+
+    private function berichte(Request $q): Response
+    {
+        $u = $this->guard($q, false, true);
+        if ($u instanceof Response) {
+            return $u;
+        }
+        $roh = $q->post['bericht'] ?? [];
+        $gewaehlt = [];
+        foreach (is_array($roh) ? $roh : [] as $eintrag) {
+            if (is_string($eintrag) && preg_match('/^\d+:(weekly|monthly)$/', $eintrag) === 1) {
+                $gewaehlt[] = $eintrag;
+            }
+        }
+        $this->reports->replace($u->id, array_map(static fn(array $s): int => $s['id'], $this->auth->sites($u)), $gewaehlt);
+        $this->merke('success', $this->t->get('einst.berichte.gespeichert'));
+
+        return Response::redirect($q->url('/einstellungen/konto#berichte'));
     }
 
     private function schluesselAnlegen(Request $q): Response

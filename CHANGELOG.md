@@ -9,6 +9,7 @@ die Versionierung folgt [Semantic Versioning](https://semver.org/lang/de/).
 
 ### Hinzugefügt
 
+- Phase 7: Ziele (Migration 0004), SMTP-Versand und E-Mail-Einstellungen, Passwort zurücksetzen (0005), CSV-Export, REST-API v1 mit API-Schlüsseln (0006), öffentliches Dashboard über geheimen Link, E-Mail-Berichte (0007). Doku in `docs/api.md`.
 - Dashboard mit echten Daten (Phase 5): Anmeldung, JSON-Schnittstelle `/api/dashboard`, Kennzahlen mit Vorperiode, Zeitreihe, Tabellen, Filter, aktive Besucher, Zeitzone je Site. Ziele folgen in Phase 7.
 - Aggregation und Hintergrundjobs (Phase 4): Migration `0003` (Tages-, Stunden-, Aufschlüsselungs- und Eigenschafts-Aggregate, Jobsperren), Aggregationsjob mit Nachholen, Aufräumjob nach Aufbewahrungsfrist, Pseudo-Cron nach der Antwort, `bin/cron.php` für echten Cron, Demo-Daten-Generator (`bin/demo-data.php`) und Benchmark (`bin/benchmark.php`). Doku in `docs/hintergrundjobs.md`.
 - Erfassung (Phase 3): Endpunkt `POST /api/event`, Tracking-Script `p.js` (unter 2 KB gzip), Migration `0002` (Salt, Wörterbücher, Sitzungen, Ereignisse), Besucher-Hash mit Tages-Salt, Sitzungszuordnung, Bot-Filter, Hostprüfung, Ratenbegrenzung, UTM und Referrer, eigener MMDB-Leser für Länder, Proxy-Unterstützung. Doku in `docs/tracking.md`, Entscheidungen in `docs/entscheidungen.md`.

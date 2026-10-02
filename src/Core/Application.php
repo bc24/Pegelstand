@@ -30,8 +30,11 @@ use Pegelstand\Install\Installer;
 use Pegelstand\Jobs\AggregationJob;
 use Pegelstand\Jobs\CleanupJob;
 use Pegelstand\Jobs\JobRunner;
+use Pegelstand\Jobs\ReportJob;
 use Pegelstand\Jobs\Scheduler;
 use Pegelstand\Mail\Mailer;
+use Pegelstand\Reports\ReportBuilder;
+use Pegelstand\Reports\ReportSubscriptions;
 use Pegelstand\Settings\ApiKeyRepository;
 use Pegelstand\Settings\GoalRepository;
 use Pegelstand\Settings\MailController;
@@ -142,9 +145,21 @@ final class Application
 
     public function scheduler(Database $db): Scheduler
     {
+        $jobs = [new AggregationJob($db, new Aggregator($db)), new CleanupJob($db)];
+        $config = Config::load($this->paths->configFile());
+        if ($config !== null && $config->string('app_key') !== '') {
+            $einstellungen = new SettingsStore($db, new Crypto($config->string('app_key')));
+            $dienst = new DashboardService(
+                $db,
+                ReferrerClassifier::fromFile($this->paths->resourcesDir() . '/data/quellen.php'),
+                self::laender($this->paths->resourcesDir() . '/data/laender.php'),
+            );
+            $jobs[] = new ReportJob(new ReportSubscriptions($db), new SiteRepository($db), new ReportBuilder($dienst), new Mailer($einstellungen), $einstellungen);
+        }
+
         return new Scheduler(
             new JobRunner($db),
-            [new AggregationJob($db, new Aggregator($db)), new CleanupJob($db)],
+            $jobs,
             new ErrorLog($this->paths->storageDir() . '/logs/error.log'),
         );
     }
@@ -223,14 +238,14 @@ final class Application
         $csrf = new Csrf($session);
         $auth = new AuthService($db, $session, new Crypto($config->string('app_key')));
         (new LoginController($view, $translator, $csrf, $auth, new RateLimiter($db), $salts, $clientIp, $config->int('login.rate_limit', 10)))->register($router);
-        (new SettingsController($view, $translator, $csrf, $session, $auth, new SiteRepository($db), new UserRepository($db), new GoalRepository($db), new ApiKeyRepository($db), $skript, $endpunkt))->register($router);
+        $einstellungen = new SettingsStore($db, new Crypto($config->string('app_key')));
+        $mailer = new Mailer($einstellungen);
+        (new SettingsController($view, $translator, $csrf, $session, $auth, new SiteRepository($db), new UserRepository($db), new GoalRepository($db), new ApiKeyRepository($db), new ReportSubscriptions($db), $mailer, $skript, $endpunkt))->register($router);
         $dashboardDienst = new DashboardService(
             $db,
             ReferrerClassifier::fromFile($this->paths->resourcesDir() . '/data/quellen.php'),
             self::laender($this->paths->resourcesDir() . '/data/laender.php'),
         );
-        $einstellungen = new SettingsStore($db, new Crypto($config->string('app_key')));
-        $mailer = new Mailer($einstellungen);
         (new MailController($view, $translator, $csrf, $session, $auth, $einstellungen, $mailer))->register($router);
         (new PasswordResetController($view, $translator, $csrf, $db, $mailer, $einstellungen, new RateLimiter($db), $salts, $clientIp))->register($router);
         (new ApiController(
