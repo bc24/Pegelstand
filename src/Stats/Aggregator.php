@@ -139,21 +139,21 @@ final class Aggregator
         ];
         foreach ($sitzungsDimensionen as $dim => $ausdruck) {
             $this->db->run(
-                $kopf . 'SELECT site_id, ?, ?, ' . $ausdruck . ', COUNT(DISTINCT visitor_hash), COUNT(*), SUM(pageviews),'
+                $kopf . 'SELECT site_id, ?, ?, ' . $ausdruck . ' AS dim_wert, COUNT(DISTINCT visitor_hash), COUNT(*), SUM(pageviews),'
                 . ' SUM(pageviews = 1 AND custom_events = 0), SUM(TIMESTAMPDIFF(SECOND, started_at, last_seen_at)) FROM ' . $sitzungen
-                . ' WHERE site_id = ? AND started_at >= ? AND started_at < ? AND ' . $ausdruck . ' IS NOT NULL GROUP BY ' . $ausdruck,
+                . ' WHERE site_id = ? AND started_at >= ? AND started_at < ? AND ' . $ausdruck . ' IS NOT NULL GROUP BY site_id, dim_wert',
                 [$tag, $dim, $siteId, $von, $bis],
             );
         }
 
         $this->db->run(
             $kopf . 'SELECT e.site_id, ?, ?, e.path_id, COUNT(DISTINCT s.visitor_hash), COUNT(DISTINCT e.session_id), COUNT(*), 0, 0 FROM ' . $ereignisse
-            . ' e JOIN ' . $sitzungen . ' s ON s.id = e.session_id WHERE e.site_id = ? AND e.occurred_at >= ? AND e.occurred_at < ? AND e.kind = 1 GROUP BY e.path_id',
+            . ' e JOIN ' . $sitzungen . ' s ON s.id = e.session_id WHERE e.site_id = ? AND e.occurred_at >= ? AND e.occurred_at < ? AND e.kind = 1 GROUP BY e.site_id, e.path_id',
             [$tag, Dimension::PAGE, $siteId, $von, $bis],
         );
         $this->db->run(
             $kopf . 'SELECT e.site_id, ?, ?, e.name_id, COUNT(DISTINCT s.visitor_hash), COUNT(DISTINCT e.session_id), COUNT(*), 0, 0 FROM ' . $ereignisse
-            . ' e JOIN ' . $sitzungen . ' s ON s.id = e.session_id WHERE e.site_id = ? AND e.occurred_at >= ? AND e.occurred_at < ? AND e.kind = 2 AND e.name_id IS NOT NULL GROUP BY e.name_id',
+            . ' e JOIN ' . $sitzungen . ' s ON s.id = e.session_id WHERE e.site_id = ? AND e.occurred_at >= ? AND e.occurred_at < ? AND e.kind = 2 AND e.name_id IS NOT NULL GROUP BY e.site_id, e.name_id',
             [$tag, Dimension::EVENT_NAME, $siteId, $von, $bis],
         );
     }
@@ -167,7 +167,7 @@ final class Aggregator
             . ' SELECT e.site_id, ?, e.name_id, p.key_id, p.value_id, COUNT(DISTINCT s.visitor_hash), COUNT(*) FROM ' . $this->db->table('events') . ' e'
             . ' JOIN ' . $this->db->table('event_props') . ' p ON p.event_id = e.id'
             . ' JOIN ' . $this->db->table('sessions') . ' s ON s.id = e.session_id'
-            . ' WHERE e.site_id = ? AND e.occurred_at >= ? AND e.occurred_at < ? AND e.kind = 2 AND e.name_id IS NOT NULL GROUP BY e.name_id, p.key_id, p.value_id',
+            . ' WHERE e.site_id = ? AND e.occurred_at >= ? AND e.occurred_at < ? AND e.kind = 2 AND e.name_id IS NOT NULL GROUP BY e.site_id, e.name_id, p.key_id, p.value_id',
             [$tag, $siteId, $von, $bis],
         );
     }
